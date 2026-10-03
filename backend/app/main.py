@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 
+from backend.app.api.routes.health import router as health_router
+from backend.app.core.config import settings
+
+
 app = FastAPI(
-    title="Assistente Pessoal API",
-    version="0.0.1",
+    title=settings.app_name,
+    version=settings.app_version,
 )
 
 
@@ -10,12 +14,12 @@ app = FastAPI(
 async def root():
     return {
         "assistant": "online",
-        "version": "0.0.1",
+        "version": settings.app_version,
+        "environment": settings.environment,
     }
 
 
-@app.get("/health")
-async def health():
-    return {
-        "status": "ok",
-    }
+app.include_router(
+    health_router,
+    prefix="/api/v1",
+)
