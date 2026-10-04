@@ -35,3 +35,14 @@ node_modules/
 windows/node_modules/
 windows/dist/
 windows/src-tauri/target/
+# Dados pessoais e artefatos de instalação
+*.db
+*.db-*
+*.sqlite*
+*.apk
+*.aab
+*.jks
+*.keystore
+
+# Configuração própria de cada instalação Android
+android/koiwai.local.properties

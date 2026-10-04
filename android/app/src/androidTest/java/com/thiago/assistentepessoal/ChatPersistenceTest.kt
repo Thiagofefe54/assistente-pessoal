@@ -1,0 +1,92 @@
+package com.thiago.assistentepessoal
+
+import androidx.room.Room
+import androidx.test.platform.app.InstrumentationRegistry
+import com.thiago.assistentepessoal.chat.*
+import kotlinx.coroutines.runBlocking
+import org.junit.Assert.*
+import org.junit.Test
+import java.time.Instant
+import java.util.UUID
+
+class ChatPersistenceTest {
+    @Test fun migrationKeepsTheExistingLocalConversation() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val name = "migration-test-${UUID.randomUUID()}.db"
+        val file = context.getDatabasePath(name)
+        file.parentFile?.mkdirs()
+        val sqlite = android.database.sqlite.SQLiteDatabase.openOrCreateDatabase(file, null)
+        sqlite.execSQL("CREATE TABLE messages (sequence INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, id TEXT NOT NULL, role TEXT NOT NULL, content TEXT NOT NULL, occurredAt INTEGER NOT NULL, timezone TEXT NOT NULL, localDate TEXT NOT NULL, status TEXT NOT NULL, replyTo TEXT, error TEXT)")
+        sqlite.execSQL("CREATE UNIQUE INDEX index_messages_id ON messages(id)")
+        sqlite.execSQL("CREATE UNIQUE INDEX index_messages_replyTo ON messages(replyTo)")
+        sqlite.execSQL("CREATE TABLE room_master_table (id INTEGER PRIMARY KEY, identity_hash TEXT)")
+        sqlite.execSQL("INSERT INTO room_master_table VALUES(42, 'eb7de3738519177cacbeff9675f1a270')")
+        sqlite.execSQL("INSERT INTO messages(id,role,content,occurredAt,timezone,localDate,status) VALUES('legacy','user','Conversa anterior',1791081000000,'America/Sao_Paulo','2026-10-03','sent')")
+        sqlite.version = 1
+        sqlite.close()
+        val db = Room.databaseBuilder(context, ChatDatabase::class.java, name)
+            .addMigrations(ChatDatabase.MIGRATION_1_2).build()
+        try {
+            val saved = db.messages().getMessages().single()
+            assertEquals("Conversa anterior", saved.content)
+            assertEquals("legacy", saved.id)
+            assertFalse(saved.synced)
+            assertEquals(1, db.messages().pendingSync().size)
+        } finally { db.close(); context.deleteDatabase(name) }
+    }
+
+    @Test fun cloudReconciliationIsIdempotent() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val db = Room.inMemoryDatabaseBuilder(context, ChatDatabase::class.java).build()
+        try {
+            val user = ChatMessage(role="user", content="Fictícia")
+            db.messages().insert(user)
+            db.messages().complete(user, "Resposta fictícia")
+            val messages = db.messages().getMessages()
+            assertEquals(2, db.messages().pendingSync().size)
+            db.messages().markSynced(messages.map { it.id })
+            db.messages().merge(messages.map { it.copy(sequence=0, synced=true) })
+            db.messages().merge(messages.map { it.copy(sequence=0, synced=true) })
+            assertEquals(2, db.messages().getMessages().size)
+            assertTrue(db.messages().pendingSync().isEmpty())
+        } finally { db.close() }
+    }
+
+    @Test fun reopenRecoverAndRetryKeepOneConversation() = runBlocking {
+        val context = InstrumentationRegistry.getInstrumentation().targetContext
+        val name = "chat-test-${UUID.randomUUID()}.db"
+        fun open() = Room.databaseBuilder(context, ChatDatabase::class.java, name).build()
+        var db = open()
+        try {
+            val timestamp = Instant.parse("2026-10-04T02:59:59Z").toEpochMilli()
+            val user = ChatMessage(role = "user", content = "Teste \"aspas\"\nsegunda linha",
+                occurredAt = timestamp, timezone = "America/Sao_Paulo", status = MessageStatus.SENDING)
+            db.messages().insert(user)
+            db.close()
+            db = open()
+            db.messages().recoverInterruptedSends()
+            val saved = db.messages().getMessages().single()
+            assertEquals(user.id, saved.id)
+            assertEquals(user.content, saved.content)
+            assertEquals("2026-10-03", saved.localDate)
+            assertEquals(MessageStatus.FAILED, saved.status)
+            db.messages().updateStatus(user.id, MessageStatus.SENDING, null)
+            db.messages().complete(saved, "Resposta\ncom \"aspas\"")
+            db.close()
+            db = open()
+            val history = db.messages().getMessages()
+            assertEquals(2, history.size)
+            assertEquals(MessageStatus.SENT, history[0].status)
+            assertEquals(user.id, history[1].replyTo)
+            assertEquals(timestamp, history[0].occurredAt)
+            try {
+                db.messages().complete(saved, "Duplicada")
+                fail("A duplicate reply must be rejected")
+            } catch (_: android.database.sqlite.SQLiteConstraintException) { }
+            assertEquals(2, db.messages().getMessages().size)
+        } finally {
+            db.close()
+            context.deleteDatabase(name)
+        }
+    }
+}

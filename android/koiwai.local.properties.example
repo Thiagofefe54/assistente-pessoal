@@ -1,0 +1,5 @@
+# Copie para koiwai.local.properties. O arquivo local é ignorado pelo Git.
+# Este exemplo não contém as credenciais/configuração de uma instalação real.
+koiBackendUrl=http://10.0.2.2:8000
+koiSupabaseUrl=https://SEU-PROJETO.supabase.co
+koiSupabasePublishableKey=sb_publishable_SUBSTITUA
