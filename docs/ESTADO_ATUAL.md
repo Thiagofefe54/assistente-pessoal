@@ -194,3 +194,24 @@ validou o modelo, não substitui o teste autenticado da memória no Poco. O APK
 está preparado, mas a instalação ainda em uso no aparelho é a versão anterior.
 Os testes MemoryLiveTest e MemoryNavigationTest foram compilados e aguardam
 reconexão. Nenhuma fixture de banco foi mantida após a verificação SQL.
+
+## Memória no Poco e tom mais natural — 07/10/2026
+
+Novo APK e pacote de testes instalados com atualização, sem desinstalar.
+MemoryLiveTest passou: criação de fixture, correção, recusa de edição antiga,
+recuperação de Farol de Rubi pela IA sem contexto recente e exclusão da fixture.
+MemoryNavigationTest passou após abrir o app em primeiro plano: navegação,
+editor, botão inválido/válido, cancelamento e retorno ao diário. A primeira
+execução ficou esperando com outro app em primeiro plano e foi interrompida;
+não foi contada como aprovação. Cada teste aprovado terminou com OK (1 test).
+
+Usuário confirmou uso dentro e fora de casa e despertar em aproximadamente 50
+segundos após inatividade. Corrigiu o relato sobre PC desligado: isso ainda não
+foi testado fisicamente. O cliente usa endereço Render, sem depender do servidor local.
+
+Prompt ajustado a pedido do usuário: alegre, carinhoso, espontâneo, emojis
+moderados e linguagem cotidiana; precisão e cuidado em assuntos sérios mantidos.
+23 testes backend passaram após o ajuste. Uma chamada fictícia respondeu:
+“Dois! 😄 Essa eu tirei de letra. Brincadeira boa, hein? 😜”. Publicação desse
+ajuste é registrada abaixo. Resumo canônico em CONTINUIDADE_KOIWAI.md e instrução
+de retomada no AGENTS.md do repositório. Não foram gravados segredos no resumo.

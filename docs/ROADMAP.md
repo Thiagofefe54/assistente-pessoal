@@ -9,7 +9,7 @@ Identidade e experiência Android refinadas e aprovadas. Histórico Room por con
 login Supabase, sessão criptografada, sincronização e consulta por dia funcionando.
 Backend publicado no Render Free; conversa Groq autenticada com contexto recente
 validada no Poco e confirmada pelo usuário. Primeiro incremento de lembranças
-confirmadas publicado no servidor, com APK preparado para teste. Relatórios,
+confirmadas instalado e testado no Poco. Relatórios,
 cadastros de Rotina e Windows continuam pendentes.
 
 ## Etapas e critérios
@@ -32,8 +32,8 @@ cadastros de Rotina e Windows continuam pendentes.
 ## Ordem imediata
 
 1. Concluído: Groq, publicação gratuita e conversa real autenticada no Poco.
-2. Em entrega: lembranças confirmadas, criação/edição/exclusão e uso no contexto.
-3. Ao reconectar o Poco: instalar o novo APK e validar a memória com dados fictícios.
+2. Concluído: lembranças confirmadas, criação/edição/exclusão e uso no contexto.
+3. Ajuste de personalidade alegre e natural em publicação; observar no uso real.
 4. Próximo: sugestões revisáveis da IA e resumos diários com fontes.
 5. Pendências da fundação: recuperação de conta, limites próprios por usuário e
    observação do uso com o computador fisicamente desligado.

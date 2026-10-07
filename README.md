@@ -19,6 +19,8 @@
 
 ---
 
+Para retomar o desenvolvimento, leia o [resumo de continuidade](docs/CONTINUIDADE_KOIWAI.md).
+
 ## O projeto
 
 A Koiwai nasceu de uma vontade: ter uma assistente pessoal que acompanhe a vida de verdade, com identidade própria, continuidade entre dispositivos e uma memória que possa ser consultada e corrigida.
@@ -29,7 +31,7 @@ O objetivo é conversar com a Koi, organizar o dia e, aos poucos, permitir que e
 
 ## Uma identidade que você reconhece
 
-Koi é uma personagem feminina, calma, próxima e competente, com humor leve. O tratamento usado na saudação pode ser personalizado no app.
+Koi é uma personagem feminina, próxima e competente, com um jeito alegre, carinhoso e brincalhão. Ela adapta o tom ao assunto e evita explicações técnicas sem necessidade. O tratamento usado na saudação pode ser personalizado no app.
 
 O visual combina roxo, azul e vermelho sobre superfícies escuras: brilho, contraste e movimento suave. Cada área tem sua própria composição, mantendo a mesma identidade. Os fundos são animados e os botões reagem ao toque. Existe uma opção persistente para reduzir movimento, e as animações também respeitam a configuração do sistema.
 
@@ -41,7 +43,7 @@ A personagem é ilustrada: animação da personagem e voz própria são possibil
 | :--- | :--- |
 | **Home** | Personagem, saudação personalizável, data/hora reais, estado da conta e atalhos. |
 | **Chat** | Conversa por texto com Groq via servidor HTTPS, contexto recente limitado, histórico persistente, horários e nova tentativa após falha. |
-| **Memória** | Diário por dia e busca; nova área de lembranças confirmadas, com edição, exclusão e fonte original (APK preparado para teste). |
+| **Memória** | Diário por dia e busca; nova área de lembranças confirmadas, com edição, exclusão e fonte original, instalada e testada no Poco. |
 | **Rotina** | Painel visual e navegação pelas categorias. Cadastros e execução de tarefas ainda estão em preparação. |
 | **Configurações** | Personalização da saudação, redução de movimento e acesso à conta. |
 | **Conta** | Cadastro/login por e-mail, confirmação de e-mail, sessão criptografada e sincronização. |
@@ -158,8 +160,7 @@ A demonstração funciona com `ENVIRONMENT=development` e não precisa de creden
 
 Para respostas de IA, configure `GROQ_API_KEY` somente no `.env` do servidor.
 A integração Groq, o contexto recente e o backend HTTPS foram validados no Poco.
-O incremento de lembranças confirmadas já está no servidor; o novo APK aguarda
-validação no aparelho. O simulador HTTP continua com respostas demonstrativas.
+O incremento de lembranças confirmadas foi instalado e testado no Poco. O simulador HTTP continua com respostas demonstrativas.
 Detalhes em [IA_GROQ.md](docs/IA_GROQ.md) e [MEMORIA_CONFIRMADA.md](docs/MEMORIA_CONFIRMADA.md).
 
 ### 2. Aplicativo Android
