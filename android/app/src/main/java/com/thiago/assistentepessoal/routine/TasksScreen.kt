@@ -60,7 +60,7 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Red) {
                 val pending=tasks.orEmpty().count { it.completedAt==null }
                 Text("$pending em andamento • ${tasks.orEmpty().count { it.overdue(now) }} vencidas",fontWeight=FontWeight.SemiBold)
-                Text("Datas usam o fuso da tarefa. Notificações chegam no próximo pack. Consultar e alterar requer internet.",fontSize=12.sp,color=KoiColors.Muted)
+                Text("Datas usam o fuso da tarefa. Ative lembretes em Configurações para missões com data e horário. Consultar e alterar requer internet.",fontSize=12.sp,color=KoiColors.Muted)
             }
             Spacer(Modifier.height(10.dp))
             KoiAction("＋ Nova tarefa",{editing=null;creationId=java.util.UUID.randomUUID().toString();repo.clearInfo();editor=true},Modifier.fillMaxWidth(),!busy && tasks!=null && tasks!!.size<500)
@@ -120,24 +120,27 @@ fun TaskEditor(existing: KoiTask?, onDismiss: () -> Unit, initial: TaskDraft? = 
     var time by rememberSaveable {mutableStateOf(existing?.time?.take(5) ?: initial?.time ?: "")}
     var recurrence by rememberSaveable {mutableStateOf(existing?.recurrence ?: initial?.recurrence ?: "none")}
     val draft=TaskDraft(title,notes,date,time,recurrence)
-    AlertDialog(onDismissRequest=onDismiss,title={Text(if(existing==null) "Nova missão" else "Editar missão")},text={
+    AlertDialog(onDismissRequest={if(!saving)onDismiss()},title={Text(if(existing==null) "Nova missão" else "Editar missão")},text={
         Column(Modifier.verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(10.dp)) {
-            OutlinedTextField(title,{if(it.length<=160)title=it},label={Text("Título da tarefa")},modifier=Modifier.fillMaxWidth())
-            OutlinedTextField(notes,{if(it.length<=2000)notes=it},label={Text("Detalhes (opcional)")},minLines=2,maxLines=4,modifier=Modifier.fillMaxWidth())
+            OutlinedTextField(title,{if(it.length<=160)title=it},enabled=!saving,label={Text("Título da tarefa")},modifier=Modifier.fillMaxWidth())
+            OutlinedTextField(notes,{if(it.length<=2000)notes=it},enabled=!saving,label={Text("Detalhes (opcional)")},minLines=2,maxLines=4,modifier=Modifier.fillMaxWidth())
+            Eyebrow("QUANDO É SUA MISSÃO?",KoiColors.Blue)
             TextButton(onClick={
                 val initial=runCatching{LocalDate.parse(date)}.getOrDefault(LocalDate.now())
                 DatePickerDialog(context,{_,y,m,d->date=LocalDate.of(y,m+1,d).toString()},initial.year,initial.monthValue-1,initial.dayOfMonth).show()
-            }) {Text(if(date.isBlank()) "Escolher data" else "Data: ${LocalDate.parse(date).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))}")}
-            if(date.isNotBlank()) {
-                TextButton(onClick={
-                    val initial=runCatching{LocalTime.parse(time)}.getOrDefault(LocalTime.of(9,0))
-                    TimePickerDialog(context,{_,h,m->time=LocalTime.of(h,m).toString()},initial.hour,initial.minute,true).show()
-                }) {Text(if(time.isBlank()) "Escolher horário (opcional)" else "Horário: $time")}
-                TextButton(onClick={date="";time="";recurrence="none"}) {Text("Remover data e repetição")}
-            }
-            if(time.isNotBlank()) TextButton(onClick={time=""}) {Text("Remover horário")}
+            },enabled=!saving) {Text(if(date.isBlank()) "Escolher data" else "Data: ${LocalDate.parse(date).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))}")}
+            TextButton(onClick={
+                val initialTime=runCatching{LocalTime.parse(time)}.getOrDefault(LocalTime.of(9,0))
+                TimePickerDialog(context,{_,h,m->
+                    time=LocalTime.of(h,m).toString()
+                    if(date.isBlank()) date=LocalDate.now(java.time.ZoneId.of(existing?.timezone ?: java.time.ZoneId.systemDefault().id)).toString()
+                },initialTime.hour,initialTime.minute,true).show()
+            },enabled=!saving) {Text(if(time.isBlank()) "◷ Escolher horário" else "◷ Horário: $time",color=KoiColors.Blue)}
+            if(date.isBlank()) Text("Se escolher apenas o horário, a data será hoje. Você poderá mudar antes de salvar.",fontSize=12.sp,color=KoiColors.Muted)
+            if(date.isNotBlank()) TextButton(onClick={date="";time="";recurrence="none"},enabled=!saving) {Text("Remover data e repetição")}
+            if(time.isNotBlank()) TextButton(onClick={time=""},enabled=!saving) {Text("Remover horário")}
             taskRecurrences.entries.chunked(2).forEach { entries -> Row(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
-                entries.forEach { (id,label)-> FilterChip(selected=recurrence==id,onClick={recurrence=id},label={Text(label)}) }
+                entries.forEach { (id,label)-> FilterChip(selected=recurrence==id,onClick={recurrence=id},enabled=!saving,label={Text(label)}) }
             }}
             Text("Repetições precisam de uma data. Na mensal, dias que não existem são ajustados ao fim do mês; a próxima parte do ciclo usa essa nova data.",fontSize=12.sp,color=KoiColors.Muted)
             if(existing?.completedAt!=null) Text("Escolher uma repetição reabre esta tarefa.",fontSize=12.sp,color=KoiColors.Blue)

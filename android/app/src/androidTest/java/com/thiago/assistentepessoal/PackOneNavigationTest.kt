@@ -20,7 +20,7 @@ class PackOneNavigationTest {
         compose.onNodeWithText("Salvar tarefa").assertIsEnabled()
         compose.onNodeWithText("Diária",substring=false).performScrollTo().performClick()
         compose.onNodeWithText("Salvar tarefa").assertIsNotEnabled()
-        compose.onNodeWithText("Uma vez",substring=false).performClick()
+        compose.onNode(hasText("Uma vez",substring=false) and hasClickAction()).performClick()
         compose.onNodeWithText("Salvar tarefa").assertIsEnabled()
         compose.onNodeWithText("Cancelar",substring=false).performClick()
         compose.onNodeWithText("Nova missão").assertDoesNotExist()

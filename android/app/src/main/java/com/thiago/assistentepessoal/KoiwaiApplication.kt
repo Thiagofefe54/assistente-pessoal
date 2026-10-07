@@ -6,10 +6,13 @@ import com.thiago.assistentepessoal.cloud.*
 import com.thiago.assistentepessoal.memory.MemoryRepository
 import com.thiago.assistentepessoal.memory.JournalRepository
 import com.thiago.assistentepessoal.routine.TaskRepository
+import com.thiago.assistentepessoal.routine.TaskReminders
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 class KoiwaiApplication : Application() {
+    lateinit var reminders: TaskReminders
+        private set
     lateinit var auth: CloudAuth
         private set
     lateinit var repositories: StateFlow<ChatRepository>
@@ -33,13 +36,16 @@ class KoiwaiApplication : Application() {
     private fun activate(account: Account?) {
         if(activeChatOwner==account?.id) return
         activeChatOwner=account?.id
+        reminders.account(account?.id)
         if(memoryOwner != account?.id) {
             memoryOwner = account?.id
             _memories.value?.close()
             _memories.value = account?.let { MemoryRepository(auth,it.id) }
             _tasks.value?.close()
             _journal.value?.close()
-            _tasks.value = account?.let { TaskRepository(auth,it.id) }
+            _tasks.value = account?.let { account -> TaskRepository(auth,account.id) { tasks ->
+                if(auth.account.value?.id==account.id) reminders.reconcile(account.id,tasks)
+            } }
             _journal.value = account?.let { JournalRepository(auth,it.id) }
         }
         val sync = account?.let { CloudSync(this, auth, it.id, database(it.id).messages()) }
@@ -53,6 +59,7 @@ class KoiwaiApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         auth = CloudAuth(SessionStore(this))
+        reminders = TaskReminders(this)
         current = MutableStateFlow(ChatRepository(database(null)))
         repos["local"] = current.value
         repositories = current.asStateFlow()

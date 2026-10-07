@@ -30,7 +30,7 @@ da documentação existente, das decisões do usuário e dos testes registrados.
 - Repositório real: `C:/Thiago/Projetos/assistente-pessoal`.
 - GitHub: https://github.com/Thiagofefe54/assistente-pessoal, branch main.
 - Backend: https://koiwai-backend.onrender.com, Render Free, deploy manual.
-  Último backend publicado: commit 04853d7, Pack 1; Live e health 200.
+  Último backend publicado: commit 31197a6, Chat↔Tarefas; Live e health 200.
   Commits posteriores de documentação podem ser mais recentes sem novo deploy.
 - Android: Kotlin/Compose, Room e WorkManager; backend: Python/FastAPI.
 - Supabase: projeto Koiwai, Auth e Postgres com RLS por dono.
@@ -125,7 +125,7 @@ de conta, ativação repetida de componentes e resposta de sucesso após escrita
 confirmada mesmo se atualizar a lista falhar. Editor não fecha após falha de
 salvamento. Dependência tzdata fixada para datas no Windows.
 36 testes backend e teste Groq fictício aprovados. RLS/políticas conferidas.
-Publicação, instalação e testes reais finais ainda em andamento neste checkpoint;
+Backend publicado/Live em 31197a6, APK instalado no Poco e testes reais de consulta/proposta/persistência aprovados;
 ver AUDITORIA_CHAT_TAREFAS.md. Pack 2 não está entregue.
 
 ### Pack 1 em 07/10/2026 — registro atual
@@ -151,7 +151,7 @@ outro pedido pode sugerir novamente. Lembrança aceita guarda a primeira fonte.
 
 Tarefas online, até 500 por conta. Concluir repetição registra e avança uma
 ocorrência; mensal ajusta ao fim do mês e usa essa nova data no ciclo seguinte.
-Ainda sem notificações e sem cache/fila offline. Agenda/notas/treinos/finanças
+Lembretes locais implementados em APK posterior, teste físico pendente; sem cache/fila offline. Agenda/notas/treinos/finanças
 continuam visuais. Próximo: Pack 2, lembretes e relatórios periódicos, depois voz,
 ferramentas pessoais e offline/acabamento. O APK recebeu o ajuste final de horário
 de vencimento e identificação explícita de resumo parcial do dia atual.
@@ -166,7 +166,7 @@ de vencimento e identificação explícita de resumo parcial do dia atual.
 7. Proatividade/notificações, ações autorizadas de PC/Android e offline ampliado são futuras.
 
 Tarefas funcionam; demais categorias de Rotina ainda são visuais. Clima não configurado.
-Não há voz, navegação web da Koi, notificações, relatórios automáticos ou controle
+Não há voz, navegação web da Koi, relatórios automáticos ou controle
 do computador pelo app. Recuperação de conta no app, cotas próprias por usuário,
 retenção/exclusão completa e confiabilidade prolongada também faltam.
 Versões 0.0.1 a 1.0.0 são etapas planejadas, não releases já concluídas; versionName
@@ -189,3 +189,18 @@ isolar o teste e verificar o motivo; não declarar sucesso só pelo código de s
 
 Fonte dos limites: https://render.com/docs/free. Atualizar este arquivo ao encerrar
 uma entrega, distinguindo feito, testado, publicado e instalado.
+
+## Checkpoint adicional: revisão geral e lembretes — 07/10/2026
+
+Leia docs/REVISAO_FINAL_2026_10_07.md antes de retomar. Novo APK preparado,
+ainda não instalado porque usuário saiu/desconectou celular. Editor com horário
+em destaque, memória sem perder texto após falha, transporte limitado e validado,
+lembretes opcionais locais com Adiar 15 min/Concluir e descanso padrão 22h–08h.
+Android pode atrasar os avisos; não é alarme exato. Sincronização de programação
+aproximadamente horária pelo Supabase, sem keepalive/IA/serviço pago.
+17 testes Android + 36 backend aprovados; APK/test APK compilados; lint 0 erros,
+45 avisos (18 novos de preferência/KTX). Validação física dessa parte pendente.
+Antes de sair, Poco aprovou 4 testes de persistência e 1 real Chat↔Tarefas; fixtures
+removidas. Teste final do editor/navegação ainda precisa ser repetido no aparelho.
+Próximo: atualizar celular preservando dados e testar notificações/descanso/ações;
+depois relatórios periódicos. Pack 2 permanece parcial; demais packs não concluídos.

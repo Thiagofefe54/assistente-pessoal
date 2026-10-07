@@ -97,9 +97,14 @@ A prioridade atual é completar o celular antes de criar o cliente Windows.
 | 4 | Notas, agenda, objetivos, treinos, finanças e ações verificáveis dentro do app. |
 | 5 | Offline ampliado, privacidade, recuperação de conta, acabamento e uso prolongado. |
 
-Tarefas e relatórios do Pack 1 exigem internet. Horário de tarefa ainda não dispara
-notificação. Nenhuma sugestão vira lembrança sem confirmação. Resumos de IA devem
+Tarefas e relatórios do Pack 1 exigem internet. Lembretes locais com descanso,
+adiamento e conclusão foram implementados; a validação no aparelho está pendente.
+São opcionais, exigem permissão e data/horário e podem atrasar pelo Android.
+Nenhuma sugestão vira lembrança sem confirmação. Resumos de IA devem
 ser conferidos nas fontes; só cobrem as mensagens sincronizadas da pessoa.
+
+Confira o estado de publicação, testes e próximos passos em
+[Revisão final do checkpoint](docs/REVISAO_FINAL_2026_10_07.md).
 
 ## Próximas versões
 

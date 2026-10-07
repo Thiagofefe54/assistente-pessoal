@@ -32,7 +32,7 @@ class CloudSync(private val context: Context, private val auth: CloudAuth,
             var cursor = 0L
             while (true) {
                 val rows = JSONArray(CloudApi.request(
-                    "/rest/v1/chat_messages?select=*&user_id=eq.$userId&server_sequence=gt.$cursor&order=server_sequence.asc&limit=500",
+                    "/rest/v1/chat_messages?select=*&user_id=eq.$userId&server_sequence=gt.$cursor&order=server_sequence.asc&limit=100",
                     token = auth.token(userId)))
                 if (rows.length() == 0) break
                 val messages = (0 until rows.length()).map { i ->

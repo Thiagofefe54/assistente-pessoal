@@ -3,6 +3,7 @@ package com.thiago.assistentepessoal.memory
 import com.thiago.assistentepessoal.BuildConfig
 import com.thiago.assistentepessoal.chat.BackendEndpoint
 import com.thiago.assistentepessoal.cloud.CloudAuth
+import com.thiago.assistentepessoal.cloud.readBoundedText
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import org.json.*
@@ -38,11 +39,11 @@ class JournalRepository(private val auth: CloudAuth, private val owner: String) 
             }
             val code=connection.responseCode
             if(code !in 200..299) {
-                val raw=connection.errorStream?.bufferedReader(Charsets.UTF_8)?.use {it.readText().take(2000)}
+                val raw=connection.errorStream?.bufferedReader(Charsets.UTF_8)?.use {it.readBoundedText(2000)}
                 val detail=runCatching{JSONObject(raw ?: "{}").optString("detail")}.getOrNull()
                 throw IOException(if(code==401) "Entre novamente na sua conta." else detail?.takeIf {it.isNotBlank()} ?: "Não consegui acessar o diário. Atualize para conferir.")
             }
-            JSONObject(connection.inputStream.bufferedReader(Charsets.UTF_8).use {it.readText()})
+            JSONObject(connection.inputStream.bufferedReader(Charsets.UTF_8).use {it.readBoundedText(100000)})
         } finally {connection.disconnect()}
     }
     private fun items(rows: JSONArray)= (0 until rows.length()).map { i -> rows.getJSONObject(i).let { r ->

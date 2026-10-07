@@ -48,7 +48,8 @@ mal uma frase; conferir o editor é parte do fluxo. Ambiguidades devem virar per
 Editar, concluir e apagar pela conversa ainda não estão implementados; funcionam em
 Rotina. Proposta pendente não tem notificação nem vale como tarefa salva.
 
-Ainda faltam notificações/adiar/silêncio e relatórios periódicos do Pack 2; voz do
+Lembretes/adiar/silêncio foram implementados após esta revisão, com validação
+física pendente; ver REVISAO_FINAL_2026_10_07.md. Ainda faltam relatórios periódicos do Pack 2; voz do
 Pack 3; agenda/notas/treinos/finanças reais e ações adicionais do Pack 4; recuperação
 de conta, exportação/exclusão completa, cache/fila offline e acabamento do Pack 5.
 Windows continua depois do celular. Sem contratação, cartão ou tráfego artificial.
@@ -59,5 +60,11 @@ Windows continua depois do celular. Sem contratação, cartão ou tráfego artif
 consulta de tarefas, paginação, dados incompletos e propostas inválidas.
 Teste real no Groq com conteúdo fictício validou amanhã e horário 09:15, sem escrita.
 RLS conferida ativa nas cinco tabelas e políticas restringindo o dono.
-Compilação inicial Android e testes unitários aprovados; verificações finais,
-publicação e instalação serão registradas no checkpoint ao terminar.
+Backend publicado e Live no Render em 31197a6. APK dessa integração instalado
+no Poco, sem apagar dados. Quatro testes de persistência/migração passaram e um
+teste real de tarefas/chat validou consulta, proposta sem escrita, revisão e
+repetição sem duplicação. Fixtures próprias removidas. Navegação passou isoladamente
+após corrigir seletor ambíguo; uma execução agrupada posterior foi interrompida
+durante outro teste. O teste novo do editor foi corrigido e recompilado, mas falta
+executar sua versão final no aparelho. Atualizações adicionais e evidências estão
+em REVISAO_FINAL_2026_10_07.md.

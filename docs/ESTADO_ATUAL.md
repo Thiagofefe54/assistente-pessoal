@@ -237,3 +237,18 @@ passou (17,15 s). Fixtures fictícias limpas da nuvem e Room, com contagens zero
 Build/lint sem erros; 27 avisos existentes. README/ROADMAP e continuidade atualizados.
 Notificações, relatórios de períodos maiores, voz e offline ampliado continuam
 nos packs seguintes. Detalhes, limites e roteiro de testes em PACK_1.md.
+
+## Checkpoint adicional: revisão geral e lembretes — 07/10/2026
+
+Leia docs/REVISAO_FINAL_2026_10_07.md antes de retomar. Novo APK preparado,
+ainda não instalado porque usuário saiu/desconectou celular. Editor com horário
+em destaque, memória sem perder texto após falha, transporte limitado e validado,
+lembretes opcionais locais com Adiar 15 min/Concluir e descanso padrão 22h–08h.
+Android pode atrasar os avisos; não é alarme exato. Sincronização de programação
+aproximadamente horária pelo Supabase, sem keepalive/IA/serviço pago.
+17 testes Android + 36 backend aprovados; APK/test APK compilados; lint 0 erros,
+45 avisos (18 novos de preferência/KTX). Validação física dessa parte pendente.
+Antes de sair, Poco aprovou 4 testes de persistência e 1 real Chat↔Tarefas; fixtures
+removidas. Teste final do editor/navegação ainda precisa ser repetido no aparelho.
+Próximo: atualizar celular preservando dados e testar notificações/descanso/ações;
+depois relatórios periódicos. Pack 2 permanece parcial; demais packs não concluídos.

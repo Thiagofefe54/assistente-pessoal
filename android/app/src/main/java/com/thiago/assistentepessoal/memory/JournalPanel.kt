@@ -86,9 +86,8 @@ private fun ConnectedJournal(repo: JournalRepository, memory: MemoryRepository?,
             }
         }
     },confirmButton={TextButton(onClick={source=null}) {Text("Fechar")}}) }
-    candidate?.let { item -> MemoryEditor(text,{text=it},category,{category=it},{candidate=null}) {
-        memory?.save(text,category,sourceId=item.sourceIds.first(),onSaved={repo.dismiss(item)})
-        candidate=null
+    candidate?.let { item -> MemoryEditor(text,{text=it},category,{category=it},{candidate=null},saving=memoryBusy,info=memoryInfo) {
+        memory?.save(text,category,sourceId=item.sourceIds.first(),onSaved={repo.dismiss(item);candidate=null})
     } }
     if(deleting) AlertDialog(onDismissRequest={deleting=false},title={Text("Apagar este resumo?")},text={Text("As conversas e lembranças continuam salvas. Você poderá gerar o resumo novamente.")},
         confirmButton={TextButton(onClick={repo.delete(day);deleting=false}) {Text("Apagar",color=KoiColors.Red)}},

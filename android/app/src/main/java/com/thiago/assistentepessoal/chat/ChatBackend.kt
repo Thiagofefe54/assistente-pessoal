@@ -6,6 +6,7 @@ import org.json.JSONArray
 import java.io.IOException
 import java.net.HttpURLConnection
 import java.net.URL
+import com.thiago.assistentepessoal.cloud.readBoundedText
 
 class ChatBackend(private val tokenProvider: suspend () -> String? = { null }) {
     suspend fun send(message: String, history: List<ChatContextEntry> = emptyList()): String = sendResult(message,history).reply
@@ -43,7 +44,7 @@ class ChatBackend(private val tokenProvider: suspend () -> String? = { null }) {
                 }
                 throw IOException(explanation)
             }
-            val body = connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readText() }
+            val body = connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readBoundedText(100000) }
             val value=JSONObject(body)
             val reply = value.getString("reply")
             if (reply.isBlank()) throw IOException("O servidor enviou uma resposta vazia.")

@@ -33,7 +33,8 @@ data class TaskDraft(val title: String, val notes: String, val date: String, val
         else -> null
     }
 }
-class TaskRepository(private val auth: CloudAuth, private val owner: String) {
+class TaskRepository(private val auth: CloudAuth, private val owner: String,
+    private val onSnapshot: (List<KoiTask>) -> Unit = {}) {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val _tasks = MutableStateFlow<List<KoiTask>?>(null)
     val tasks = _tasks.asStateFlow()
@@ -49,16 +50,13 @@ class TaskRepository(private val auth: CloudAuth, private val owner: String) {
         check(auth.account.value?.id == owner)
         return withContext(Dispatchers.IO) { CloudApi.request(path,method,body?.toString(),auth.token(owner),"return=representation") }
     }
-    private fun nullable(row: JSONObject, key: String) = if(row.isNull(key)) null else row.getString(key)
     private suspend fun fetch() {
-        val rows = JSONArray(request("/rest/v1/koi_tasks?select=*&user_id=eq.$owner&order=created_at.asc&limit=500"))
-        val entries = (0 until rows.length()).map { i -> rows.getJSONObject(i).let { r ->
-            KoiTask(r.getString("id"),r.getInt("slot"),r.getString("title"),r.getString("notes"),
-                nullable(r,"due_date"),nullable(r,"due_time"),r.getString("timezone"),r.getString("recurrence"),
-                nullable(r,"completed_at"),r.getInt("completed_count"),r.getString("updated_at")) } }
+        val entries = loadTasks(auth,owner)
+        if(auth.account.value?.id != owner) return
+        _tasks.value = entries
+        withContext(Dispatchers.IO) {if(auth.account.value?.id==owner)onSnapshot(entries)}
         val completed = JSONArray(request("/rest/v1/koi_task_completions?select=title,completed_at&user_id=eq.$owner&order=completed_at.desc&limit=10"))
         if(auth.account.value?.id == owner) {
-            _tasks.value = entries
             _recent.value = (0 until completed.length()).map { i -> completed.getJSONObject(i).let {
                 val day = Instant.parse(it.getString("completed_at")).atZone(ZoneId.systemDefault()).toLocalDate()
                 "$day • ${it.getString("title")}" } }
@@ -135,4 +133,24 @@ class TaskRepository(private val auth: CloudAuth, private val owner: String) {
         val changed=JSONArray(request(filter(task),"DELETE")).length()==1
         afterMutation(if(changed) "Tarefa e seus registros de conclusão apagados." else "Esta tarefa mudou. Confira antes de apagar.")
     }
+}
+
+/** Pagination is shared by the screen and the optional reminder reconciler. */
+suspend fun loadTasks(auth:CloudAuth,owner:String):List<KoiTask> = withContext(Dispatchers.IO) {
+    val entries=mutableListOf<KoiTask>()
+    var offset=0
+    while(offset<500) {
+        check(auth.account.value?.id==owner)
+        val rows=JSONArray(CloudApi.request("/rest/v1/koi_tasks?select=*&user_id=eq.$owner&order=slot.asc&limit=100&offset=$offset",token=auth.token(owner)))
+        if(rows.length()==0) break
+        for(i in 0 until rows.length()) {val r=rows.getJSONObject(i)
+            fun nullable(key:String)=if(r.isNull(key)) null else r.getString(key)
+            entries.add(KoiTask(r.getString("id"),r.getInt("slot"),r.getString("title"),r.getString("notes"),
+                nullable("due_date"),nullable("due_time"),r.getString("timezone"),r.getString("recurrence"),
+                nullable("completed_at"),r.getInt("completed_count"),r.getString("updated_at")))
+        }
+        offset+=rows.length()
+    }
+    check(auth.account.value?.id==owner)
+    entries
 }

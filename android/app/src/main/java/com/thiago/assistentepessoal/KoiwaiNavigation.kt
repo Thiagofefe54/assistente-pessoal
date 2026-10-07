@@ -45,7 +45,7 @@ fun KoiwaiTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun KoiwaiNavigation() {
+fun KoiwaiNavigation(taskRequest:Int=0) {
     var selected by rememberSaveable { mutableStateOf("home") }
     var accountReturn by rememberSaveable { mutableStateOf("settings") }
     var day by rememberSaveable { mutableStateOf<String?>(null) }
@@ -55,6 +55,7 @@ fun KoiwaiNavigation() {
     val account by app.auth.account.collectAsState()
     val motion = LocalKoiMotion.current
     LaunchedEffect(account?.id) { day=null }
+    LaunchedEffect(taskRequest) { if(taskRequest>0) {selected="routine";category="Tarefas";day=null} }
     fun back() { when {
         selected=="account" -> selected=accountReturn
         selected=="facts" -> selected="memory"
@@ -245,10 +246,10 @@ private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit, 
         }
     }
     remembering?.let { message ->
-        MemoryEditor(factText,{factText=it},factCategory,{factCategory=it},{remembering=null}) {
-            memories?.save(factText,factCategory,sourceId=message.id)
-            remembering=null
-            onFacts()
+        val memoryBusy=memories?.busy?.collectAsState()?.value ?: false
+        val memoryInfo=memories?.info?.collectAsState()?.value
+        MemoryEditor(factText,{factText=it},factCategory,{factCategory=it},{remembering=null},saving=memoryBusy,info=memoryInfo) {
+            memories?.save(factText,factCategory,sourceId=message.id,onSaved={remembering=null;onFacts()})
         }
     }
 }
@@ -354,6 +355,7 @@ private fun SettingsScreen(onAccount:()->Unit) {
                 },Modifier.fillMaxWidth(),treatment.trim().isNotEmpty() && treatment.trim().length<=30)
             }
         }
+        item {com.thiago.assistentepessoal.routine.ReminderSettings()}
         item {Eyebrow("SOBRE SUA KOI")}
         items(listOf("Voz e notificações","Memória e privacidade","Sobre a Koiwai")) { title ->
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue,onClick={detail=title}) {
@@ -364,7 +366,7 @@ private fun SettingsScreen(onAccount:()->Unit) {
     }
     detail?.let { title ->
         val description=when(title) {
-            "Voz e notificações"->"Em preparação. Primeiro virão o botão para falar e as respostas em voz. A ativação por “Koi” será testada depois."
+            "Voz e notificações"->"Lembretes de tarefas podem ser ativados acima. Precisam de data e horário; o Android pode atrasá-los. Voz por botão e respostas faladas ainda estão em preparação. A ativação por “Koi” será testada depois."
             "Memória e privacidade"->"Você pode revisar, editar e apagar lembranças confirmadas na área Memória. Conversas, lembranças e tarefas ficam separadas por conta. O chat envia o pedido, parte da conversa recente, lembranças confirmadas e uma lista limitada de tarefas ao provedor de IA. Não há limpeza automática. Exportação e exclusão completa ainda estão em preparação."
             else->"Koi é sua assistente pessoal. O chat usa IA na nuvem e suas conversas ficam no celular e no Supabase quando sincronizadas. O servidor gratuito pode levar um pouco para despertar após ficar sem uso. Tarefas, lembranças e resumos diários já estão disponíveis; as demais áreas continuam em preparação."
         }

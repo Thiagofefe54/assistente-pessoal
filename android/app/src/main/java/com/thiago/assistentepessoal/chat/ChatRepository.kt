@@ -43,7 +43,13 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
         perform(message, true)
     }
 
-    fun dismissTaskDraft(id:String) { scope.launch { dao.dismissTaskDraft(id) } }
+    fun dismissTaskDraft(id:String) { scope.launch {
+        try {dao.dismissTaskDraft(id)}
+        catch(e:Exception) {
+            if(e is CancellationException)throw e
+            _error.value="Não consegui atualizar a proposta salva. Reabra o chat para conferir."
+        }
+    } }
 
     private fun perform(message: ChatMessage, retry: Boolean) {
         _busy.value = true

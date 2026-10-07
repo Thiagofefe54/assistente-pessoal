@@ -96,8 +96,8 @@ private fun ConnectedMemories(repo: MemoryRepository, onBack: () -> Unit, onSour
             }
         }
     }
-    if(editor) MemoryEditor(text,{text=it},category,{category=it},{editor=false}) {
-        repo.save(text,category,existing=editing);editor=false
+    if(editor) MemoryEditor(text,{text=it},category,{category=it},{editor=false},saving=busy,info=info) {
+        repo.save(text,category,existing=editing,onSaved={editor=false})
     }
     deleting?.let { fact -> AlertDialog(onDismissRequest={deleting=null},title={Text("Apagar lembrança?")},
         text={Text("A Koi deixará de receber esta lembrança nas próximas perguntas. A conversa original e as respostas anteriores continuam no histórico.")},
@@ -107,19 +107,20 @@ private fun ConnectedMemories(repo: MemoryRepository, onBack: () -> Unit, onSour
 
 @Composable
 fun MemoryEditor(text: String, onText: (String)->Unit, category: String, onCategory: (String)->Unit,
-    onDismiss: ()->Unit, onConfirm: ()->Unit) {
-    AlertDialog(onDismissRequest=onDismiss,title={Text("Confirmar lembrança")},text={
+    onDismiss: ()->Unit, saving: Boolean = false, info: String? = null, onConfirm: ()->Unit) {
+    AlertDialog(onDismissRequest={if(!saving)onDismiss()},title={Text("Confirmar lembrança")},text={
         Column(Modifier.verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(10.dp)) {
             Text("Escreva como você quer que a Koi lembre. Até 500 caracteres.",fontSize=13.sp)
-            OutlinedTextField(text,{if(it.length<=500)onText(it)},label={Text("O que a Koi deve lembrar?")},
+            OutlinedTextField(text,{if(it.length<=500)onText(it)},enabled=!saving,label={Text("O que a Koi deve lembrar?")},
                 modifier=Modifier.fillMaxWidth(),minLines=3,maxLines=5,shape=RoundedCornerShape(16.dp),supportingText={Text("${text.length}/500")})
             memoryCategories.entries.chunked(2).forEach { row ->
                 Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {row.forEach { (key,label) ->
-                    FilterChip(selected=category==key,onClick={onCategory(key)},label={Text(label)})
+                    FilterChip(selected=category==key,onClick={onCategory(key)},enabled=!saving,label={Text(label)})
                 }}
             }
             Text("Será salva na sua conta e poderá ser enviada ao provedor de IA nas próximas perguntas.",fontSize=12.sp,color=KoiColors.Muted)
+            info?.let {Text(it,fontSize=12.sp,color=KoiColors.Blue)}
         }
-    },confirmButton={TextButton(onClick=onConfirm,enabled=text.trim().isNotEmpty()) {Text("Confirmar e salvar")}},
-        dismissButton={TextButton(onClick=onDismiss) {Text("Cancelar")}})
+    },confirmButton={TextButton(onClick=onConfirm,enabled=!saving && text.trim().isNotEmpty() && text.length<=500) {Text(if(saving) "Salvando…" else "Confirmar e salvar")}},
+        dismissButton={TextButton(onClick=onDismiss,enabled=!saving) {Text("Cancelar")}})
 }
