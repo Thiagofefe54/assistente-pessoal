@@ -36,6 +36,15 @@ async def call(path='/api/v1/chat', scheme='https', token=None, body=None, metho
 
 
 class AuthTests(unittest.IsolatedAsyncioTestCase):
+    async def test_direct_chat_requires_identity_and_reports_require_verified_auth(self):
+        self.upstream({'id': USER})
+        status,_=await call(token='Bearer private-test-token',body={'message':'Crie tarefa','task_mode':'direct'})
+        self.assertEqual(422,status)
+        status,_=await call(path='/api/v1/reports/prepare',body={'kind':'month','anchor':'2026-10-07'})
+        self.assertEqual(401,status)
+        self.upstream({'id':USER})
+        status,_=await call(path='/api/v1/reports/read',token='Bearer private-test-token',body={'kind':'month','anchor':'2026-10-07','timezone':'bad-zone'})
+        self.assertEqual(422,status)
     async def test_journal_requires_auth_and_owner_is_never_accepted_from_body(self):
         status,_ = await call(path='/api/v1/journal/summary',body={'local_date':'2026-10-07'})
         self.assertEqual(401,status)
@@ -81,7 +90,7 @@ class AuthTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual('Bearer private-test-token', request.get_header('Authorization'))
         self.upstream({'id': USER})
         status, payload = await call(token='Bearer private-test-token')
-        self.assertEqual((200, {'reply': 'Olá, Mestre. Estou aqui.','task_draft':None}), (status, payload))
+        self.assertEqual((200, {'reply': 'Olá, Mestre. Estou aqui.','task_draft':None,'action_receipt':None}), (status, payload))
         self.assertEqual(USER, str(self.memory.call_args.args[0]))
         self.assertEqual('Bearer private-test-token', self.memory.call_args.args[1])
         self.assertEqual(USER,str(self.tasks.call_args.args[0]))

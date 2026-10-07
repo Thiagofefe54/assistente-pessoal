@@ -42,8 +42,8 @@ A personagem é ilustrada: animação da personagem e voz própria são possibil
 | Área | Entrega atual |
 | :--- | :--- |
 | **Home** | Personagem, saudação personalizável, data/hora reais, estado da conta, contagem de tarefas e atalhos. |
-| **Chat** | Conversa por texto com Groq via HTTPS; contexto recente, lembranças e consulta atual de tarefas. Pedidos para criar tarefas geram propostas editáveis para revisar e salvar. |
-| **Memória** | Diário por dia e busca; lembranças confirmadas; sugestões revisáveis e resumo diário solicitado pela pessoa, com fontes e atualização após novas mensagens. |
+| **Chat** | Conversa por texto com Groq via HTTPS; contexto recente, lembranças e tarefas atuais. Novo APK do Pack 2 executa pedidos claros de criar, concluir, editar, reabrir, arquivar e desfazer, sem revisão repetida. |
+| **Memória** | Diário por dia e busca; lembranças confirmadas; sugestões revisáveis e resumos diários. Pack 2 acrescenta semana, mês, semestre e ano com fontes e preparação opcional pelo Android. |
 | **Rotina** | Tarefas reais na conta: criar, editar, concluir, reabrir e apagar; data, horário, repetição e últimas conquistas. Agenda, notas, treinos e finanças continuam planejados. |
 | **Configurações** | Personalização da saudação, redução de movimento e acesso à conta. |
 | **Conta** | Cadastro/login por e-mail, confirmação de e-mail, sessão criptografada e sincronização. |
@@ -52,7 +52,7 @@ A personagem é ilustrada: animação da personagem e voz própria são possibil
 
 O histórico pode ser lido sem conexão. Receber uma resposta exige internet; a instalação testada usa o servidor gratuito na nuvem, sem depender do computador. O serviço pode dormir quando fica sem uso, então a primeira resposta pode demorar. A sincronização tenta novamente quando houver rede. Ela não reenvia automaticamente uma conversa que falhou no servidor.
 
-No chat, experimente “Quais são minhas tarefas de hoje?” ou “Adicione estudar amanhã às 9h”. A criação pede **Revisar tarefa → Salvar tarefa**; uma proposta não é uma tarefa salva. A consulta envia até 60 tarefas ao provedor de IA e informa quando a lista está incompleta. Edição/conclusão/exclusão continuam na Rotina. Detalhes da [revisão e integração](docs/AUDITORIA_CHAT_TAREFAS.md).
+No novo APK, experimente “Quais são minhas tarefas de hoje?”, “Adicione estudar amanhã às 9h” ou “Já terminei estudar”. Um pedido claro realiza uma ação; alvos ambíguos pedem esclarecimento. O resultado aparece depois da confirmação na nuvem e pode ser desfeito. Aplicativos antigos continuam usando propostas revisáveis. A consulta envia até 60 tarefas ao provedor de IA e informa quando a lista está incompleta. [Detalhes do Pack 2](docs/PACK_2.md).
 
 ## O que a Koi poderá fazer
 
@@ -83,7 +83,7 @@ flowchart LR
 
 Os relatórios deverão indicar o período realmente coberto e permitir voltar às fontes. Quando o uso começar no meio do ano, a primeira retrospectiva anual reunirá apenas os registros existentes até dezembro. Não será necessário esperar seis meses, e a Koi não deverá inventar acontecimentos de períodos sem dados.
 
-**Hoje existe o histórico diário consultável e o resumo diário sob demanda. Relatórios de períodos maiores e entrega automática continuam no roadmap.**
+**O Pack 2 implementa relatórios por período e entrega opcional no app.** O novo APK está preparado e aguarda instalação/validação no Poco. Fontes dos relatórios maiores levam aos capítulos mensais e diários; cobertura parcial é indicada. Confira limites e evidências em [PACK_2.md](docs/PACK_2.md).
 
 ### Desenvolvimento em packs
 
@@ -92,7 +92,7 @@ A prioridade atual é completar o celular antes de criar o cliente Windows.
 | Pack | Entrega |
 | --- | --- |
 | 1 | Sugestões de lembranças com revisão, resumo diário com fontes e tarefas reais. Implementado; confira as evidências em [PACK_1.md](docs/PACK_1.md). |
-| 2 | Lembretes, notificações e relatórios semanais, mensais, semestrais e anuais. |
+| 2 | Ações de tarefas pelo chat, desfazer, lembretes e relatórios por período. Implementado; nova instalação e validação física pendentes. [Evidências](docs/PACK_2.md). |
 | 3 | Voz por botão, interrupção da fala e refinamento de personalidade. |
 | 4 | Notas, agenda, objetivos, treinos, finanças e ações verificáveis dentro do app. |
 | 5 | Offline ampliado, privacidade, recuperação de conta, acabamento e uso prolongado. |

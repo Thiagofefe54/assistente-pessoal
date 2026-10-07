@@ -11,6 +11,14 @@ from backend.app.core.conversation import converse
 
 
 class TaskChatTests(unittest.TestCase):
+    def test_named_old_task_is_visible_and_archives_are_not_pending(self):
+        rows=[dict(title=f'Tarefa recente {n}',due_date='2026-10-07',due_time=None,recurrence='none',completed_at=None) for n in range(60)]
+        rows += [dict(title='Missão antiga única',due_date='2025-01-01',due_time=None,recurrence='none',completed_at=None,archived_at='2026-10-01')]
+        with patch('backend.app.core.tasks.cloud',return_value=rows):
+            value=task_context(UUID(int=1),'Bearer fake','UTC','Reabra Missão antiga única de 01/01/2025')
+            self.assertEqual('Missão antiga única',value['tasks'][0]['title'])
+            self.assertEqual('2025-01-01',value['focus_date']);self.assertEqual(60,value['pending'])
+
     def test_owner_token_pagination_and_focus_are_current_and_bounded(self):
         rows=[dict(title=f'Tarefa {n}',due_date='2026-10-07',due_time=None,
                    timezone='UTC',recurrence='none',completed_at=None) for n in range(105)]
@@ -34,8 +42,9 @@ class TaskChatTests(unittest.TestCase):
     def test_draft_validation_rejects_ambiguous_or_invalid_schedule_and_extra_actions(self):
         base=dict(title='Estudar',notes='',due_date=None,due_time=None,recurrence='none')
         self.assertEqual('Estudar',TaskProposal(**base).title)
+        self.assertEqual('09:00',TaskProposal(**(base|{'due_date':'2026-10-07','due_time':'09:00:00'})).due_time)
         for changes in ({'due_date':'2026-02-30'},{'due_time':'09:00'},{'recurrence':'daily'},
-                        {'due_date':'2026-10-07','due_time':'24:00'}, {'title':' '}, {'action':'delete'}):
+                        {'due_date':'2026-10-07','due_time':'24:00'}, {'due_date':'2026-10-07','due_time':'09:00:30'}, {'title':' '}, {'action':'delete'}):
             with self.assertRaises(ValidationError):TaskProposal(**(base|changes))
 
     def test_conversation_is_read_only_and_draft_never_claims_saved(self):

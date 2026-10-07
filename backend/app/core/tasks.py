@@ -1,4 +1,4 @@
-"""Read live tasks as reference data. Chat never writes without the app's review."""
+"""Read bounded live task context; actions are handled separately with receipts."""
 from datetime import date, datetime, timedelta
 from urllib.parse import urlencode
 from uuid import UUID
@@ -26,6 +26,13 @@ class TaskProposal(BaseModel):
             raise ValueError('Empty title')
         return value.strip()
 
+    @field_validator('due_time',mode='before')
+    @classmethod
+    def minute_precision(cls,value):
+        if isinstance(value,str) and re.fullmatch(r'([01]\d|2[0-3]):[0-5]\d:00',value):
+            return value[:5]
+        return value
+
     @model_validator(mode='after')
     def valid_schedule(self):
         if self.due_date is not None:
@@ -49,7 +56,7 @@ def task_context(owner: UUID, authorization: str, timezone: str, message: str) -
     rows = []
     for offset in range(0, 500, 100):
         page = cloud('koi_tasks?' + urlencode({'user_id': 'eq.' + str(owner),
-            'select': 'title,due_date,due_time,timezone,recurrence,completed_at',
+            'select': 'id,title,due_date,due_time,timezone,recurrence,completed_at,updated_at,archived_at',
             'order': 'slot.asc', 'limit': 100, 'offset': offset}), authorization)
         if not isinstance(page, list) or len(page) > 100:
             raise HTTPException(503, 'Não consegui conferir suas tarefas.')
@@ -61,17 +68,26 @@ def task_context(owner: UUID, authorization: str, timezone: str, message: str) -
             break
     # Keep inference bounded. The model sees explicit completeness/counts, never
     # assumes an omitted task is absent. Focus the snapshot on the requested day.
-    focus = today + timedelta(days=1 if 'amanhã' in message.lower() or 'amanha' in message.lower() else 0)
+    lowered=message.lower()
+    focus = today + timedelta(days=1 if 'amanhã' in lowered or 'amanha' in lowered else -1 if 'ontem' in lowered else 0)
     match = re.search(r'\b\d{4}-\d{2}-\d{2}\b', message)
     if match:
         try:
             focus = date.fromisoformat(match.group())
         except ValueError:
             pass
-    rows.sort(key=lambda r: (r.get('due_date') != focus.isoformat(),
+    brazilian=re.search(r'\b(\d{2})/(\d{2})/(\d{4})\b',message)
+    if brazilian:
+        try: focus=date(int(brazilian[3]),int(brazilian[2]),int(brazilian[1]))
+        except ValueError: pass
+    rows.sort(key=lambda r: (r['title'].casefold() not in message.casefold(),r.get('archived_at') is not None, r.get('due_date') != focus.isoformat(),
         r.get('completed_at') is not None, r.get('due_date') or '9999', r.get('due_time') or ''))
     selected = rows[:60]
+    for r in selected:
+        same=[t for t in rows if t['title'].casefold()==r['title'].casefold() and (t.get('completed_at') is None)==(r.get('completed_at') is None) and (t.get('archived_at') is None)==(r.get('archived_at') is None)]
+        r['same_title_count']=len(same)
+        r['same_title_date_count']=sum(t.get('due_date')==r.get('due_date') for t in same)
     return {'today': today.isoformat(), 'timezone': timezone, 'focus_date': focus.isoformat(),
-        'total': len(rows), 'pending': sum(r.get('completed_at') is None for r in rows),
-        'focus_pending': sum(r.get('completed_at') is None and r.get('due_date') == focus.isoformat() for r in rows),
+        'total': len(rows), 'pending': sum(r.get('archived_at') is None and r.get('completed_at') is None for r in rows),
+        'focus_pending': sum(r.get('archived_at') is None and r.get('completed_at') is None and r.get('due_date') == focus.isoformat() for r in rows),
         'complete_list': len(rows) <= 60, 'shown': len(selected), 'tasks': selected}

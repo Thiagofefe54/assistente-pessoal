@@ -61,12 +61,17 @@ class TaskReminders(private val context:Context) {
     }
     fun snapshot(id:String):JSONObject?=runCatching {JSONObject(prefs.getString("snapshot","{}")!!).optJSONObject(id)}.getOrNull()
     private fun registry()=runCatching{JSONObject(prefs.getString("snapshot","{}")!!)}.getOrDefault(JSONObject())
+    @Synchronized fun invalidate(id:String) {
+        work.cancelUniqueWork("koi-reminder-$id");manager.cancel(id,1)
+        val next=registry();next.remove(id)
+        prefs.edit().putString("snapshot",next.toString()).remove("scheduled-$id").remove("snooze-$id").remove("delivered-$id").apply()
+    }
     private fun occurrence(row:JSONObject)=listOf(row.getString("date"),row.getString("time"),row.getString("timezone")).joinToString("|")
     private fun due(row:JSONObject)=LocalDateTime.of(LocalDate.parse(row.getString("date")),LocalTime.parse(row.getString("time"))).atZone(ZoneId.of(row.getString("timezone"))).toInstant()
     @Synchronized fun reconcile(owner:String,tasks:List<KoiTask>,reschedule:Boolean=false) {
         if(prefs.getString("owner",null)!=owner) return
         val old=registry();val next=JSONObject()
-        tasks.filter {it.completedAt==null && it.date!=null && it.time!=null}.forEach { task ->
+        tasks.filter {it.archivedAt==null && it.completedAt==null && it.date!=null && it.time!=null}.forEach { task ->
             val row=JSONObject().put("owner",owner).put("id",task.id).put("title",task.title)
                 .put("date",task.date).put("time",task.time).put("timezone",task.timezone).put("version",task.updatedAt)
             if(runCatching{due(row)}.isSuccess) next.put(task.id,row)

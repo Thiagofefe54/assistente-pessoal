@@ -10,6 +10,21 @@ import java.time.Instant
 import java.util.UUID
 
 class ChatPersistenceTest {
+    @Test fun actionReceiptSurvivesSyncAndUndoKeepsConversation() = runBlocking {
+        val context=InstrumentationRegistry.getInstrumentation().targetContext
+        val db=Room.inMemoryDatabaseBuilder(context,ChatDatabase::class.java).build()
+        try {
+            val user=ChatMessage(role="user",content="Conclua a tarefa fictícia")
+            val receipt="""{"request_id":"${UUID.randomUUID()}","type":"complete","task_id":"${UUID.randomUUID()}","title":"Fictícia"}"""
+            db.messages().insert(user);db.messages().complete(user,"Concluída",actionReceiptJson=receipt)
+            val original=db.messages().getMessages().last()
+            db.messages().merge(listOf(original.copy(sequence=0,actionReceiptJson=null,synced=true)))
+            assertEquals(receipt,db.messages().find(original.id)?.actionReceiptJson)
+            db.messages().saveUndo(ChatMessage(role="user",content="Desfaça"),"Desfeito",original.id)
+            assertNull(db.messages().find(original.id)?.actionReceiptJson)
+            assertEquals(4,db.messages().getMessages().size)
+        } finally {db.close()}
+    }
     @Test fun proposalSurvivesReconciliationAndCanBeDismissedWithoutDeletingConversation() = runBlocking {
         val context=InstrumentationRegistry.getInstrumentation().targetContext
         val db=Room.inMemoryDatabaseBuilder(context,ChatDatabase::class.java).build()
@@ -41,7 +56,7 @@ class ChatPersistenceTest {
         sqlite.version = 1
         sqlite.close()
         val db = Room.databaseBuilder(context, ChatDatabase::class.java, name)
-            .addMigrations(ChatDatabase.MIGRATION_1_2,ChatDatabase.MIGRATION_2_3).build()
+            .addMigrations(ChatDatabase.MIGRATION_1_2,ChatDatabase.MIGRATION_2_3,ChatDatabase.MIGRATION_3_4).build()
         try {
             val saved = db.messages().getMessages().single()
             assertEquals("Conversa anterior", saved.content)

@@ -45,7 +45,7 @@ fun KoiwaiTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun KoiwaiNavigation(taskRequest:Int=0) {
+fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null) {
     var selected by rememberSaveable { mutableStateOf("home") }
     var accountReturn by rememberSaveable { mutableStateOf("settings") }
     var day by rememberSaveable { mutableStateOf<String?>(null) }
@@ -56,9 +56,13 @@ fun KoiwaiNavigation(taskRequest:Int=0) {
     val motion = LocalKoiMotion.current
     LaunchedEffect(account?.id) { day=null }
     LaunchedEffect(taskRequest) { if(taskRequest>0) {selected="routine";category="Tarefas";day=null} }
+    LaunchedEffect(reportRequest) {reportRequest?.split('|')?.let { parts ->
+        if(parts[0]=="day") {day=parts[1];selected="memory"} else {day=null;selected="reports"}
+    }}
     fun back() { when {
         selected=="account" -> selected=accountReturn
         selected=="facts" -> selected="memory"
+        selected=="reports" -> selected="memory"
         selected=="memory" && day!=null -> day=null
         selected=="routine" && category!=null -> category=null
         else -> selected="home"
@@ -73,7 +77,7 @@ fun KoiwaiNavigation(taskRequest:Int=0) {
                     HorizontalDivider(color=KoiColors.Purple.copy(alpha=.18f))
                     NavigationBar(containerColor=Color.Transparent,tonalElevation=0.dp) {
                         tabs.forEach { (route,label) ->
-                            val active=selected==route || (route=="memory" && selected=="facts")
+                            val active=selected==route || (route=="memory" && selected in listOf("facts","reports"))
                             NavigationBarItem(selected=active,onClick={ selected=route;day=null;category=null },
                                 icon={ KoiGlyph(route,if(active) KoiColors.Purple else KoiColors.Muted) },
                                 label={ Text(label,fontSize=11.sp,fontWeight=if(active) FontWeight.Bold else FontWeight.Normal) },
@@ -92,7 +96,9 @@ fun KoiwaiNavigation(taskRequest:Int=0) {
                         when(route) {
                             "home" -> HomeScreen({selected="chat"},{selected="routine"},{openAccount("home")})
                             "chat" -> ChatScreen({back()},{openAccount("chat")},{day=it;selected="memory"})
-                            "memory" -> MemoryScreen(day,{day=it},{day=null},{selected="facts"})
+                            "memory" -> MemoryScreen(day,{day=it},{day=null},{selected="facts"},{selected="reports"})
+                            "reports" -> key(reportRequest) {ReportsScreen({selected="memory"},{day=it;selected="memory"},
+                                reportRequest?.split('|')?.get(0) ?: "week",reportRequest?.split('|')?.get(1) ?: java.time.LocalDate.now().toString())}
                             "facts" -> MemoriesScreen({selected="memory"},{openAccount("facts")})
                             "routine" -> if(category=="Tarefas") TasksScreen({category=null},{openAccount("routine")}) else RoutineScreen(category,{category=it},{category=null})
                             "settings" -> SettingsScreen {openAccount("settings")}
@@ -155,7 +161,7 @@ private fun HomeScreen(onChat: () -> Unit, onRoutine: () -> Unit, onAccount: () 
             }
             Text(if(account==null) "Entre na sua conta para organizar suas missões."
                 else if(tasks==null) "Abra Rotina para conferir suas tarefas."
-                else "${tasks.count {it.completedAt==null}} pendentes • ${tasks.count {it.overdue()}} vencidas",color=KoiColors.Muted,fontSize=13.sp)
+                else "${tasks.count {it.completedAt==null && it.archivedAt==null}} pendentes • ${tasks.count {it.overdue()}} vencidas",color=KoiColors.Muted,fontSize=13.sp)
         }
         KoiAction("✦  Conversar comigo",onChat,Modifier.fillMaxWidth())
         Spacer(Modifier.height(4.dp))
@@ -163,7 +169,7 @@ private fun HomeScreen(onChat: () -> Unit, onRoutine: () -> Unit, onAccount: () 
 }
 
 @Composable
-private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit, onFacts: ()->Unit) {
+private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit, onFacts: ()->Unit,onReports:()->Unit) {
     val app=LocalContext.current.applicationContext as KoiwaiApplication
     val repo by app.repositories.collectAsState()
     val history by repo.messages.collectAsState()
@@ -184,6 +190,11 @@ private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit, 
             Text("Suas conversas, organizadas por dia.",color=KoiColors.Muted,fontSize=13.sp)
         }
         if(day==null) {
+            item {KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue,onClick=onReports) {
+                Eyebrow("DIAS QUE VIRAM HISTÓRIA",KoiColors.Blue)
+                Text("Relatórios da Koi →",fontSize=20.sp)
+                Text("Semana, mês, semestre e ano, com capítulos de origem.",color=KoiColors.Muted)
+            }}
             item {
                 KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple,onClick=onFacts) {
                     Eyebrow("O QUE A KOI LEVA COM ELA",KoiColors.Purple)
@@ -356,6 +367,7 @@ private fun SettingsScreen(onAccount:()->Unit) {
             }
         }
         item {com.thiago.assistentepessoal.routine.ReminderSettings()}
+        item {ReportSettings()}
         item {Eyebrow("SOBRE SUA KOI")}
         items(listOf("Voz e notificações","Memória e privacidade","Sobre a Koiwai")) { title ->
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue,onClick={detail=title}) {

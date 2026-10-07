@@ -86,6 +86,9 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
                 item(key=message.id) {
                     Column {
                         MessageBubble(message,busy){repository.retry(message)}
+                        if(message.actionReceiptJson!=null && org.json.JSONObject(message.actionReceiptJson).optString("type")!="undo") TextButton(onClick={repository.undoAction(message)},enabled=!busy) {
+                            Text("↶ Desfazer ação",color=KoiColors.Blue)
+                        }
                         if(message.role=="assistant" && message.taskDraftJson!=null && tasksRepo!=null) {
                             Row {
                                 TextButton(onClick={tasksRepo?.clearInfo();reviewing=message}) {Text("✦ Revisar tarefa",color=KoiColors.Purple)}

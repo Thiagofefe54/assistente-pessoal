@@ -3,6 +3,12 @@
 Documento de evolução, atualizado em 07/10/2026. Sem datas de entrega prometidas.
 A versão da especificação e o versionName do template Android não são releases.
 
+Checkpoint atual: [Pack 2](PACK_2.md) implementa ações diretas e reversíveis de
+tarefas no chat, relatórios por período e preparação/notificação opcionais no
+Android. Banco aplicado e testes locais aprovados. APK pronto; instalação e
+validação física dessa atualização pendentes. Não marcar Pack 2 ou V1 concluídos.
+Critérios de reinício, entrega prolongada e integridade continuam exigidos.
+
 ## Ponto de partida
 
 Identidade e experiência Android refinadas e aprovadas. Histórico Room por conta,
@@ -10,8 +16,9 @@ login Supabase, sessão criptografada, sincronização e consulta por dia funcio
 Backend publicado no Render Free; conversa Groq autenticada com contexto recente
 validada no Poco e confirmada pelo usuário. Primeiro incremento de lembranças
 confirmadas instalado e testado no Poco. Pack 1 implementa sugestões revisáveis,
-resumo diário sob demanda e tarefas reais. Relatórios de períodos maiores,
-notificações, outros cadastros de Rotina e Windows continuam pendentes.
+resumo diário sob demanda e tarefas reais. Pack 2 amplia relatórios/notificações
+e ações, aguardando a validação do novo APK. Outros cadastros de Rotina e Windows
+continuam pendentes.
 
 ## Etapas e critérios
 
@@ -59,7 +66,8 @@ O orçamento confirmado é R$0. Balanço atual e pequenos objetivos M01–M10 em
 - Registros por dia, mantendo instante UTC e fuso do usuário.
 - Relatório semanal, mensal, semestral e anual, com cobertura explícita.
 - Proposta de calendário: segunda a domingo; meses civis; janeiro–junho e
-  julho–dezembro; retrospectiva até 31 de dezembro. Ainda requer implementação.
+  julho–dezembro; retrospectiva até 31 de dezembro. Implementado no Pack 2,
+  validação física pendente.
 - Primeiro ano parcial começa no primeiro registro real: reunir até dezembro,
   sem esperar seis meses e sem inventar informações anteriores.
 - Se uma visão semestral parcial repetir exatamente a retrospectiva anual inicial,
@@ -71,6 +79,7 @@ O orçamento confirmado é R$0. Balanço atual e pequenos objetivos M01–M10 em
 - Entrega inicial no app; notificações opcionais. Envio externo exige definição
   explícita do canal e autorização.
 
-A consulta diária já existe. Geração automática e agendamento pertencem às etapas
-de Memória e Proatividade. Política de retenção é futura e configurável; não há
+A consulta diária já existe. Preparação automática e agendamento opcionais foram
+implementados no Pack 2 pelo Android, sujeitos a rede, cotas e atrasos do sistema.
+Política de retenção é futura e configurável; não há
 exclusão automática de conversas nesta entrega.

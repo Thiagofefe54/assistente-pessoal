@@ -47,7 +47,7 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
     var now by remember { mutableStateOf(Instant.now()) }
     LaunchedEffect(Unit) {while(true) {now=Instant.now();delay(30000)}}
     LaunchedEffect(repo) { repo.refresh() }
-    val visible=tasks.orEmpty().filter { when(filter) {"today"->it.today(now);"done"->it.completedAt!=null;"late"->it.overdue(now);else->it.completedAt==null} }
+    val visible=tasks.orEmpty().filter { when(filter) {"today"->it.today(now);"archived"->it.archivedAt!=null;"done"->it.archivedAt==null && it.completedAt!=null;"late"->it.overdue(now);else->it.archivedAt==null && it.completedAt==null} }
         .sortedWith(compareBy<KoiTask> { it.date ?: "9999-12-31" }.thenBy { it.time ?: "23:59" })
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
         item {
@@ -58,14 +58,14 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
         }
         item {
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Red) {
-                val pending=tasks.orEmpty().count { it.completedAt==null }
+                val pending=tasks.orEmpty().count { it.archivedAt==null && it.completedAt==null }
                 Text("$pending em andamento • ${tasks.orEmpty().count { it.overdue(now) }} vencidas",fontWeight=FontWeight.SemiBold)
                 Text("Datas usam o fuso da tarefa. Ative lembretes em Configurações para missões com data e horário. Consultar e alterar requer internet.",fontSize=12.sp,color=KoiColors.Muted)
             }
             Spacer(Modifier.height(10.dp))
             KoiAction("＋ Nova tarefa",{editing=null;creationId=java.util.UUID.randomUUID().toString();repo.clearInfo();editor=true},Modifier.fillMaxWidth(),!busy && tasks!=null && tasks!!.size<500)
             Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
-                listOf("today" to "Hoje","pending" to "Pendentes","late" to "Vencidas","done" to "Concluídas").forEach { (id,label) ->
+                listOf("today" to "Hoje","pending" to "Pendentes","late" to "Vencidas","done" to "Concluídas","archived" to "Arquivadas").forEach { (id,label) ->
                     FilterChip(selected=filter==id,onClick={filter=id},label={Text(label,fontSize=11.sp)})
                 }
             }
@@ -82,14 +82,14 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
         }
         items(visible,key={it.id}) { task ->
             KoiPanel(Modifier.fillMaxWidth(),accent=if(task.overdue(now)) KoiColors.Red else KoiColors.Purple) {
-                Eyebrow(if(task.completedAt!=null) "CONCLUÍDA" else if(task.overdue(now)) "DATA PASSOU" else "EM ANDAMENTO",KoiColors.Red)
+                Eyebrow(if(task.archivedAt!=null) "ARQUIVADA" else if(task.completedAt!=null) "CONCLUÍDA" else if(task.overdue(now)) "DATA PASSOU" else "EM ANDAMENTO",KoiColors.Red)
                 Text(task.title,fontSize=20.sp,fontWeight=FontWeight.SemiBold)
                 if(task.notes.isNotBlank()) Text(task.notes,color=KoiColors.Muted)
                 Text(listOfNotNull(task.date?.let {LocalDate.parse(it).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))},task.time?.take(5),
                     taskRecurrences[task.recurrence],if(task.date!=null) task.timezone else null).joinToString(" • "),fontSize=12.sp,color=KoiColors.Blue)
                 if(task.recurrence!="none") Text("${task.count} etapas concluídas. Cada conclusão avança uma ocorrência.",fontSize=11.sp,color=KoiColors.Muted)
                 Row {
-                    TextButton(onClick={if(task.completedAt==null)repo.complete(task) else repo.reopen(task)},enabled=!busy) {Text(if(task.completedAt==null) "Concluir" else "Reabrir")}
+                    TextButton(onClick={if(task.completedAt==null && task.archivedAt==null)repo.complete(task) else repo.reopen(task)},enabled=!busy) {Text(if(task.completedAt==null && task.archivedAt==null) "Concluir" else "Reabrir")}
                     TextButton(onClick={editing=task;repo.clearInfo();editor=true},enabled=!busy) {Text("Editar")}
                     TextButton(onClick={deleting=task},enabled=!busy) {Text("Apagar",color=KoiColors.Red)}
                 }

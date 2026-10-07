@@ -5,12 +5,15 @@ import com.thiago.assistentepessoal.chat.*
 import com.thiago.assistentepessoal.cloud.*
 import com.thiago.assistentepessoal.memory.MemoryRepository
 import com.thiago.assistentepessoal.memory.JournalRepository
+import com.thiago.assistentepessoal.memory.PeriodReports
 import com.thiago.assistentepessoal.routine.TaskRepository
 import com.thiago.assistentepessoal.routine.TaskReminders
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 class KoiwaiApplication : Application() {
+    lateinit var reports:PeriodReports
+        private set
     lateinit var reminders: TaskReminders
         private set
     lateinit var auth: CloudAuth
@@ -37,6 +40,7 @@ class KoiwaiApplication : Application() {
         if(activeChatOwner==account?.id) return
         activeChatOwner=account?.id
         reminders.account(account?.id)
+        reports.account(account?.id)
         if(memoryOwner != account?.id) {
             memoryOwner = account?.id
             _memories.value?.close()
@@ -52,7 +56,12 @@ class KoiwaiApplication : Application() {
         cloudSync = sync
         current.value = repos.getOrPut(account?.id ?: "local") {
             ChatRepository(database(account?.id), onSaved = { sync?.schedule() },
-                tokenProvider = { account?.let { auth.token(it.id) } })
+                tokenProvider = { account?.let { auth.token(it.id) } },onTaskChanged={ receipt ->
+                    if(auth.account.value?.id==account?.id) {
+                        org.json.JSONObject(receipt).optString("task_id").takeIf {it.isNotBlank()}?.let {reminders.invalidate(it)}
+                        _tasks.value?.refresh()
+                    }
+                })
         }
         sync?.schedule()
     }
@@ -60,6 +69,7 @@ class KoiwaiApplication : Application() {
         super.onCreate()
         auth = CloudAuth(SessionStore(this))
         reminders = TaskReminders(this)
+        reports = PeriodReports(this)
         current = MutableStateFlow(ChatRepository(database(null)))
         repos["local"] = current.value
         repositories = current.asStateFlow()

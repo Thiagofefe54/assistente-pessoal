@@ -29,7 +29,8 @@ data class ChatMessage(
     val replyTo: String? = null,
     val error: String? = null,
     @ColumnInfo(defaultValue = "0") val synced: Boolean = false,
-    val taskDraftJson: String? = null
+    val taskDraftJson: String? = null,
+    val actionReceiptJson: String? = null
 )
 
 @Dao
@@ -63,6 +64,8 @@ abstract class ChatDao {
 
     @Query("UPDATE messages SET taskDraftJson = NULL WHERE id = :id")
     abstract suspend fun dismissTaskDraft(id: String)
+    @Query("UPDATE messages SET actionReceiptJson = NULL WHERE id = :id")
+    abstract suspend fun dismissActionReceipt(id:String)
 
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract suspend fun insertIfMissing(message: ChatMessage)
@@ -73,17 +76,25 @@ abstract class ChatDao {
     }
 
     @Transaction
-    open suspend fun complete(user: ChatMessage, reply: String, taskDraftJson: String? = null) {
-        insert(ChatMessage(role = "assistant", content = reply, replyTo = user.id, taskDraftJson=taskDraftJson))
+    open suspend fun saveUndo(user:ChatMessage,reply:String,originalMessageId:String) {
+        insert(user);complete(user,reply);dismissActionReceipt(originalMessageId)
+    }
+
+    @Transaction
+    open suspend fun complete(user: ChatMessage, reply: String, taskDraftJson: String? = null, actionReceiptJson:String?=null) {
+        insert(ChatMessage(role = "assistant", content = reply, replyTo = user.id, taskDraftJson=taskDraftJson,actionReceiptJson=actionReceiptJson))
         updateStatus(user.id, MessageStatus.SENT, null)
     }
 }
 
-@Database(entities = [ChatMessage::class], version = 3, exportSchema = true)
+@Database(entities = [ChatMessage::class], version = 4, exportSchema = true)
 abstract class ChatDatabase : RoomDatabase() {
     abstract fun messages(): ChatDao
 
     companion object {
+        val MIGRATION_3_4 = object:Migration(3,4) {
+            override fun migrate(db:SupportSQLiteDatabase) {db.execSQL("ALTER TABLE messages ADD COLUMN actionReceiptJson TEXT")}
+        }
         val MIGRATION_2_3 = object : Migration(2, 3) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE messages ADD COLUMN taskDraftJson TEXT")
@@ -97,6 +108,6 @@ abstract class ChatDatabase : RoomDatabase() {
 
         fun open(context: Context, userId: String? = null): ChatDatabase = Room.databaseBuilder(
             context.applicationContext, ChatDatabase::class.java, if (userId == null) "koiwai-chat.db" else "koiwai-$userId.db"
-        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build()
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
     }
 }

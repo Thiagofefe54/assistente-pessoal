@@ -40,7 +40,7 @@ def day_messages(owner: UUID, authorization: str, day: date) -> list[dict]:
     # Paginate explicitly instead of silently accepting a project's API row cap.
     result = []
     for offset in range(0, 601, 100):
-        rows = cloud('chat_messages?' + urlencode({'select': 'id,content,occurred_at,timezone',
+        rows = cloud('chat_messages?' + urlencode({'select': 'id,content,occurred_at,timezone,server_sequence',
             'user_id': 'eq.' + str(owner), 'local_date': 'eq.' + day.isoformat(),
             'role': 'eq.user', 'order': 'occurred_at.asc,id.asc', 'limit': 100, 'offset': offset}), authorization)
         if not isinstance(rows, list) or len(rows) > 100:
@@ -131,7 +131,8 @@ def daily_report(owner: UUID, authorization: str, day: date, regenerate: bool = 
     # Sync may finish during model inference. Refuse to label an old snapshot current.
     if fingerprint(day_messages(owner, authorization, day)) != digest:
         raise HTTPException(409, 'Chegaram novas mensagens. Gere o resumo novamente após a sincronização.')
-    payload = {'source_hash': digest, 'source_count': len(rows), 'items': items}
+    payload = {'source_hash': digest, 'source_count': len(rows), 'items': items,
+               'source_sequence':max((r.get('server_sequence',0) for r in rows),default=0)}
     if old:
         updated = cloud(path + '&updated_at=eq.' + quote(old['updated_at'], safe=''),
                         authorization, 'PATCH', payload)

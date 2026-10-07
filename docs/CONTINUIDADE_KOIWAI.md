@@ -1,5 +1,34 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint prioritário — Pack 2, 07/10/2026
+
+**Leia este bloco e PACK_2.md antes dos registros históricos abaixo.** Usuário
+pediu uma assistente capaz de agir: concluir tarefas no chat e eliminar revisão
+rotineira de pedidos claros. Implementado: criar/concluir/reabrir/editar/arquivar/
+desfazer por conversa, recibos atômicos e proteção contra repetição/versão antiga;
+Room 4 preserva histórico; Rotina filtra arquivadas e lembretes invalidam versão antiga.
+Relatórios semanais/mensais/semestrais/anuais com fontes, cobertura parcial,
+cache, capítulos e preparação/entrega opcionais pelo Android.
+
+Banco remoto: cinco migrações Pack 2 aplicadas, RLS e verificação fictícia com
+rollback aprovadas. Backend 58 testes; Android 19; APK/testes compilados; lint
+0 erros/55 avisos. Groq real com dados fictícios/escritas simuladas confirmou criar,
+concluir e editar data/hora. Cota 429 interrompeu arquivar e síntese: não alegar
+aprovação desses dois fluxos com IA real nesta sequência. Segurança: aviso existente
+de proteção contra senhas vazadas; performance: índice FK acrescentado.
+
+**APK pronto, ainda NÃO instalado:** usuário saiu/desconectou Poco. Último APK
+instalado continua e230382, com lembretes já testados. Próximo é atualizar sem
+apagar dados e validar as novas ações, relatório/fontes, notificação e migração.
+APK android/app/build/outputs/apk/debug/app-debug.apk;
+SHA256 2a022c591eb225626bdce8dae0f885e2040e757b76cf4a15061e22ed39bba18f.
+Publicação do backend será registrada após verificação; não inferir pelo APK.
+Pack 2 não está fisicamente validado; V1 não concluída. Reset só na futura V1,
+com escopo combinado. Orçamento R$0 e visual aprovado mantidos.
+
+Os relatos abaixo documentam entregas anteriores e podem conter pendências já
+implementadas nesta etapa. Limites e próximos testes em PACK_2.md.
+
 Resumo de continuidade atualizado em **07/10/2026**. Este é o ponto de partida
 atual; ESTADO_ATUAL.md e REVISAO_2026_10_07.md contêm registros históricos que
 podem dizer “pendente” sobre entregas já concluídas. Confira código e último

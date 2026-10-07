@@ -10,10 +10,10 @@ import java.util.UUID
 
 data class KoiTask(val id: String, val slot: Int, val title: String, val notes: String,
     val date: String?, val time: String?, val timezone: String, val recurrence: String,
-    val completedAt: String?, val count: Int, val updatedAt: String) {
-    fun today(now: Instant = Instant.now()): Boolean = completedAt==null && date!=null &&
+    val completedAt: String?, val count: Int, val updatedAt: String,val archivedAt:String?=null) {
+    fun today(now: Instant = Instant.now()): Boolean = archivedAt==null && completedAt==null && date!=null &&
         runCatching {date==now.atZone(ZoneId.of(timezone)).toLocalDate().toString()}.getOrDefault(false)
-    fun overdue(now: Instant = Instant.now()): Boolean = completedAt == null && date != null &&
+    fun overdue(now: Instant = Instant.now()): Boolean = archivedAt==null && completedAt == null && date != null &&
         runCatching {
             val current=now.atZone(ZoneId.of(timezone))
             val due=LocalDate.parse(date)
@@ -126,7 +126,7 @@ class TaskRepository(private val auth: CloudAuth, private val owner: String,
             else if(task.recurrence=="none") "Missão concluída! 💜" else "Etapa concluída! A próxima data está pronta. 💜")
     }
     fun reopen(task: KoiTask) = action {
-        val changed=JSONArray(request(filter(task),"PATCH",JSONObject().put("completed_at",JSONObject.NULL))).length()==1
+        val changed=JSONArray(request(filter(task),"PATCH",JSONObject().put("completed_at",JSONObject.NULL).put("archived_at",JSONObject.NULL))).length()==1
         afterMutation(if(changed) "Tarefa reaberta. A conclusão anterior continua registrada." else "Esta tarefa mudou. Confira a versão atual.")
     }
     fun delete(task: KoiTask) = action {
@@ -147,7 +147,7 @@ suspend fun loadTasks(auth:CloudAuth,owner:String):List<KoiTask> = withContext(D
             fun nullable(key:String)=if(r.isNull(key)) null else r.getString(key)
             entries.add(KoiTask(r.getString("id"),r.getInt("slot"),r.getString("title"),r.getString("notes"),
                 nullable("due_date"),nullable("due_time"),r.getString("timezone"),r.getString("recurrence"),
-                nullable("completed_at"),r.getInt("completed_count"),r.getString("updated_at")))
+                nullable("completed_at"),r.getInt("completed_count"),r.getString("updated_at"),nullable("archived_at")))
         }
         offset+=rows.length()
     }

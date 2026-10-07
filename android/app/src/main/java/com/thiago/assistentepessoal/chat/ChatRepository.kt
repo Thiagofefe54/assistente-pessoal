@@ -6,7 +6,7 @@ import java.io.IOException
 
 // This scope belongs to the app, so leaving the chat does not interrupt an active send.
 class ChatRepository(private val database: ChatDatabase, private val onSaved: () -> Unit = {},
-    tokenProvider: suspend () -> String? = { null }) {
+    tokenProvider: suspend () -> String? = { null },private val onTaskChanged:(String)->Unit={}) {
     private val dao = database.messages()
     private val backend = ChatBackend(tokenProvider)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -50,6 +50,22 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
             _error.value="Não consegui atualizar a proposta salva. Reabra o chat para conferir."
         }
     } }
+    fun undoAction(message:ChatMessage) {
+        if(_busy.value || message.actionReceiptJson==null) return
+        _busy.value=true;_error.value=null
+        scope.launch {
+            try {
+                val id=org.json.JSONObject(message.actionReceiptJson).getString("request_id")
+                val reply=withContext(Dispatchers.IO){backend.undo(id)}
+                val user=ChatMessage(role="user",content="Desfaça a ação anterior sobre esta tarefa.")
+                dao.saveUndo(user,reply,message.id)
+                scheduleSaved(message.actionReceiptJson)
+            } catch(e:Exception) {
+                if(e is CancellationException)throw e
+                _error.value=if(e is IOException)e.message else "Não consegui atualizar o resultado. Reabra a conversa para conferir."
+            } finally {_busy.value=false}
+        }
+    }
 
     private fun perform(message: ChatMessage, retry: Boolean) {
         _busy.value = true
@@ -64,13 +80,9 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
                     dao.insert(message)
                 }
                 val context = recentChatContext(dao.recentContext(message.id, message.occurredAt), message)
-                val reply = withContext(Dispatchers.IO) { backend.sendResult(message.content, context) }
-                dao.complete(message, reply.reply, reply.taskDraftJson)
-                try { onSaved() }
-                catch (scheduleError: Exception) {
-                    if (scheduleError is CancellationException) throw scheduleError
-                    _error.value = "Mensagem salva. Abra Minha conta para sincronizar com a nuvem."
-                }
+                val reply = withContext(Dispatchers.IO) { backend.sendResult(message.content, context,message.id,message.timezone) }
+                dao.complete(message, reply.reply, reply.taskDraftJson,reply.actionReceiptJson)
+                scheduleSaved(reply.actionReceiptJson)
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 try {
@@ -88,6 +100,14 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
             } finally {
                 _busy.value = false
             }
+        }
+    }
+
+    private fun scheduleSaved(receipt:String?) {
+        try {if(receipt!=null) onTaskChanged(receipt);onSaved()}
+        catch(e:Exception) {
+            if(e is CancellationException)throw e
+            _error.value="Resultado salvo. Atualize a Rotina e sincronize em Minha conta para conferir."
         }
     }
 }
