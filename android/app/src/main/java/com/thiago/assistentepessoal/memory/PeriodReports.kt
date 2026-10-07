@@ -73,6 +73,7 @@ class PeriodReports(private val context:Context) {
     fun ready(owner:String,kind:String,anchor:String,hash:String,automatic:Boolean=false) {
         if(prefs.getString("owner",null)!=owner) return
         if(automatic && !this.automatic()) return
+        if(automatic && prefs.getBoolean("skip:"+key(owner,kind,anchor),false)) return
         prefs.edit().putString("pending:"+key(owner,kind,anchor),hash).apply()
         state(owner,kind,anchor,"Prontinho! Atualize para ler 💜")
         notifyReady(owner,kind,anchor,hash,automatic)
@@ -130,9 +131,11 @@ class ReportPrepareWorker(context:Context,params:WorkerParameters):CoroutineWork
                 if(app.auth.account.value?.id!=owner || (automatic && !app.reports.automatic())) return Result.success()
                 val value=if(kind=="day") api.request("/api/v1/journal/summary","POST",JSONObject().put("local_date",anchor)).put("ready",true)
                     else api.request("/api/v1/reports/prepare","POST",JSONObject().put("kind",kind).put("anchor",anchor).put("timezone",ZoneId.systemDefault().id))
+                currentCoroutineContext().ensureActive()
                 if(value.optBoolean("ready")) {
                     val report=value.getJSONObject("report")
-                    app.reports.ready(owner,kind,anchor,report.getString("source_hash"),automatic);return Result.success()
+                    val delivery=report.getString("source_hash")+if(kind=="day") "" else ":${report.getJSONObject("coverage").optBoolean("closed") }"
+                    app.reports.ready(owner,kind,anchor,delivery,automatic);return Result.success()
                 }
                 if(value.optInt("available_count")==0) {app.reports.state(owner,kind,anchor,"Ainda não há mensagens sincronizadas nesse período.");return Result.success()}
                 app.reports.state(owner,kind,anchor,"Preparando fontes: ${value.optInt("remaining")} capítulos principais restantes.")

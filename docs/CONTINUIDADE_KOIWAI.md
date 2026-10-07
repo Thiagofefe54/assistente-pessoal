@@ -21,8 +21,11 @@ de proteção contra senhas vazadas; performance: índice FK acrescentado.
 instalado continua e230382, com lembretes já testados. Próximo é atualizar sem
 apagar dados e validar as novas ações, relatório/fontes, notificação e migração.
 APK android/app/build/outputs/apk/debug/app-debug.apk;
-SHA256 2a022c591eb225626bdce8dae0f885e2040e757b76cf4a15061e22ed39bba18f.
-Publicação do backend será registrada após verificação; não inferir pelo APK.
+SHA256 60cb5fe8dd335996cb8764c634fbe3e67b42beda7a0e6846fc57581d5095385f.
+Backend **06c003c** publicado no Render Free como **Live**;
+deploy dep-db3akiflk1mc73a03phg. Health HTTPS 200, relatórios/desfazer sem sessão
+401, demonstração em produção 404; logs recentes sem erro de aplicação.
+O acabamento posterior é somente Android/documentação, sem mudança de backend.
 Pack 2 não está fisicamente validado; V1 não concluída. Reset só na futura V1,
 com escopo combinado. Orçamento R$0 e visual aprovado mantidos.
 

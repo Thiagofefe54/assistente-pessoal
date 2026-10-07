@@ -1,8 +1,11 @@
 # Pack 2 — uma Koi que ajuda a agir
 
 Checkpoint de 07/10/2026. Android primeiro, orçamento R$0, identidade aprovada preservada.
-Código implementado e APK preparado. Publicação e validação física devem ser
-consultadas no checkpoint mais recente de CONTINUIDADE_KOIWAI.md.
+Código implementado e APK preparado. Backend 06c003c publicado no Render Free,
+Live no deploy dep-db3akiflk1mc73a03phg. Health HTTPS 200; rotas de relatórios e
+desfazer sem sessão 401; demo em produção 404; logs recentes sem erros de aplicação.
+Nova instalação e validação física do Pack 2 pendentes. O acabamento posterior
+à publicação mudou somente Android/documentação.
 
 ## Entrega
 
@@ -65,7 +68,7 @@ docs/sql/ é documentação dessas migrações, não script para reaplicar em pr
 - Backend: **58 testes aprovados**.
 - Android local: **19 testes aprovados**, APK e APK de testes compilados.
 - Lint: **0 erros / 55 avisos**, incluindo recomendações de estilo/KTX; não afirmar zero avisos.
-- SHA256 do APK: `2a022c591eb225626bdce8dae0f885e2040e757b76cf4a15061e22ed39bba18f`.
+- SHA256 do APK: `60cb5fe8dd335996cb8764c634fbe3e67b42beda7a0e6846fc57581d5095385f`.
 - SQL fictício com rollback aprovado: dono, criação/conclusão repetidas,
   avanço mensal no ano bissexto, desfazer repetido, versão antiga recusada,
   arquivar/recuperar, tarefa arquivada impedida de concluir, inventário e relatórios

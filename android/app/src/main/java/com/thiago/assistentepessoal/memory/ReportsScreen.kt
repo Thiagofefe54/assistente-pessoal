@@ -92,7 +92,7 @@ import java.time.LocalDate
     }
     if(deleting) AlertDialog(onDismissRequest={deleting=false},title={Text("Apagar este relatório?")},text={Text("Os capítulos, conversas e lembranças continuam salvos. Este celular não vai recriar o relatório automaticamente; você poderá pedir de novo.")},
         confirmButton={TextButton(onClick={deleting=false;scope.launch {
-            busy=true;try {api?.request("/api/v1/reports/$kind/$anchor","DELETE");account?.id?.let {app.reports.suppress(it,kind,anchor)};refresh++}
+            busy=true;try {account?.id?.let {app.reports.suppress(it,kind,anchor)};api?.request("/api/v1/reports/$kind/$anchor","DELETE");refresh++}
             catch(e:Exception){if(e is CancellationException)throw e;info=e.message} finally {busy=false}
         }}){Text("Apagar")}},dismissButton={TextButton(onClick={deleting=false}){Text("Cancelar")}})
 }
