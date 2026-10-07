@@ -4,8 +4,10 @@ Checkpoint de 07/10/2026. Android primeiro, orçamento R$0, identidade aprovada 
 Código implementado e APK preparado. Backend 06c003c publicado no Render Free,
 Live no deploy dep-db3akiflk1mc73a03phg. Health HTTPS 200; rotas de relatórios e
 desfazer sem sessão 401; demo em produção 404; logs recentes sem erros de aplicação.
-Nova instalação e validação física do Pack 2 pendentes. O acabamento posterior
-à publicação mudou somente Android/documentação.
+APK instalado no Poco por atualização, código 1537df2, dados preservados.
+Cinco testes de persistência passaram; novas ações/telas/relatórios ainda exigem
+validação funcional no aparelho. O acabamento posterior à publicação mudou
+somente Android/documentação.
 
 ## Entrega
 
@@ -67,6 +69,7 @@ docs/sql/ é documentação dessas migrações, não script para reaplicar em pr
 
 - Backend: **58 testes aprovados**.
 - Android local: **19 testes aprovados**, APK e APK de testes compilados.
+- Poco: **ChatPersistenceTest, 5 testes aprovados em 0,278 s**, depois da atualização.
 - Lint: **0 erros / 55 avisos**, incluindo recomendações de estilo/KTX; não afirmar zero avisos.
 - SHA256 do APK: `60cb5fe8dd335996cb8764c634fbe3e67b42beda7a0e6846fc57581d5095385f`.
 - SQL fictício com rollback aprovado: dono, criação/conclusão repetidas,
@@ -75,9 +78,10 @@ docs/sql/ é documentação dessas migrações, não script para reaplicar em pr
   isolados por conta. Nenhuma fixture dessa verificação ficou persistida.
 - Groq real, somente dados fictícios e escritas simuladas: criação, conclusão e
   mudança de data/horário aprovadas na última sequência. Identificado/corrigido
-  HH:mm:00 sem mudar minutos. A cota 429 interrompeu o teste de arquivar;
-  arquivar/relatório com IA real ainda não aprovados nesta sequência. Sem troca
-  automática de modelo para contornar cota.
+  HH:mm:00 sem mudar minutos. A cota 429 interrompeu a primeira sequência.
+  Checagem posterior: arquivar e relatório com fontes fictícias também aprovados.
+  Não houve troca automática de modelo para contornar cota. Escritas simuladas
+  não substituem teste de ação real no Poco.
 - Advisor segurança: apenas aviso já existente de proteção contra senhas vazadas
   desativada. [Explicação do Supabase](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
 - Advisor performance: índice da FK de conclusões acrescentado; pode aparecer
@@ -85,10 +89,13 @@ docs/sql/ é documentação dessas migrações, não script para reaplicar em pr
 
 ## O que falta validar no Poco
 
-Atualizar com adb install -r, mantendo conta e histórico. Não desinstalar.
-Usuário saiu e desconectou: este checkpoint não fez nova instalação nem teste físico.
+Atualização já instalada com adb install -r, mantendo conta e histórico.
+Usuário reconectou brevemente e depois desconectou para ir à escola.
+O teste de persistência passou; os demais não foram executados. APK de testes
+mais recente contém PackTwoLiveTest/PackTwoNavigationTest, ainda não reinstalado.
 
-1. Persistência/migração Room 4, inclusive recibo e desfazer sem perder conversa.
+1. Concluído: persistência/migração Room 4, recibo e desfazer sem perder conversa
+   no banco fictício do teste. Não equivale a concluir/desfazer na nuvem pelo chat.
 2. Criar uma tarefa fictícia pelo chat sem Revisar; concluir, alterar horário,
    reabrir, arquivar e desfazer; conferir Rotina depois de cada resultado.
 3. Reconexão/repetição do mesmo envio; repetição de tarefa avança uma vez.
@@ -104,7 +111,7 @@ Isso não aprova automaticamente estas novas telas e ações nem confiabilidade 
 
 ## Próximos objetivos
 
-- P2.1: instalar e validar os fluxos acima; corrigir qualquer problema encontrado.
+- P2.1: validar os fluxos acima no APK já instalado; corrigir problemas encontrados.
 - P2.2: observar uso real, recuperação após reinício e cotas. Pack 2 permanece
   pendente de validação física, sem declarar versões inteiras concluídas.
 - P3: voz por botão, interrupção e personalidade contextual.
@@ -117,3 +124,12 @@ WorkManager depende do Android e do celular ligado, pode atrasar e não é alarm
 exato. Falhas/cotas exigem retomar; não há execução contínua garantida 24/7.
 V1: usuário pediu começo limpo nessa etapa futura. Combinar escopo antes; não
 apagar contas, conversas, lembranças, tarefas ou configurações agora.
+
+Testes preparados: executar PackTwoLiveTest com koiLiveBackend=true, um método
+por vez; não chamar todos os testes reais em lote e estourar cotas. Ações usam
+fixture PACK2_TEST_B301, dois recibos protegidos por guarda e tarefa removida
+no finally. Relatório usa dia fictício reservado 1901-02-03, guardado contra dados
+existentes; não gera lembranças. Depois executar docs/sql/pack2_fixture_cleanup.sql
+e cleanupLocalReportFixture com koiCleanupFixture=true, conferindo zero restos.
+Não ampliar DELETE público de mensagens para limpar fixture. Nenhuma dessas
+fixtures funcionais foi criada neste checkpoint, pois o usuário desconectou.

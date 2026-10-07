@@ -83,7 +83,7 @@ flowchart LR
 
 Os relatórios deverão indicar o período realmente coberto e permitir voltar às fontes. Quando o uso começar no meio do ano, a primeira retrospectiva anual reunirá apenas os registros existentes até dezembro. Não será necessário esperar seis meses, e a Koi não deverá inventar acontecimentos de períodos sem dados.
 
-**O Pack 2 implementa relatórios por período e entrega opcional no app.** O novo APK está preparado e aguarda instalação/validação no Poco. Fontes dos relatórios maiores levam aos capítulos mensais e diários; cobertura parcial é indicada. Confira limites e evidências em [PACK_2.md](docs/PACK_2.md).
+**O Pack 2 implementa relatórios por período e entrega opcional no app.** O novo APK foi instalado no Poco e passou nos cinco testes de persistência; ações e relatórios ainda aguardam validação funcional. Fontes dos relatórios maiores levam aos capítulos mensais e diários; cobertura parcial é indicada. Confira limites e evidências em [PACK_2.md](docs/PACK_2.md).
 
 ### Desenvolvimento em packs
 
@@ -92,7 +92,7 @@ A prioridade atual é completar o celular antes de criar o cliente Windows.
 | Pack | Entrega |
 | --- | --- |
 | 1 | Sugestões de lembranças com revisão, resumo diário com fontes e tarefas reais. Implementado; confira as evidências em [PACK_1.md](docs/PACK_1.md). |
-| 2 | Ações de tarefas pelo chat, desfazer, lembretes e relatórios por período. Implementado; nova instalação e validação física pendentes. [Evidências](docs/PACK_2.md). |
+| 2 | Ações de tarefas pelo chat, desfazer, lembretes e relatórios por período. Instalado; persistência aprovada, validação funcional pendente. [Evidências](docs/PACK_2.md). |
 | 3 | Voz por botão, interrupção da fala e refinamento de personalidade. |
 | 4 | Notas, agenda, objetivos, treinos, finanças e ações verificáveis dentro do app. |
 | 5 | Offline ampliado, privacidade, recuperação de conta, acabamento e uso prolongado. |

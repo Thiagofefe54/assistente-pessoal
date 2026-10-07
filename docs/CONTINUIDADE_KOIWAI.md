@@ -13,20 +13,26 @@ cache, capítulos e preparação/entrega opcionais pelo Android.
 Banco remoto: cinco migrações Pack 2 aplicadas, RLS e verificação fictícia com
 rollback aprovadas. Backend 58 testes; Android 19; APK/testes compilados; lint
 0 erros/55 avisos. Groq real com dados fictícios/escritas simuladas confirmou criar,
-concluir e editar data/hora. Cota 429 interrompeu arquivar e síntese: não alegar
-aprovação desses dois fluxos com IA real nesta sequência. Segurança: aviso existente
+concluir, editar data/hora e arquivar; síntese com fontes fictícias também aprovada.
+Cota 429 interrompeu a primeira sequência; checagem posterior dos dois fluxos
+restantes passou, sem contornar a cota ou trocar de modelo. Segurança: aviso existente
 de proteção contra senhas vazadas; performance: índice FK acrescentado.
 
-**APK pronto, ainda NÃO instalado:** usuário saiu/desconectou Poco. Último APK
-instalado continua e230382, com lembretes já testados. Próximo é atualizar sem
-apagar dados e validar as novas ações, relatório/fontes, notificação e migração.
+**APK atualizado no Poco:** usuário reconectou, app e pacote de testes instalados
+via atualização, sem desinstalar. ChatPersistenceTest passou **5 testes** em
+0,278 s: migração até Room 4, reconciliação, persistência/proposta/recibo e desfazer.
+Usuário desconectou novamente para ir à escola antes dos novos testes funcionais.
+PackTwoLiveTest e PackTwoNavigationTest preparados/compilados, **não executados**.
+Próximo é validar novas ações, relatório/fontes e avisos reais. Código do APK
+instalado corresponde a 1537df2; backend continua 06c003c. Testes/docs posteriores
+não mudam o aplicativo instalado. Não repetir instalação sem mudança de app.
 APK android/app/build/outputs/apk/debug/app-debug.apk;
 SHA256 60cb5fe8dd335996cb8764c634fbe3e67b42beda7a0e6846fc57581d5095385f.
 Backend **06c003c** publicado no Render Free como **Live**;
 deploy dep-db3akiflk1mc73a03phg. Health HTTPS 200, relatórios/desfazer sem sessão
 401, demonstração em produção 404; logs recentes sem erro de aplicação.
 O acabamento posterior é somente Android/documentação, sem mudança de backend.
-Pack 2 não está fisicamente validado; V1 não concluída. Reset só na futura V1,
+Pack 2 tem validação física parcial; V1 não concluída. Reset só na futura V1,
 com escopo combinado. Orçamento R$0 e visual aprovado mantidos.
 
 Os relatos abaixo documentam entregas anteriores e podem conter pendências já

@@ -5,8 +5,9 @@ A versão da especificação e o versionName do template Android não são relea
 
 Checkpoint atual: [Pack 2](PACK_2.md) implementa ações diretas e reversíveis de
 tarefas no chat, relatórios por período e preparação/notificação opcionais no
-Android. Banco aplicado e testes locais aprovados. APK pronto; instalação e
-validação física dessa atualização pendentes. Não marcar Pack 2 ou V1 concluídos.
+Android. Banco aplicado e testes locais aprovados. APK instalado; cinco testes de
+persistência passaram. Validação funcional dessa atualização pendente.
+Não marcar Pack 2 ou V1 concluídos.
 Critérios de reinício, entrega prolongada e integridade continuam exigidos.
 
 ## Ponto de partida
