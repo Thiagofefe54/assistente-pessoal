@@ -65,7 +65,8 @@ requisição recebeu 403 da camada de proteção; definir User-Agent Koiwai/0.1 
 Accept application/json resolveu o problema. O usuário foi orientado a substituir
 a chave que acabou sendo compartilhada no chat; não houve revogação automática.
 
-Próximo: substituir a chave compartilhada e preparar hospedagem HTTPS. Depois
+Atualização: hospedagem HTTPS publicada no Render Free. O usuário decidiu
+substituir a chave compartilhada após os testes. Próximo:
 validar login, contexto, persistência e sincronização no
 celular antes de declarar M06–M09 concluídos.
 

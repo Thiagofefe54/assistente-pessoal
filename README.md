@@ -25,7 +25,7 @@ A Koiwai nasceu de uma vontade: ter uma assistente pessoal que acompanhe a vida 
 
 O objetivo é conversar com a Koi, organizar o dia e, aos poucos, permitir que ela ajude a executar tarefas com permissões claras. O Android é o primeiro lar; o Windows faz parte da evolução planejada.
 
-**A base já funciona no celular. A integração Groq foi validada com chamadas reais no servidor.** O código do app prepara contexto recente para a rota autenticada; a hospedagem HTTPS e o teste completo no aparelho ainda precisam ser concluídos. A demonstração local mantém saudação e eco.
+**A Koiwai já conversa com IA na nuvem.** O backend está publicado no Render Free, e uma conversa autenticada com contexto fictício passou no Poco. O app usa Groq pela rota HTTPS protegida; a demonstração local mantém saudação e eco.
 
 ## Uma identidade que você reconhece
 
@@ -40,7 +40,7 @@ A personagem é ilustrada: animação da personagem e voz própria são possibil
 | Área | Entrega atual |
 | :--- | :--- |
 | **Home** | Personagem, saudação personalizável, data/hora reais, estado da conta e atalhos. |
-| **Chat** | Conversa por texto com o servidor de demonstração, histórico persistente, horários e nova tentativa após falha. |
+| **Chat** | Conversa por texto com Groq via servidor HTTPS, contexto recente limitado, histórico persistente, horários e nova tentativa após falha. |
 | **Memória** | Linha do tempo das conversas reais, navegação por dia e busca no histórico. |
 | **Rotina** | Painel visual e navegação pelas categorias. Cadastros e execução de tarefas ainda estão em preparação. |
 | **Configurações** | Personalização da saudação, redução de movimento e acesso à conta. |
@@ -48,7 +48,7 @@ A personagem é ilustrada: animação da personagem e voz própria são possibil
 | **Dados** | Banco local por conta, importação explícita do histórico local e reconciliação por UUID na nuvem. |
 | **Servidor** | API FastAPI; rota protegida validando a conta no Supabase; demonstração separada, disponível apenas em desenvolvimento. |
 
-O histórico pode ser lido sem conexão. Receber uma resposta exige acesso ao servidor; na configuração local atual, ele ainda roda no computador. A sincronização tenta novamente quando houver rede. Ela não reenvia automaticamente uma conversa que falhou no servidor.
+O histórico pode ser lido sem conexão. Receber uma resposta exige internet; a instalação testada usa o servidor gratuito na nuvem, sem depender do computador. O serviço pode dormir quando fica sem uso, então a primeira resposta pode demorar. A sincronização tenta novamente quando houver rede. Ela não reenvia automaticamente uma conversa que falhou no servidor.
 
 ## O que a Koi poderá fazer
 

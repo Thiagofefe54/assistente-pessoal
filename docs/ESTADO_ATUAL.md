@@ -144,3 +144,20 @@ Testes reais com conversa fictícia confirmaram resposta e contexto no principal
 além de disponibilidade da reserva. Plano Free e cotas conferidos no painel.
 Lint: zero erros e 27 avisos. Sem publicação, troca de APK instalado ou plano pago.
 Detalhes e limitações em IA_GROQ.md. Hospedagem HTTPS e fluxo completo pendentes.
+
+## Publicação gratuita e atualização do Poco — 07/10/2026
+
+Backend publicado em https://koiwai-backend.onrender.com no Render Free,
+com configuração de produção e credenciais nos segredos do serviço.
+Validação externa: health HTTPS 200; conversa sem token ou com token inválido 401;
+rota de demonstração 404. Nenhum plano pago foi ativado.
+
+APK atualizado no Poco sem desinstalar; endereço privado do app passou a usar
+HTTPS na nuvem. Pacote de testes instalado. Os três testes de persistência,
+migração e reconciliação passaram no aparelho, usando bancos de teste isolados.
+Após login feito pelo usuário, o teste real autenticado passou no Poco: a IA
+recuperou o nome Tucano Violeta do contexto fictício via HTTPS no Render.
+Não foram exportados senha ou tokens nem enviadas conversas pessoais. O teste
+usou diretamente o endereço online, sem depender do processo local; o computador
+não foi desligado durante a execução. Os quatro testes no aparelho passaram
+(três de persistência e um de integração real), em execuções separadas.

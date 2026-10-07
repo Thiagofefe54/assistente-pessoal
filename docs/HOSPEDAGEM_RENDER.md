@@ -1,6 +1,7 @@
 # Servidor gratuito no Render
 
-Configuração preparada em 07/10/2026; publicação e teste no aparelho são
+Serviço publicado gratuitamente em 07/10/2026: https://koiwai-backend.onrender.com.
+Publicação e testes no aparelho são
 registrados em ESTADO_ATUAL.md quando concluídos.
 
 O serviço Python usa render.yaml, .python-version e requirements.txt. Plano Free,
@@ -51,3 +52,13 @@ Referências: [Free](https://render.com/docs/free),
 [FastAPI](https://render.com/docs/deploy-fastapi),
 [porta e TLS](https://render.com/docs/web-services),
 [BluePrint](https://render.com/docs/blueprint-spec).
+
+
+## Resultado em 07/10/2026
+
+Health HTTPS, recusa de token ausente/inválido e desativação da demonstração
+confirmados externamente. APK atualizado no Poco para o endereço online. Três
+testes de persistência passaram; após login do usuário, o teste autenticado com
+contexto fictício também passou. O teste não enviou o diário pessoal nem exportou
+a sessão. Funcionamento com o computador fisicamente desligado ainda não foi
+observado; a chamada validada foi diretamente para o Render.
