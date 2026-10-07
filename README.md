@@ -41,10 +41,10 @@ A personagem é ilustrada: animação da personagem e voz própria são possibil
 
 | Área | Entrega atual |
 | :--- | :--- |
-| **Home** | Personagem, saudação personalizável, data/hora reais, estado da conta e atalhos. |
+| **Home** | Personagem, saudação personalizável, data/hora reais, estado da conta, contagem de tarefas e atalhos. |
 | **Chat** | Conversa por texto com Groq via servidor HTTPS, contexto recente limitado, histórico persistente, horários e nova tentativa após falha. |
-| **Memória** | Diário por dia e busca; nova área de lembranças confirmadas, com edição, exclusão e fonte original, instalada e testada no Poco. |
-| **Rotina** | Painel visual e navegação pelas categorias. Cadastros e execução de tarefas ainda estão em preparação. |
+| **Memória** | Diário por dia e busca; lembranças confirmadas; sugestões revisáveis e resumo diário solicitado pela pessoa, com fontes e atualização após novas mensagens. |
+| **Rotina** | Tarefas reais na conta: criar, editar, concluir, reabrir e apagar; data, horário, repetição e últimas conquistas. Agenda, notas, treinos e finanças continuam planejados. |
 | **Configurações** | Personalização da saudação, redução de movimento e acesso à conta. |
 | **Conta** | Cadastro/login por e-mail, confirmação de e-mail, sessão criptografada e sincronização. |
 | **Dados** | Banco local por conta, importação explícita do histórico local e reconciliação por UUID na nuvem. |
@@ -81,7 +81,23 @@ flowchart LR
 
 Os relatórios deverão indicar o período realmente coberto e permitir voltar às fontes. Quando o uso começar no meio do ano, a primeira retrospectiva anual reunirá apenas os registros existentes até dezembro. Não será necessário esperar seis meses, e a Koi não deverá inventar acontecimentos de períodos sem dados.
 
-**Hoje existe o histórico diário consultável. A geração e a entrega automática desses relatórios estão no roadmap.**
+**Hoje existe o histórico diário consultável e o resumo diário sob demanda. Relatórios de períodos maiores e entrega automática continuam no roadmap.**
+
+### Desenvolvimento em packs
+
+A prioridade atual é completar o celular antes de criar o cliente Windows.
+
+| Pack | Entrega |
+| --- | --- |
+| 1 | Sugestões de lembranças com revisão, resumo diário com fontes e tarefas reais. Implementado; confira as evidências em [PACK_1.md](docs/PACK_1.md). |
+| 2 | Lembretes, notificações e relatórios semanais, mensais, semestrais e anuais. |
+| 3 | Voz por botão, interrupção da fala e refinamento de personalidade. |
+| 4 | Notas, agenda, objetivos, treinos, finanças e ações verificáveis dentro do app. |
+| 5 | Offline ampliado, privacidade, recuperação de conta, acabamento e uso prolongado. |
+
+Tarefas e relatórios do Pack 1 exigem internet. Horário de tarefa ainda não dispara
+notificação. Nenhuma sugestão vira lembrança sem confirmação. Resumos de IA devem
+ser conferidos nas fontes; só cobrem as mensagens sincronizadas da pessoa.
 
 ## Próximas versões
 
@@ -108,7 +124,7 @@ As versões representam etapas verificáveis, sem datas prometidas. A `v0.0.1` i
 - [x] Persistir conversas no celular e preservar dados nas atualizações.
 - [x] Implementar conta e sincronização com Supabase.
 - [x] Preparar autenticação do backend e separar a demonstração local.
-- [ ] Publicar o backend em HTTPS e validar a conversa autenticada em produção.
+- [x] Publicar o backend em HTTPS e validar a conversa autenticada em produção.
 - [ ] Integrar IA com limites de uso e controle de custos.
 - [ ] Ajustar o retorno da confirmação de e-mail para o app.
 - [ ] Validar o fluxo completo com o computador desligado.

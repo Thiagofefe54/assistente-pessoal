@@ -42,6 +42,7 @@ private fun ConnectedJournal(repo: JournalRepository, memory: MemoryRepository?,
             Eyebrow("SEU DIA COM A KOI",KoiColors.Blue)
             Text("Um capítulo,\ncom suas palavras.",fontSize=23.sp,fontWeight=FontWeight.SemiBold)
             Text("O resumo usa apenas suas mensagens sincronizadas deste dia, no fuso registrado em cada conversa. É uma síntese por IA: confira as fontes. Não cobre o que aconteceu fora do chat.",fontSize=12.sp,color=KoiColors.Muted)
+            if(day==java.time.LocalDate.now().toString()) Text("Hoje ainda está acontecendo. Este resumo é parcial e pode ser atualizado.",fontSize=12.sp,color=KoiColors.Blue)
             if(unsynced>0) Text("$unsynced mensagens suas ainda precisam sincronizar. Abra Minha conta para sincronizar antes de gerar.",fontSize=12.sp,color=KoiColors.Red)
             if(state.stale) Text("Chegaram mensagens depois deste resumo. Atualize o capítulo.",color=KoiColors.Red,fontSize=13.sp)
             if(state.busy) LinearProgressIndicator(Modifier.fillMaxWidth(),color=KoiColors.Blue)

@@ -9,8 +9,9 @@ Identidade e experiência Android refinadas e aprovadas. Histórico Room por con
 login Supabase, sessão criptografada, sincronização e consulta por dia funcionando.
 Backend publicado no Render Free; conversa Groq autenticada com contexto recente
 validada no Poco e confirmada pelo usuário. Primeiro incremento de lembranças
-confirmadas instalado e testado no Poco. Relatórios,
-cadastros de Rotina e Windows continuam pendentes.
+confirmadas instalado e testado no Poco. Pack 1 implementa sugestões revisáveis,
+resumo diário sob demanda e tarefas reais. Relatórios de períodos maiores,
+notificações, outros cadastros de Rotina e Windows continuam pendentes.
 
 ## Etapas e critérios
 
@@ -34,7 +35,7 @@ cadastros de Rotina e Windows continuam pendentes.
 1. Concluído: Groq, publicação gratuita e conversa real autenticada no Poco.
 2. Concluído: lembranças confirmadas, criação/edição/exclusão e uso no contexto.
 3. Ajuste de personalidade alegre e natural publicado; observar no uso real.
-4. Próximo: sugestões revisáveis da IA e resumos diários com fontes.
+4. Pack 1: sugestões revisáveis, resumo diário com fontes e tarefas na conta.
 5. Pendências da fundação: recuperação de conta, limites próprios por usuário e
    observação do uso com o computador fisicamente desligado.
 
@@ -42,6 +43,14 @@ A meta inicial de custo é R$0. Isso não é promessa de servidor gratuito sempr
 disponível: limites, suspensão por inatividade e condições dos provedores precisam
 ser verificados na escolha. Nenhum serviço pago foi contratado nesta etapa.
 Chaves de IA ficam no servidor. Não é necessário rodar um modelo grande no PC.
+
+## Prioridade atual por packs
+
+Completar primeiro o Android. Pack 1: memória/diário/tarefas; Pack 2: lembretes e
+relatórios periódicos; Pack 3: voz e personalidade; Pack 4: ferramentas pessoais;
+Pack 5: offline, privacidade e acabamento. Windows vem depois, mesmo que a tabela
+histórica de versões o apresente antes. Não confundir packs entregues com versões
+inteiras concluídas: os critérios da tabela continuam exigidos.
 
 O orçamento confirmado é R$0. Balanço atual e pequenos objetivos M01–M10 em [REVISAO_2026_10_07.md](REVISAO_2026_10_07.md).
 

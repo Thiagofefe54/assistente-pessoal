@@ -16,6 +16,8 @@ import androidx.compose.ui.unit.*
 import com.thiago.assistentepessoal.*
 import java.time.LocalDate
 import java.time.LocalTime
+import java.time.Instant
+import kotlinx.coroutines.delay
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -40,8 +42,10 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
     var editor by remember { mutableStateOf(false) }
     var editing by remember { mutableStateOf<KoiTask?>(null) }
     var deleting by remember { mutableStateOf<KoiTask?>(null) }
+    var now by remember { mutableStateOf(Instant.now()) }
+    LaunchedEffect(Unit) {while(true) {now=Instant.now();delay(30000)}}
     LaunchedEffect(repo) { repo.refresh() }
-    val visible=tasks.orEmpty().filter { when(filter) {"done"->it.completedAt!=null;"late"->it.overdue();else->it.completedAt==null} }
+    val visible=tasks.orEmpty().filter { when(filter) {"done"->it.completedAt!=null;"late"->it.overdue(now);else->it.completedAt==null} }
         .sortedWith(compareBy<KoiTask> { it.date ?: "9999-12-31" }.thenBy { it.time ?: "23:59" })
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
         item {
@@ -53,7 +57,7 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
         item {
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Red) {
                 val pending=tasks.orEmpty().count { it.completedAt==null }
-                Text("$pending em andamento • ${tasks.orEmpty().count { it.overdue() }} vencidas",fontWeight=FontWeight.SemiBold)
+                Text("$pending em andamento • ${tasks.orEmpty().count { it.overdue(now) }} vencidas",fontWeight=FontWeight.SemiBold)
                 Text("Datas usam o fuso da tarefa. Notificações chegam no próximo pack. Consultar e alterar requer internet.",fontSize=12.sp,color=KoiColors.Muted)
             }
             Spacer(Modifier.height(10.dp))
@@ -75,8 +79,8 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
             }
         }
         items(visible,key={it.id}) { task ->
-            KoiPanel(Modifier.fillMaxWidth(),accent=if(task.overdue()) KoiColors.Red else KoiColors.Purple) {
-                Eyebrow(if(task.completedAt!=null) "CONCLUÍDA" else if(task.overdue()) "DATA PASSOU" else "EM ANDAMENTO",KoiColors.Red)
+            KoiPanel(Modifier.fillMaxWidth(),accent=if(task.overdue(now)) KoiColors.Red else KoiColors.Purple) {
+                Eyebrow(if(task.completedAt!=null) "CONCLUÍDA" else if(task.overdue(now)) "DATA PASSOU" else "EM ANDAMENTO",KoiColors.Red)
                 Text(task.title,fontSize=20.sp,fontWeight=FontWeight.SemiBold)
                 if(task.notes.isNotBlank()) Text(task.notes,color=KoiColors.Muted)
                 Text(listOfNotNull(task.date?.let {LocalDate.parse(it).format(DateTimeFormatter.ofPattern("dd/MM/yyyy"))},task.time?.take(5),

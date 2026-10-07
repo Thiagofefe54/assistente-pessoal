@@ -11,8 +11,13 @@ import java.util.UUID
 data class KoiTask(val id: String, val slot: Int, val title: String, val notes: String,
     val date: String?, val time: String?, val timezone: String, val recurrence: String,
     val completedAt: String?, val count: Int, val updatedAt: String) {
-    fun overdue(): Boolean = completedAt == null && date != null &&
-        runCatching { LocalDate.parse(date) < LocalDate.now(ZoneId.of(timezone)) }.getOrDefault(false)
+    fun overdue(now: Instant = Instant.now()): Boolean = completedAt == null && date != null &&
+        runCatching {
+            val current=now.atZone(ZoneId.of(timezone))
+            val due=LocalDate.parse(date)
+            due < current.toLocalDate() || (due==current.toLocalDate() && time!=null &&
+                !current.toLocalTime().isBefore(LocalTime.parse(time)))
+        }.getOrDefault(false)
 }
 val taskRecurrences = linkedMapOf("none" to "Uma vez", "daily" to "Diária", "weekly" to "Semanal", "monthly" to "Mensal")
 data class TaskDraft(val title: String, val notes: String, val date: String, val time: String, val recurrence: String) {

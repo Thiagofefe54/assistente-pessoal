@@ -221,3 +221,19 @@ Health HTTPS respondeu 200 após a publicação. O texto do prompt é uma orient
 de comportamento, não garantia de frases idênticas em toda conversa. A mudança
 já vale para próximas chamadas do APK instalado. A observação do tom pelo usuário
 fica como próxima conferência, sem necessidade de outra instalação.
+
+## 07/10/2026 — Pack 1: diário, memória revisável e missões
+
+Usuário priorizou completar o Android em packs antes de Windows. Implementados
+resumo diário com fontes e cache/versão, sugestões sob demanda com revisão antes
+de salvar e tarefas reais com data/horário/repetição, conclusão registrada e CRUD.
+Migração Supabase aplicada com RLS e grants mínimos; testes fictícios com rollback
+verificaram isolamento, fontes, concorrência, mês/ano bissexto e versão antiga.
+Backend 04853d7 publicado Live no Render Free; health 200, journal sem token 401,
+demo de produção 404. 30 testes backend e nove unitários Android aprovados.
+APK atualizado no Poco sem limpar conta/histórico. Teste real de tarefas passou
+(0,947 s), navegação/editor passou (5,493 s), resumo/sugestão/atualização tardia
+passou (17,15 s). Fixtures fictícias limpas da nuvem e Room, com contagens zero.
+Build/lint sem erros; 27 avisos existentes. README/ROADMAP e continuidade atualizados.
+Notificações, relatórios de períodos maiores, voz e offline ampliado continuam
+nos packs seguintes. Detalhes, limites e roteiro de testes em PACK_1.md.

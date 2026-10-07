@@ -58,10 +58,25 @@ em outro dispositivo impedem sobrescrever silenciosamente uma versão nova.
 
 ## Verificação nesta entrega
 
-Registro provisório: banco aplicado e teste SQL com rollback aprovado; 30 testes
-backend (incluindo acesso autenticado, fonte inválida, limite, cache e atualização
-tardia). Compilação, testes Android, publicação e teste físico serão registrados
-ao encerrar. Não interpretar este registro provisório como tudo publicado/testado.
+Banco aplicado e teste SQL com rollback aprovado. 30 testes backend (acesso
+autenticado, fonte inválida, limite, cache e atualização tardia) e nove testes
+unitários Android aprovados. APK e testes compilados; lint sem erros, 27 avisos
+existentes. Backend publicado no Render Free como Live no commit 04853d7; health
+200, geração sem token 401 e demonstração em produção 404.
+
+APK instalado no Poco preservando dados. Testes reais aprovados: CRUD de tarefa,
+edição antiga recusada, conclusão duplicada recusada, avanço 31/01/2028 → 29/02,
+registro de conclusão e exclusão; navegação/editor; resumo com fontes válidas,
+cache com timestamp preservado, sugestão sem criar fato, sincronização tardia
+detectada e resumo atualizado. Apenas conteúdo fictício foi enviado ao modelo.
+Fixtures remotas e locais limpas; conferidas zero mensagens/relatórios de teste.
+O ajuste final considera horário e fuso no vencimento e identifica o resumo de
+hoje como parcial. Ainda falta observação prolongada de uso real; não há promessa
+de precisão perfeita dos resumos de IA ou de disponibilidade contínua gratuita.
+
+Advisor de segurança: nenhum aviso novo nas tabelas. Permanece o aviso anterior
+de [proteção contra senhas vazadas](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection)
+desativada, sem alterar configuração/plano de Auth nesta entrega.
 
 PackOneLiveTest usa somente fixtures fictícias. O teste de diário reserva
 1901-01-02 e recusa execução se já houver dados. Histórico remoto é imutável para

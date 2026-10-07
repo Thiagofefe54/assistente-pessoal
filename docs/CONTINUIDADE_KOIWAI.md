@@ -30,7 +30,7 @@ da documentação existente, das decisões do usuário e dos testes registrados.
 - Repositório real: `C:/Thiago/Projetos/assistente-pessoal`.
 - GitHub: https://github.com/Thiagofefe54/assistente-pessoal, branch main.
 - Backend: https://koiwai-backend.onrender.com, Render Free, deploy manual.
-  Último código publicado: commit 85aada2, personalidade mais alegre; Live e health 200.
+  Último backend publicado: commit 04853d7, Pack 1; Live e health 200.
   Commits posteriores de documentação podem ser mais recentes sem novo deploy.
 - Android: Kotlin/Compose, Room e WorkManager; backend: Python/FastAPI.
 - Supabase: projeto Koiwai, Auth e Postgres com RLS por dono.
@@ -110,17 +110,44 @@ seguro. Gestão de chaves pelo app ainda não implementada.
 
 ## O que falta e próximos pequenos objetivos
 
-1. Observar no uso real o ajuste de personalidade já publicado; memória e navegação
-   verificadas no Poco. Próxima implementação: sugestões revisáveis e resumos diários.
+### Pack 1 em 07/10/2026 — registro atual
+
+Usuário decidiu completar o celular antes de Windows, em cinco packs grandes.
+Pack 1 implementado e publicado no Render como Live no commit 04853d7:
+sugestões revisáveis (sob demanda no capítulo/atalho Chat), resumo diário com
+fontes e tarefas reais com CRUD, datas/horários/repetição e registro de conclusão.
+Banco remoto aplicado com RLS; teste SQL com rollback aprovado. 30 testes backend,
+nove testes unitários Android, build APK/testes e lint (0 erros/27 avisos) aprovados.
+APK atualizado no Poco sem apagar dados. Teste real de tarefas e teste de navegação
+do editor aprovados. Teste real dos resumos/sugestões também passou: fontes válidas,
+cache sem nova IA, detecção de mensagem tardia, atualização e nenhuma memória
+salva automaticamente. Fixtures fictícias removidas da nuvem e Room; contagens
+remotas conferidas como zero. Mais detalhes e limites em PACK_1.md.
+
+Os resumos cobrem somente mensagens sincronizadas do usuário no dia registrado,
+até 500/60 mil caracteres; oito tópicos com fontes. Não há geração automática.
+Novas mensagens marcam o resumo antigo como desatualizado. Mesmo hash devolve
+cache, sem nova IA. Mudança durante geração e versão concorrente recusam gravação.
+Sugestões não persistem nem viram fatos sem confirmação. Recusa não é permanente:
+outro pedido pode sugerir novamente. Lembrança aceita guarda a primeira fonte.
+
+Tarefas online, até 500 por conta. Concluir repetição registra e avança uma
+ocorrência; mensal ajusta ao fim do mês e usa essa nova data no ciclo seguinte.
+Ainda sem notificações e sem cache/fila offline. Agenda/notas/treinos/finanças
+continuam visuais. Próximo: Pack 2, lembretes e relatórios periódicos, depois voz,
+ferramentas pessoais e offline/acabamento. O APK recebeu o ajuste final de horário
+de vencimento e identificação explícita de resumo parcial do dia atual.
+
+1. Usar o Pack 1 no dia a dia; depois implementar o Pack 2.
 2. Observar o tom no uso real e testar uso com PC realmente desligado quando conveniente.
-3. Sugerir lembranças a partir de conversas, sempre com revisão antes de salvar.
-4. Resumo diário com fontes, cobertura explícita e atualização após sincronização tardia.
+3. Sugestões revisáveis e resumo diário implementados, publicados e testados.
+4. Ampliar mais tarde: cache offline de fatos/tarefas, fila de edições e conflitos.
 5. Relatórios semanais, mensais, semestrais e anuais; primeiro ano parcial começa no
    primeiro registro. Não inventar meses anteriores nem duplicar períodos equivalentes.
-6. Depois: tarefas/agenda/notas/treinos/finanças reais, Windows e voz por botão.
+6. Depois: voz, agenda/notas/treinos/finanças reais. Windows após os packs do celular.
 7. Proatividade/notificações, ações autorizadas de PC/Android e offline ampliado são futuras.
 
-Rotina atualmente é visual: não executa cadastros/tarefas. Clima não configurado.
+Tarefas funcionam; demais categorias de Rotina ainda são visuais. Clima não configurado.
 Não há voz, navegação web da Koi, notificações, relatórios automáticos ou controle
 do computador pelo app. Recuperação de conta no app, cotas próprias por usuário,
 retenção/exclusão completa e confiabilidade prolongada também faltam.
