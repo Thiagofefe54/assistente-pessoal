@@ -39,6 +39,9 @@ abstract class ChatDao {
     @Query("SELECT * FROM messages ORDER BY sequence ASC")
     abstract suspend fun getMessages(): List<ChatMessage>
 
+    @Query("SELECT * FROM messages WHERE status = 'sent' AND id != :currentId AND occurredAt <= :beforeTime ORDER BY occurredAt DESC, sequence DESC LIMIT 20")
+    abstract suspend fun recentContext(currentId: String, beforeTime: Long): List<ChatMessage>
+
     @Insert
     abstract suspend fun insert(message: ChatMessage)
 

@@ -1,17 +1,40 @@
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException, Request
-from pydantic import BaseModel, ConfigDict, Field
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 from backend.app.core.auth import current_user
 from backend.app.core.config import settings
+from backend.app.core.ai import reply
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
+
+
+class ContextMessage(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    role: Literal["user", "assistant"]
+    content: str = Field(min_length=1, max_length=4000)
 
 
 class ChatRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     message: str = Field(min_length=1, max_length=8000)
+    history: list[ContextMessage] = Field(default_factory=list, max_length=20)
+
+    @field_validator("message")
+    @classmethod
+    def nonblank_message(cls, value: str) -> str:
+        if not value.strip():
+            raise ValueError("Escreva uma mensagem.")
+        return value.strip()
+
+    @model_validator(mode="after")
+    def bounded_context(self):
+        if sum(len(item.content) for item in self.history) > 12000:
+            raise ValueError("O contexto recente excedeu o limite.")
+        return self
 
 
 class ChatResponse(BaseModel):
@@ -28,10 +51,10 @@ def simulated_reply(request: ChatRequest) -> ChatResponse:
 
 
 @router.post("", response_model=ChatResponse)
-async def chat(request: ChatRequest, user_id: UUID = Depends(current_user)):
-    # The verified identity is available for future scoped context and AI calls.
-    # This checkpoint deliberately keeps the existing simulated response.
-    return simulated_reply(request)
+def chat(request: ChatRequest, user_id: UUID = Depends(current_user)):
+    # Auth runs before inference. The account-scoped Android database provides
+    # untrusted recent context; this route never reads another user's memory.
+    return ChatResponse(reply=reply(request.message, [item.model_dump() for item in request.history]))
 
 
 @router.post("/demo", response_model=ChatResponse)

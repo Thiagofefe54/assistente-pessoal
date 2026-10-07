@@ -43,6 +43,7 @@ class AuthTests(unittest.IsolatedAsyncioTestCase):
         self.addCleanup(self.config.stop)
         self.opener = patch('backend.app.core.auth.build_opener').start()
         self.addCleanup(patch.stopall)
+        self.ai = patch('backend.app.api.routes.chat.reply', return_value='Olá, Mestre. Estou aqui.').start()
 
     def upstream(self, user):
         self.opener.return_value.open.return_value = io.BytesIO(json.dumps(user).encode())

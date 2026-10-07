@@ -120,3 +120,27 @@ Verificação final: assembleDebug e cinco testes unitários Android passaram; l
 terminou com 0 erros e 27 avisos. Configuração da instalação Android foi
 separada em koiwai.local.properties, ignorado pelo Git. O conteúdo público usa
 apenas exemplos, sem IP local, identificador do projeto ou chave da instalação.
+
+## Revisão e pequenos objetivos — 07/10/2026
+
+Código e documentação revisados; 12 testes do backend passaram novamente.
+Metadados remotos confirmam projeto ativo e tabela de histórico com RLS e registros.
+Não foram lidas conversas privadas nem alterados usuários, senhas ou dados.
+Orçamento confirmado R$0. Balanço completo e metas M01–M10 em REVISAO_2026_10_07.md.
+A revisão registra a separação entre senhas de painel, banco e conta do app;
+o app atual não depende da senha de conexão direta ao banco.
+Hospedagem, IA, contexto e recuperação de conta no app continuam pendentes.
+
+## Primeira integração Groq — 07/10/2026
+
+Servidor preparado para GPT-OSS 120B, com 20B como reserva em falhas temporárias;
+429 e timeout não causam troca automática. O app prepara contexto recente da conta,
+limitado a mensagens concluídas e anteriores ao envio, e envia apenas em HTTPS.
+Chave Groq somente no .env privado. A demonstração HTTP continua simulada.
+
+19 testes de backend, sete testes unitários Android e assembleDebug passaram.
+A chave foi configurada pelo usuário após falha de verificação na criação automática.
+Testes reais com conversa fictícia confirmaram resposta e contexto no principal,
+além de disponibilidade da reserva. Plano Free e cotas conferidos no painel.
+Lint: zero erros e 27 avisos. Sem publicação, troca de APK instalado ou plano pago.
+Detalhes e limitações em IA_GROQ.md. Hospedagem HTTPS e fluxo completo pendentes.

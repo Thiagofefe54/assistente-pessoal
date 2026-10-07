@@ -1,19 +1,20 @@
 # Backend: demonstração e autenticação
 
-Checkpoint de 04/10/2026. As respostas continuam simuladas; esta etapa prepara a
-identidade verificada para a futura integração com IA. Não há escrita de conversas
-pelo backend nem chamada a modelos nesta implementação.
+Atualizado em 07/10/2026. A rota protegida usa Groq com contexto recente; a
+demonstração permanece simulada. Não há escrita de conversas pelo backend.
+Detalhes de IA em IA_GROQ.md e publicação em HOSPEDAGEM_RENDER.md.
 
 ## Rotas
 
 | Rota | Acesso | Resultado |
 | --- | --- | --- |
 | `POST /api/v1/chat/demo` | Desenvolvimento, sem Authorization | Saudação/eco; 404 em produção. |
-| `POST /api/v1/chat` | HTTPS + Bearer válido | Saudação/eco após verificar usuário no Supabase. |
+| `POST /api/v1/chat` | HTTPS + Bearer válido | Resposta de IA após verificar usuário no Supabase. |
 | `GET /api/v1/chat/me` | HTTPS + Bearer válido | UUID verificado da própria conta. |
 | `/api/v1/health`, `/` | Público | Disponibilidade e versão do serviço. |
 
-O corpo de chat aceita apenas `message`, entre 1 e 8000 caracteres. `user_id`
+O corpo aceita `message`, entre 1 e 8000 caracteres, e `history` limitado a
+20 mensagens user/assistant e 12.000 caracteres no total. `user_id`
 fornecido pelo cliente é rejeitado. O backend consulta `GET /auth/v1/user` com o
 token da solicitação e a chave publishable do projeto: não decodifica claims sem
 verificação e não confia em `user_metadata`. Usuários anônimos são recusados.
@@ -63,7 +64,7 @@ Os testes Android verificam a escolha de rota, a exigência de HTTPS em release
 e a recusa de origens com credenciais ou parâmetros.
 
 A validação de ponta a ponta com uma conta real no servidor hospedado permanece
-pendente: não há implantação HTTPS nem provedor de IA configurado neste checkpoint.
+pendente antes da publicação: chamadas reais ao Groq foram validadas localmente.
 O login e a sincronização Android/Supabase já foram confirmados pelo usuário.
 
 Referência oficial: [getUser](https://supabase.com/docs/reference/javascript/auth-getuser)

@@ -2,6 +2,7 @@ package com.thiago.assistentepessoal.chat
 
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
+import java.io.IOException
 
 // This scope belongs to the app, so leaving the chat does not interrupt an active send.
 class ChatRepository(private val database: ChatDatabase, private val onSaved: () -> Unit = {},
@@ -31,7 +32,7 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
     }
 
     fun send(text: String): String? {
-        if (_busy.value || messages.value == null || text.isBlank()) return null
+        if (_busy.value || messages.value == null || text.isBlank() || text.trim().length > 8000) return null
         val message = ChatMessage(role = "user", content = text.trim(), status = MessageStatus.SENDING)
         perform(message, false)
         return message.id
@@ -54,7 +55,8 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
                 } else {
                     dao.insert(message)
                 }
-                val reply = withContext(Dispatchers.IO) { backend.send(message.content) }
+                val context = recentChatContext(dao.recentContext(message.id, message.occurredAt), message)
+                val reply = withContext(Dispatchers.IO) { backend.send(message.content, context) }
                 dao.complete(message, reply)
                 try { onSaved() }
                 catch (scheduleError: Exception) {
@@ -66,7 +68,8 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
                 try {
                     if (dao.find(message.id) != null) {
                         dao.updateStatus(message.id, MessageStatus.FAILED,
-                            "Não consegui concluir o envio. Confira a conexão e tente novamente.")
+                            if (e is IOException) e.message ?: "Confira a conexão e tente novamente."
+                            else "Não consegui concluir o envio. Confira a conexão e tente novamente.")
                     } else {
                         _error.value = "Não consegui salvar a mensagem. Seu texto continua no campo de entrada."
                     }

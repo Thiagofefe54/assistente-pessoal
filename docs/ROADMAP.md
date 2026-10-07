@@ -1,6 +1,6 @@
 # Roadmap da Koiwai
 
-Documento de evolução, atualizado em 04/10/2026. Sem datas de entrega prometidas.
+Documento de evolução, atualizado em 07/10/2026. Sem datas de entrega prometidas.
 A versão da especificação e o versionName do template Android não são releases.
 
 ## Ponto de partida
@@ -8,7 +8,8 @@ A versão da especificação e o versionName do template Android não são relea
 Identidade e experiência Android refinadas e aprovadas. Histórico Room por conta,
 login Supabase, sessão criptografada, sincronização e consulta por dia funcionando.
 O backend tem uma demonstração local e uma rota preparada para autenticação HTTPS.
-IA, hospedagem, relatórios, cadastros de Rotina e cliente Windows estão pendentes.
+Integração Groq com contexto recente implementada localmente; ativação real e
+hospedagem HTTPS ainda pendentes. Relatórios, cadastros de Rotina e Windows pendentes.
 
 ## Etapas e critérios
 
@@ -29,16 +30,18 @@ IA, hospedagem, relatórios, cadastros de Rotina e cliente Windows estão penden
 
 ## Ordem imediata
 
-1. Publicar um checkpoint recuperável do app e preparar autenticação do backend.
-2. Definir a hospedagem HTTPS com custo e disponibilidade conhecidos.
+1. Concluído: checkpoint recuperável publicado e autenticação do backend preparada.
+2. Render Free escolhido e configuração de publicação preparada; Groq Free validado.
 3. Validar a comunicação autenticada Android/backend com conta real.
-4. Escolher o provedor/modelo de IA e ativar limites antes da primeira chamada.
+4. Groq escolhido; testar configuração privada e limites reais antes de ativar no app.
 5. Testar fluxo completo e recuperação de falhas com o computador desligado.
 
 A meta inicial de custo é R$0. Isso não é promessa de servidor gratuito sempre
 disponível: limites, suspensão por inatividade e condições dos provedores precisam
 ser verificados na escolha. Nenhum serviço pago foi contratado nesta etapa.
 Chaves de IA ficam no servidor. Não é necessário rodar um modelo grande no PC.
+
+O orçamento confirmado é R$0. Balanço atual e pequenos objetivos M01–M10 em [REVISAO_2026_10_07.md](REVISAO_2026_10_07.md).
 
 ## Memória periódica aprovada como direção
 

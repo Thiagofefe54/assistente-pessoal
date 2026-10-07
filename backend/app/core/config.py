@@ -1,7 +1,7 @@
 from typing import Literal
 from urllib.parse import urlsplit
 
-from pydantic import model_validator
+from pydantic import Field, SecretStr, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -12,6 +12,11 @@ class Settings(BaseSettings):
     environment: Literal["development", "production"] = "development"
     supabase_url: str = ""
     supabase_publishable_key: str = ""
+    groq_api_key: SecretStr = SecretStr("")
+    groq_model: str = "openai/gpt-oss-120b"
+    groq_fallback_model: str = "openai/gpt-oss-20b"
+    groq_timeout_seconds: int = Field(default=30, ge=5, le=45)
+    groq_max_completion_tokens: int = Field(default=1536, ge=128, le=4096)
 
     @model_validator(mode="after")
     def validate_auth_config(self):

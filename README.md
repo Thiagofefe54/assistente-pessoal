@@ -25,7 +25,7 @@ A Koiwai nasceu de uma vontade: ter uma assistente pessoal que acompanhe a vida 
 
 O objetivo é conversar com a Koi, organizar o dia e, aos poucos, permitir que ela ajude a executar tarefas com permissões claras. O Android é o primeiro lar; o Windows faz parte da evolução planejada.
 
-**A base já funciona no celular. A inteligência artificial ainda será integrada.** Neste estágio, as respostas do servidor são demonstrações de saudação e eco. O projeto está construindo primeiro a experiência, a persistência e a proteção dos dados que sustentarão a inteligência depois.
+**A base já funciona no celular. A integração Groq foi validada com chamadas reais no servidor.** O código do app prepara contexto recente para a rota autenticada; a hospedagem HTTPS e o teste completo no aparelho ainda precisam ser concluídos. A demonstração local mantém saudação e eco.
 
 ## Uma identidade que você reconhece
 
@@ -121,7 +121,7 @@ flowchart TD
     A <-->|HTTPS · conta e histórico| S[Supabase · Auth + Postgres + RLS]
     A -->|HTTPS · token da conta| B[FastAPI · chat autenticado]
     B -->|Verificação do usuário| S
-    B -. integração futura .-> I[Provedor de IA · limites de uso]
+    B -->|Integração preparada · chave privada| I[Groq · GPT-OSS · cotas de uso]
     W[Windows · planejado] -. mesma conta .-> S
     W -. chat futuro .-> B
 ```
@@ -155,6 +155,12 @@ Copy-Item .env.example .env
 ```
 
 A demonstração funciona com `ENVIRONMENT=development` e não precisa de credenciais válidas. Para testar a rota protegida, configure o projeto Supabase em `.env` e use HTTPS. A documentação interativa local fica em `http://localhost:8000/docs`.
+
+Para respostas de IA, configure `GROQ_API_KEY` somente no `.env` do servidor.
+A integração Groq e o contexto recente foram implementados e testados localmente,
+inclusive com chamadas reais usando dados fictícios. A hospedagem HTTPS e a
+validação no aparelho ainda estão pendentes. O simulador HTTP
+continua com respostas demonstrativas. Detalhes em [IA_GROQ.md](docs/IA_GROQ.md).
 
 ### 2. Aplicativo Android
 

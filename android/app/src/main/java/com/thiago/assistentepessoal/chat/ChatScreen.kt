@@ -83,7 +83,7 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit) {
             }
         }
         if(busy && history!=null) ProcessingIndicator()
-        if(input.length>10000) Text("Envie até 10.000 caracteres por mensagem.",color=KoiColors.Red,fontSize=12.sp)
+        if(input.length>8000) Text("Envie até 8.000 caracteres por mensagem.",color=KoiColors.Red,fontSize=12.sp)
         error?.let {Text(it,color=KoiColors.Red,fontSize=12.sp,modifier=Modifier.padding(bottom=8.dp))}
         Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(22.dp)).background(KoiColors.Card.copy(alpha=.96f)).border(1.dp,KoiColors.Purple.copy(alpha=.35f),RoundedCornerShape(22.dp)).padding(6.dp),verticalAlignment=Alignment.CenterVertically) {
             TextField(value=input,onValueChange={input=it},placeholder={Text("Digite uma mensagem…",fontSize=14.sp)},
@@ -91,7 +91,7 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit) {
                 colors=TextFieldDefaults.colors(focusedContainerColor=Color.Transparent,unfocusedContainerColor=Color.Transparent,
                     focusedIndicatorColor=Color.Transparent,unfocusedIndicatorColor=Color.Transparent,cursorColor=KoiColors.Purple))
             KoiAction(if(busy) "…" else "Enviar",{pendingText=input;pendingId=repository.send(input)},
-                enabled=!busy && history!=null && input.isNotBlank() && input.length<=10000)
+                enabled=!busy && history!=null && input.isNotBlank() && input.length<=8000)
         }
     }
 }
