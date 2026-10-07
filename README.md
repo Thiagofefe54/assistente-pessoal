@@ -98,7 +98,8 @@ A prioridade atual é completar o celular antes de criar o cliente Windows.
 | 5 | Offline ampliado, privacidade, recuperação de conta, acabamento e uso prolongado. |
 
 Tarefas e relatórios do Pack 1 exigem internet. Lembretes locais com descanso,
-adiamento e conclusão foram implementados; a validação no aparelho está pendente.
+adiamento e conclusão implementados e com teste inicial aprovado no Poco.
+Reinício, toque real nas ações e confiabilidade prolongada ainda precisam de validação.
 São opcionais, exigem permissão e data/horário e podem atrasar pelo Android.
 Nenhuma sugestão vira lembrança sem confirmação. Resumos de IA devem
 ser conferidos nas fontes; só cobrem as mensagens sincronizadas da pessoa.

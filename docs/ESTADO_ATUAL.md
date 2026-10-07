@@ -252,3 +252,15 @@ Antes de sair, Poco aprovou 4 testes de persistência e 1 real Chat↔Tarefas; f
 removidas. Teste final do editor/navegação ainda precisa ser repetido no aparelho.
 Próximo: atualizar celular preservando dados e testar notificações/descanso/ações;
 depois relatórios periódicos. Pack 2 permanece parcial; demais packs não concluídos.
+
+## Atualização posterior ao checkpoint — 07/10/2026
+
+APK e230382 instalado no Poco preservando dados. Testes isolados de navegação
+(5,319 s), editor de proposta (4,222 s) e lembretes reais (46,219 s) aprovados.
+Último teste confirmou entrega agendada pelo WorkManager, descanso, isolamento,
+controle de duplicação, adiamento programado e conclusão RPC confirmada. Reentrega
+do adiamento foi antecipada pelo teste: não ficou esperando 15 minutos. Fixture
+fictícia removida, com zero restante confirmado. Não se testou reinício, atraso
+prolongado nem toque real nos botões da notificação. Pack 2 continua parcial.
+Usuário pediu reset/começo limpo ao atingir V1; não apagar nada agora. Escopo exato
+será combinado na V1. Ver os registros finais em REVISAO_FINAL_2026_10_07.md.

@@ -85,3 +85,16 @@ Ainda faltam ações de editar/concluir/apagar tarefas pelo chat, relatórios pe
 voz e ferramentas pessoais além de tarefas. Gestão de keys pelo app não implementada.
 Pack 2 e versão funcional completa não estão concluídos. Teste com PC realmente
 desligado continua pendente, embora uso fora de casa tenha sido confirmado pelo usuário.
+
+## Instalação e decisão de V1 — 07/10/2026
+
+APK do commit e230382 instalado no Poco 14c3a88a via atualização, sem apagar conta
+ou histórico. Testes finais TaskProposalEditorTest e PackOneNavigationTest passaram
+isoladamente (1 + 1), após iniciar o app em primeiro plano. Uma tentativa anterior
+de teste de tela ficou bloqueada ao iniciar em segundo plano e foi interrompida;
+não representa aprovação. Usuário ativou lembretes e permitiu notificações na tela.
+Teste físico TaskRemindersLiveTest aprovado (1 teste, 46,219 s). Confirmou entrega real pelo WorkManager, bloqueio no descanso, rejeição de dono/versão errados, deduplicação, programação de adiamento e conclusão protegida na nuvem. Reentrega foi antecipada pelo teste; não houve espera de 15 min. Apenas fixture própria removida e zero restante confirmado. Ainda faltam toque real nas ações, reinício e medição de atrasos prolongados.
+
+Usuário quer um começo limpo/reset completo quando chegarmos à V1. Não é pedido
+para apagar agora. Escopo de conversas, lembranças, tarefas e preferências deverá
+ser combinado nessa etapa; não resetar contas/infraestrutura/credenciais por inferência.
