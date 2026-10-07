@@ -11,6 +11,8 @@ import java.util.UUID
 data class KoiTask(val id: String, val slot: Int, val title: String, val notes: String,
     val date: String?, val time: String?, val timezone: String, val recurrence: String,
     val completedAt: String?, val count: Int, val updatedAt: String) {
+    fun today(now: Instant = Instant.now()): Boolean = completedAt==null && date!=null &&
+        runCatching {date==now.atZone(ZoneId.of(timezone)).toLocalDate().toString()}.getOrDefault(false)
     fun overdue(now: Instant = Instant.now()): Boolean = completedAt == null && date != null &&
         runCatching {
             val current=now.atZone(ZoneId.of(timezone))
@@ -41,6 +43,7 @@ class TaskRepository(private val auth: CloudAuth, private val owner: String) {
     val info = _info.asStateFlow()
     private val _recent = MutableStateFlow<List<String>>(emptyList())
     val recent = _recent.asStateFlow()
+    fun clearInfo() { _info.value=null }
     fun close() { scope.cancel() }
     private suspend fun request(path: String, method: String = "GET", body: JSONObject? = null): String {
         check(auth.account.value?.id == owner)
@@ -79,7 +82,14 @@ class TaskRepository(private val auth: CloudAuth, private val owner: String) {
     }
     fun refresh() = action { fetch() }
     private fun filter(task: KoiTask) = "/rest/v1/koi_tasks?user_id=eq.$owner&id=eq.${task.id}&updated_at=eq." + URLEncoder.encode(task.updatedAt,"UTF-8")
-    fun save(draft: TaskDraft, existing: KoiTask? = null) {
+    private suspend fun afterMutation(success: String) {
+        try {fetch();_info.value=success}
+        catch(e: Exception) {
+            if(e is CancellationException) throw e
+            _info.value="$success A lista ainda não atualizou. Toque em Atualizar tarefas."
+        }
+    }
+    fun save(draft: TaskDraft, existing: KoiTask? = null, creationId: String? = null, onSaved: (() -> Unit)? = null) {
         if(draft.error()!=null) return
         action {
             val body=JSONObject().put("title",draft.title.trim()).put("notes",draft.notes.trim())
@@ -88,10 +98,18 @@ class TaskRepository(private val auth: CloudAuth, private val owner: String) {
                 .put("timezone",existing?.timezone ?: ZoneId.systemDefault().id).put("recurrence",draft.recurrence)
             if(existing==null) {
                 fetch()
+                // Keep the same identity when a chat proposal is retried after
+                // an ambiguous connection failure. Never overwrite another task.
+                val id=creationId ?: UUID.randomUUID().toString()
+                UUID.fromString(id)
+                if(_tasks.value.orEmpty().any {it.id==id}) {
+                    _info.value="Esta proposta já foi salva. Confira em Rotina. 💜"
+                    onSaved?.invoke();return@action
+                }
                 val slot=(1..500).firstOrNull { n -> _tasks.value.orEmpty().none { it.slot==n } }
                     ?: run { _info.value="Você chegou a 500 tarefas. Revise as antigas para liberar espaço."; return@action }
-                body.put("id",UUID.randomUUID().toString()).put("user_id",owner).put("slot",slot)
-                request("/rest/v1/koi_tasks","POST",body)
+                body.put("id",id).put("user_id",owner).put("slot",slot)
+                check(JSONArray(request("/rest/v1/koi_tasks","POST",body)).length()==1)
             } else {
                 // Changing recurrence of a finished task explicitly reopens it.
                 if(draft.recurrence!="none") body.put("completed_at",JSONObject.NULL)
@@ -99,22 +117,22 @@ class TaskRepository(private val auth: CloudAuth, private val owner: String) {
                     fetch(); _info.value="Esta tarefa mudou. Abra a versão atual antes de editar."; return@action
                 }
             }
-            fetch(); _info.value="Missão salva na sua conta. 💜"
+            onSaved?.invoke()
+            afterMutation("Missão salva na sua conta. 💜")
         }
     }
     fun complete(task: KoiTask) = action {
         val done=request("/rest/v1/rpc/complete_koi_task","POST",JSONObject()
             .put("task_id",task.id).put("expected_updated_at",task.updatedAt)).trim()=="true"
-        fetch()
-        _info.value=if(!done) "Esta tarefa já mudou. Confira a versão atual."
-            else if(task.recurrence=="none") "Missão concluída! 💜" else "Etapa concluída! A próxima data está pronta. 💜"
+        afterMutation(if(!done) "Esta tarefa já mudou. Confira a versão atual."
+            else if(task.recurrence=="none") "Missão concluída! 💜" else "Etapa concluída! A próxima data está pronta. 💜")
     }
     fun reopen(task: KoiTask) = action {
         val changed=JSONArray(request(filter(task),"PATCH",JSONObject().put("completed_at",JSONObject.NULL))).length()==1
-        fetch(); _info.value=if(changed) "Tarefa reaberta. A conclusão anterior continua registrada." else "Esta tarefa mudou. Confira a versão atual."
+        afterMutation(if(changed) "Tarefa reaberta. A conclusão anterior continua registrada." else "Esta tarefa mudou. Confira a versão atual.")
     }
     fun delete(task: KoiTask) = action {
         val changed=JSONArray(request(filter(task),"DELETE")).length()==1
-        fetch(); _info.value=if(changed) "Tarefa e seus registros de conclusão apagados." else "Esta tarefa mudou. Confira antes de apagar."
+        afterMutation(if(changed) "Tarefa e seus registros de conclusão apagados." else "Esta tarefa mudou. Confira antes de apagar.")
     }
 }

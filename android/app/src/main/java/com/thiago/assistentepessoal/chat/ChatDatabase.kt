@@ -28,7 +28,8 @@ data class ChatMessage(
     val status: String = MessageStatus.SENT,
     val replyTo: String? = null,
     val error: String? = null,
-    @ColumnInfo(defaultValue = "0") val synced: Boolean = false
+    @ColumnInfo(defaultValue = "0") val synced: Boolean = false,
+    val taskDraftJson: String? = null
 )
 
 @Dao
@@ -60,6 +61,9 @@ abstract class ChatDao {
     @Query("UPDATE messages SET synced = 1 WHERE id IN (:ids)")
     abstract suspend fun markSynced(ids: List<String>)
 
+    @Query("UPDATE messages SET taskDraftJson = NULL WHERE id = :id")
+    abstract suspend fun dismissTaskDraft(id: String)
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     abstract suspend fun insertIfMissing(message: ChatMessage)
 
@@ -69,17 +73,22 @@ abstract class ChatDao {
     }
 
     @Transaction
-    open suspend fun complete(user: ChatMessage, reply: String) {
-        insert(ChatMessage(role = "assistant", content = reply, replyTo = user.id))
+    open suspend fun complete(user: ChatMessage, reply: String, taskDraftJson: String? = null) {
+        insert(ChatMessage(role = "assistant", content = reply, replyTo = user.id, taskDraftJson=taskDraftJson))
         updateStatus(user.id, MessageStatus.SENT, null)
     }
 }
 
-@Database(entities = [ChatMessage::class], version = 2, exportSchema = true)
+@Database(entities = [ChatMessage::class], version = 3, exportSchema = true)
 abstract class ChatDatabase : RoomDatabase() {
     abstract fun messages(): ChatDao
 
     companion object {
+        val MIGRATION_2_3 = object : Migration(2, 3) {
+            override fun migrate(db: SupportSQLiteDatabase) {
+                db.execSQL("ALTER TABLE messages ADD COLUMN taskDraftJson TEXT")
+            }
+        }
         val MIGRATION_1_2 = object : Migration(1, 2) {
             override fun migrate(db: SupportSQLiteDatabase) {
                 db.execSQL("ALTER TABLE messages ADD COLUMN synced INTEGER NOT NULL DEFAULT 0")
@@ -88,6 +97,6 @@ abstract class ChatDatabase : RoomDatabase() {
 
         fun open(context: Context, userId: String? = null): ChatDatabase = Room.databaseBuilder(
             context.applicationContext, ChatDatabase::class.java, if (userId == null) "koiwai-chat.db" else "koiwai-$userId.db"
-        ).addMigrations(MIGRATION_1_2).build()
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3).build()
     }
 }

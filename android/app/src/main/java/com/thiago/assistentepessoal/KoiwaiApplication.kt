@@ -28,10 +28,14 @@ class KoiwaiApplication : Application() {
     private val _journal = MutableStateFlow<JournalRepository?>(null)
     val journal = _journal.asStateFlow()
     private var memoryOwner: String? = null
+    private var activeChatOwner: String? = "uninitialized"
     private fun database(id: String?): ChatDatabase = databases.getOrPut(id ?: "local") { ChatDatabase.open(this, id) }
     private fun activate(account: Account?) {
+        if(activeChatOwner==account?.id) return
+        activeChatOwner=account?.id
         if(memoryOwner != account?.id) {
             memoryOwner = account?.id
+            _memories.value?.close()
             _memories.value = account?.let { MemoryRepository(auth,it.id) }
             _tasks.value?.close()
             _journal.value?.close()

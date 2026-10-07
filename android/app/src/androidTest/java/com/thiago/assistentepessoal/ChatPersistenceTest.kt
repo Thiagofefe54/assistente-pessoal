@@ -10,6 +10,22 @@ import java.time.Instant
 import java.util.UUID
 
 class ChatPersistenceTest {
+    @Test fun proposalSurvivesReconciliationAndCanBeDismissedWithoutDeletingConversation() = runBlocking {
+        val context=InstrumentationRegistry.getInstrumentation().targetContext
+        val db=Room.inMemoryDatabaseBuilder(context,ChatDatabase::class.java).build()
+        try {
+            val user=ChatMessage(role="user",content="Crie tarefa fictícia")
+            db.messages().insert(user)
+            val draft="""{"title":"Tarefa fictícia","notes":"","due_date":null,"due_time":null,"recurrence":"none"}"""
+            db.messages().complete(user,"Revise antes de salvar",draft)
+            val assistant=db.messages().getMessages().last()
+            db.messages().merge(listOf(assistant.copy(sequence=0,synced=true,taskDraftJson=null)))
+            assertEquals(draft,db.messages().find(assistant.id)?.taskDraftJson)
+            db.messages().dismissTaskDraft(assistant.id)
+            assertNull(db.messages().find(assistant.id)?.taskDraftJson)
+            assertEquals(2,db.messages().getMessages().size)
+        } finally {db.close()}
+    }
     @Test fun migrationKeepsTheExistingLocalConversation() = runBlocking {
         val context = InstrumentationRegistry.getInstrumentation().targetContext
         val name = "migration-test-${UUID.randomUUID()}.db"
@@ -25,7 +41,7 @@ class ChatPersistenceTest {
         sqlite.version = 1
         sqlite.close()
         val db = Room.databaseBuilder(context, ChatDatabase::class.java, name)
-            .addMigrations(ChatDatabase.MIGRATION_1_2).build()
+            .addMigrations(ChatDatabase.MIGRATION_1_2,ChatDatabase.MIGRATION_2_3).build()
         try {
             val saved = db.messages().getMessages().single()
             assertEquals("Conversa anterior", saved.content)

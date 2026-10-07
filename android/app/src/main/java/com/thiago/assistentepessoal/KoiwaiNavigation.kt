@@ -365,8 +365,8 @@ private fun SettingsScreen(onAccount:()->Unit) {
     detail?.let { title ->
         val description=when(title) {
             "Voz e notificações"->"Em preparação. Primeiro virão o botão para falar e as respostas em voz. A ativação por “Koi” será testada depois."
-            "Memória e privacidade"->"Nenhuma limpeza automática está ativa. Retenção, exportação e gerenciamento de memórias serão adicionados antes de habilitar a limpeza."
-            else->"Koi é sua assistente pessoal. O chat atual usa respostas de teste e depende do servidor no seu PC. A inteligência na nuvem é uma próxima etapa."
+            "Memória e privacidade"->"Você pode revisar, editar e apagar lembranças confirmadas na área Memória. Conversas, lembranças e tarefas ficam separadas por conta. O chat envia o pedido, parte da conversa recente, lembranças confirmadas e uma lista limitada de tarefas ao provedor de IA. Não há limpeza automática. Exportação e exclusão completa ainda estão em preparação."
+            else->"Koi é sua assistente pessoal. O chat usa IA na nuvem e suas conversas ficam no celular e no Supabase quando sincronizadas. O servidor gratuito pode levar um pouco para despertar após ficar sem uso. Tarefas, lembranças e resumos diários já estão disponíveis; as demais áreas continuam em preparação."
         }
         AlertDialog(onDismissRequest={detail=null},title={Text(title)},text={Text(description)},confirmButton={TextButton(onClick={detail=null}){Text("Entendi")}})
     }

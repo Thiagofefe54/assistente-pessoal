@@ -38,7 +38,10 @@ def current_user(request: Request,
     )
     try:
         with build_opener(NoRedirect()).open(upstream, timeout=8) as response:
-            user = json.load(response)
+            body = response.read(65537)
+            if len(body) > 65536:
+                raise ValueError('Oversized auth response')
+            user = json.loads(body)
         if user.get("is_anonymous") is True:
             raise unauthorized()
         return UUID(user["id"])

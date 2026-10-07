@@ -26,6 +26,7 @@ class MemoryRepository(private val auth: CloudAuth, private val owner: String) {
     val busy = _busy.asStateFlow()
     private val _info = MutableStateFlow<String?>(null)
     val info = _info.asStateFlow()
+    fun close() { scope.cancel() }
 
     private suspend fun request(path: String, method: String = "GET", body: String? = null): String {
         check(auth.account.value?.id == owner) { "A conta mudou. Reabra Memória." }

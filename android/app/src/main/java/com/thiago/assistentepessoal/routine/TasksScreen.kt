@@ -5,6 +5,7 @@ import android.app.TimePickerDialog
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.lazy.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -40,12 +41,13 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
     val recent by repo.recent.collectAsState()
     var filter by rememberSaveable { mutableStateOf("pending") }
     var editor by remember { mutableStateOf(false) }
+    var creationId by remember { mutableStateOf(java.util.UUID.randomUUID().toString()) }
     var editing by remember { mutableStateOf<KoiTask?>(null) }
     var deleting by remember { mutableStateOf<KoiTask?>(null) }
     var now by remember { mutableStateOf(Instant.now()) }
     LaunchedEffect(Unit) {while(true) {now=Instant.now();delay(30000)}}
     LaunchedEffect(repo) { repo.refresh() }
-    val visible=tasks.orEmpty().filter { when(filter) {"done"->it.completedAt!=null;"late"->it.overdue(now);else->it.completedAt==null} }
+    val visible=tasks.orEmpty().filter { when(filter) {"today"->it.today(now);"done"->it.completedAt!=null;"late"->it.overdue(now);else->it.completedAt==null} }
         .sortedWith(compareBy<KoiTask> { it.date ?: "9999-12-31" }.thenBy { it.time ?: "23:59" })
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
         item {
@@ -61,9 +63,9 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
                 Text("Datas usam o fuso da tarefa. Notificações chegam no próximo pack. Consultar e alterar requer internet.",fontSize=12.sp,color=KoiColors.Muted)
             }
             Spacer(Modifier.height(10.dp))
-            KoiAction("＋ Nova tarefa",{editing=null;editor=true},Modifier.fillMaxWidth(),!busy && tasks!=null && tasks!!.size<500)
-            Row(horizontalArrangement=Arrangement.spacedBy(6.dp)) {
-                listOf("pending" to "Pendentes","late" to "Vencidas","done" to "Concluídas").forEach { (id,label) ->
+            KoiAction("＋ Nova tarefa",{editing=null;creationId=java.util.UUID.randomUUID().toString();repo.clearInfo();editor=true},Modifier.fillMaxWidth(),!busy && tasks!=null && tasks!!.size<500)
+            Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(6.dp)) {
+                listOf("today" to "Hoje","pending" to "Pendentes","late" to "Vencidas","done" to "Concluídas").forEach { (id,label) ->
                     FilterChip(selected=filter==id,onClick={filter=id},label={Text(label,fontSize=11.sp)})
                 }
             }
@@ -88,7 +90,7 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
                 if(task.recurrence!="none") Text("${task.count} etapas concluídas. Cada conclusão avança uma ocorrência.",fontSize=11.sp,color=KoiColors.Muted)
                 Row {
                     TextButton(onClick={if(task.completedAt==null)repo.complete(task) else repo.reopen(task)},enabled=!busy) {Text(if(task.completedAt==null) "Concluir" else "Reabrir")}
-                    TextButton(onClick={editing=task;editor=true},enabled=!busy) {Text("Editar")}
+                    TextButton(onClick={editing=task;repo.clearInfo();editor=true},enabled=!busy) {Text("Editar")}
                     TextButton(onClick={deleting=task},enabled=!busy) {Text("Apagar",color=KoiColors.Red)}
                 }
             }
@@ -100,7 +102,9 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
             }
         }
     }
-    if(editor) TaskEditor(editing,{editor=false}) {repo.save(it,editing);editor=false}
+    if(editor) TaskEditor(editing,{if(!busy)editor=false},saving=busy,info=info) {
+        repo.save(it,editing,creationId=creationId,onSaved={editor=false})
+    }
     deleting?.let { task -> AlertDialog(onDismissRequest={deleting=null},title={Text("Apagar tarefa?")},
         text={Text("Isso apaga “${task.title}” e seus registros de conclusão. Suas conversas continuam no diário.")},
         confirmButton={TextButton(onClick={repo.delete(task);deleting=null}) {Text("Apagar",color=KoiColors.Red)}},
@@ -108,13 +112,13 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
 }
 
 @Composable
-private fun TaskEditor(existing: KoiTask?, onDismiss: () -> Unit, onSave: (TaskDraft) -> Unit) {
+fun TaskEditor(existing: KoiTask?, onDismiss: () -> Unit, initial: TaskDraft? = null, saving: Boolean = false, info: String? = null, onSave: (TaskDraft) -> Unit) {
     val context=LocalContext.current
-    var title by rememberSaveable {mutableStateOf(existing?.title ?: "")}
-    var notes by rememberSaveable {mutableStateOf(existing?.notes ?: "")}
-    var date by rememberSaveable {mutableStateOf(existing?.date ?: "")}
-    var time by rememberSaveable {mutableStateOf(existing?.time?.take(5) ?: "")}
-    var recurrence by rememberSaveable {mutableStateOf(existing?.recurrence ?: "none")}
+    var title by rememberSaveable {mutableStateOf(existing?.title ?: initial?.title ?: "")}
+    var notes by rememberSaveable {mutableStateOf(existing?.notes ?: initial?.notes ?: "")}
+    var date by rememberSaveable {mutableStateOf(existing?.date ?: initial?.date ?: "")}
+    var time by rememberSaveable {mutableStateOf(existing?.time?.take(5) ?: initial?.time ?: "")}
+    var recurrence by rememberSaveable {mutableStateOf(existing?.recurrence ?: initial?.recurrence ?: "none")}
     val draft=TaskDraft(title,notes,date,time,recurrence)
     AlertDialog(onDismissRequest=onDismiss,title={Text(if(existing==null) "Nova missão" else "Editar missão")},text={
         Column(Modifier.verticalScroll(rememberScrollState()),verticalArrangement=Arrangement.spacedBy(10.dp)) {
@@ -138,7 +142,8 @@ private fun TaskEditor(existing: KoiTask?, onDismiss: () -> Unit, onSave: (TaskD
             Text("Repetições precisam de uma data. Na mensal, dias que não existem são ajustados ao fim do mês; a próxima parte do ciclo usa essa nova data.",fontSize=12.sp,color=KoiColors.Muted)
             if(existing?.completedAt!=null) Text("Escolher uma repetição reabre esta tarefa.",fontSize=12.sp,color=KoiColors.Blue)
             draft.error()?.let {Text(it,fontSize=12.sp,color=KoiColors.Muted)}
+            info?.let {Text(it,fontSize=12.sp,color=KoiColors.Blue)}
         }
-    },confirmButton={TextButton(onClick={onSave(draft)},enabled=draft.error()==null) {Text("Salvar tarefa")}},
-        dismissButton={TextButton(onClick=onDismiss) {Text("Cancelar")}})
+    },confirmButton={TextButton(onClick={onSave(draft)},enabled=!saving && draft.error()==null) {Text(if(saving) "Salvando…" else "Salvar tarefa")}},
+        dismissButton={TextButton(onClick=onDismiss,enabled=!saving) {Text("Cancelar")}})
 }

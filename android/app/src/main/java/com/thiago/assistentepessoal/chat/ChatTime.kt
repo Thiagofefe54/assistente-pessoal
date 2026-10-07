@@ -13,4 +13,4 @@ fun messageTime(message: ChatMessage): String = Instant.ofEpochMilli(message.occ
     .atZone(ZoneId.of(message.timezone)).format(DateTimeFormatter.ofPattern("HH:mm"))
 
 fun dayLabel(date: String): String = LocalDate.parse(date)
-    .format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", Locale("pt", "BR")))
+    .format(DateTimeFormatter.ofPattern("dd 'de' MMMM 'de' yyyy", Locale.forLanguageTag("pt-BR")))

@@ -7,8 +7,10 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 
 from backend.app.core.auth import current_user
 from backend.app.core.config import settings
-from backend.app.core.ai import reply
 from backend.app.core.memory import confirmed_facts
+from backend.app.core.tasks import task_context, TaskProposal
+from backend.app.core.conversation import converse
+from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
@@ -23,6 +25,16 @@ class ChatRequest(BaseModel):
     model_config = ConfigDict(extra="forbid")
     message: str = Field(min_length=1, max_length=8000)
     history: list[ContextMessage] = Field(default_factory=list, max_length=20)
+    timezone: str = Field(default='America/Sao_Paulo', min_length=1, max_length=100)
+
+    @field_validator('timezone')
+    @classmethod
+    def valid_timezone(cls, value: str) -> str:
+        try:
+            ZoneInfo(value)
+        except (ValueError, ZoneInfoNotFoundError):
+            raise ValueError('Fuso horário inválido.') from None
+        return value
 
     @field_validator("message")
     @classmethod
@@ -40,6 +52,7 @@ class ChatRequest(BaseModel):
 
 class ChatResponse(BaseModel):
     reply: str
+    task_draft: TaskProposal | None = None
 
 
 def simulated_reply(request: ChatRequest) -> ChatResponse:
@@ -55,7 +68,8 @@ def simulated_reply(request: ChatRequest) -> ChatResponse:
 def chat(payload: ChatRequest, request: Request, user_id: UUID = Depends(current_user)):
     # Owner comes from validated Auth, never from the body. RLS also protects reads.
     facts = confirmed_facts(user_id, request.headers['authorization'])
-    return ChatResponse(reply=reply(payload.message, [item.model_dump() for item in payload.history], facts))
+    tasks = task_context(user_id, request.headers['authorization'], payload.timezone, payload.message)
+    return ChatResponse(**converse(payload.message, [item.model_dump() for item in payload.history], facts, tasks))
 
 
 @router.post("/demo", response_model=ChatResponse)

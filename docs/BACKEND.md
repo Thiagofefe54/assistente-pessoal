@@ -14,7 +14,10 @@ Detalhes de IA em IA_GROQ.md e publicação em HOSPEDAGEM_RENDER.md.
 | `/api/v1/health`, `/` | Público | Disponibilidade e versão do serviço. |
 
 O corpo aceita `message`, entre 1 e 8000 caracteres, e `history` limitado a
-20 mensagens user/assistant e 12.000 caracteres no total. `user_id`
+20 mensagens user/assistant e 12.000 caracteres no total. Aceita `timezone` IANA
+(padrão America/Sao_Paulo) validado. Retorna `reply` e `task_draft` opcional;
+consulta tarefas atuais e lembranças com o token do dono. O backend não escreve
+tarefas pelo chat: o Android oferece revisão e grava após confirmação. `user_id`
 fornecido pelo cliente é rejeitado. O backend consulta `GET /auth/v1/user` com o
 token da solicitação e a chave publishable do projeto: não decodifica claims sem
 verificação e não confia em `user_metadata`. Usuários anônimos são recusados.

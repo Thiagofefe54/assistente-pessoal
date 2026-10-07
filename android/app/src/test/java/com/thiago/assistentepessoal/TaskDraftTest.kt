@@ -7,6 +7,13 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class TaskDraftTest {
+    @Test fun todayUsesTaskTimezoneAndExcludesCompletedAndUndatedTasks() {
+        val task=KoiTask("fixture",1,"Missão","","2026-10-07",null,"America/Sao_Paulo","none",null,0,"")
+        assertTrue(task.today(Instant.parse("2026-10-08T02:59:00Z")))
+        assertFalse(task.today(Instant.parse("2026-10-08T03:00:00Z")))
+        assertFalse(task.copy(completedAt="done").today(Instant.parse("2026-10-07T15:00:00Z")))
+        assertFalse(task.copy(date=null).today(Instant.parse("2026-10-07T15:00:00Z")))
+    }
     @Test fun overdueRespectsTaskTimezoneAndOptionalTimeAndCompletion() {
         val task=KoiTask("fixture",1,"Missão","","2026-10-07","09:00","America/Sao_Paulo","none",null,0,"")
         assertFalse(task.overdue(Instant.parse("2026-10-07T11:59:00Z")))

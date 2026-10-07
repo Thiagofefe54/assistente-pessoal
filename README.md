@@ -42,7 +42,7 @@ A personagem é ilustrada: animação da personagem e voz própria são possibil
 | Área | Entrega atual |
 | :--- | :--- |
 | **Home** | Personagem, saudação personalizável, data/hora reais, estado da conta, contagem de tarefas e atalhos. |
-| **Chat** | Conversa por texto com Groq via servidor HTTPS, contexto recente limitado, histórico persistente, horários e nova tentativa após falha. |
+| **Chat** | Conversa por texto com Groq via HTTPS; contexto recente, lembranças e consulta atual de tarefas. Pedidos para criar tarefas geram propostas editáveis para revisar e salvar. |
 | **Memória** | Diário por dia e busca; lembranças confirmadas; sugestões revisáveis e resumo diário solicitado pela pessoa, com fontes e atualização após novas mensagens. |
 | **Rotina** | Tarefas reais na conta: criar, editar, concluir, reabrir e apagar; data, horário, repetição e últimas conquistas. Agenda, notas, treinos e finanças continuam planejados. |
 | **Configurações** | Personalização da saudação, redução de movimento e acesso à conta. |
@@ -51,6 +51,8 @@ A personagem é ilustrada: animação da personagem e voz própria são possibil
 | **Servidor** | API FastAPI; rota protegida validando a conta no Supabase; demonstração separada, disponível apenas em desenvolvimento. |
 
 O histórico pode ser lido sem conexão. Receber uma resposta exige internet; a instalação testada usa o servidor gratuito na nuvem, sem depender do computador. O serviço pode dormir quando fica sem uso, então a primeira resposta pode demorar. A sincronização tenta novamente quando houver rede. Ela não reenvia automaticamente uma conversa que falhou no servidor.
+
+No chat, experimente “Quais são minhas tarefas de hoje?” ou “Adicione estudar amanhã às 9h”. A criação pede **Revisar tarefa → Salvar tarefa**; uma proposta não é uma tarefa salva. A consulta envia até 60 tarefas ao provedor de IA e informa quando a lista está incompleta. Edição/conclusão/exclusão continuam na Rotina. Detalhes da [revisão e integração](docs/AUDITORIA_CHAT_TAREFAS.md).
 
 ## O que a Koi poderá fazer
 

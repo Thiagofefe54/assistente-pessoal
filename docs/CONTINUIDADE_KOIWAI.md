@@ -110,6 +110,24 @@ seguro. Gestão de chaves pelo app ainda não implementada.
 
 ## O que falta e próximos pequenos objetivos
 
+### Revisão e integração Chat ↔ Tarefas — 07/10/2026
+
+Após o usuário constatar que o chat não conhecia tarefas criadas em Rotina,
+a entrega foi ampliada: consulta atual protegida por dono/RLS e propostas de
+criação na conversa, editáveis antes de salvar. Data/fuso atuais, validação de
+agenda, identidade estável para impedir duplicações, Room 3 com migração sem
+apagar histórico e descarte de proposta sem apagar conversa. Metadados das
+propostas ficam somente no celular; tarefas salvas continuam sincronizadas.
+Até 60 tarefas no contexto da IA; lista incompleta é explicitada. Editar/concluir/
+apagar por chat ainda falta. Filtro Hoje adicionado à Rotina.
+Corrigidos texto antigo sobre PC/chat simulado, vida útil da memória ao trocar
+de conta, ativação repetida de componentes e resposta de sucesso após escrita
+confirmada mesmo se atualizar a lista falhar. Editor não fecha após falha de
+salvamento. Dependência tzdata fixada para datas no Windows.
+36 testes backend e teste Groq fictício aprovados. RLS/políticas conferidas.
+Publicação, instalação e testes reais finais ainda em andamento neste checkpoint;
+ver AUDITORIA_CHAT_TAREFAS.md. Pack 2 não está entregue.
+
 ### Pack 1 em 07/10/2026 — registro atual
 
 Usuário decidiu completar o celular antes de Windows, em cinco packs grandes.

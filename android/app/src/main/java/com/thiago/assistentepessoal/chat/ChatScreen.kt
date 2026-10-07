@@ -23,6 +23,8 @@ import androidx.compose.ui.unit.*
 import com.thiago.assistentepessoal.*
 import com.thiago.assistentepessoal.R
 import kotlin.math.sin
+import com.thiago.assistentepessoal.routine.TaskEditor
+import java.util.UUID
 
 @Composable
 fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) -> Unit = {}) {
@@ -32,6 +34,8 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
     val history by repository.messages.collectAsState()
     val busy by repository.busy.collectAsState()
     val error by repository.error.collectAsState()
+    val tasksRepo by app.tasks.collectAsState()
+    var reviewing by remember(repository) {mutableStateOf<ChatMessage?>(null)}
     val messages=history.orEmpty()
     var input by rememberSaveable {mutableStateOf("")}
     var pendingId by rememberSaveable {mutableStateOf<String?>(null)}
@@ -79,7 +83,17 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
                 if(index==0 || messages[index-1].localDate!=message.localDate) item(key="day-${message.id}") {
                     Box(Modifier.fillMaxWidth().padding(vertical=4.dp),contentAlignment=Alignment.Center){KoiChip(dayLabel(message.localDate),KoiColors.Muted)}
                 }
-                item(key=message.id) { MessageBubble(message,busy){repository.retry(message)} }
+                item(key=message.id) {
+                    Column {
+                        MessageBubble(message,busy){repository.retry(message)}
+                        if(message.role=="assistant" && message.taskDraftJson!=null && tasksRepo!=null) {
+                            Row {
+                                TextButton(onClick={tasksRepo?.clearInfo();reviewing=message}) {Text("✦ Revisar tarefa",color=KoiColors.Purple)}
+                                TextButton(onClick={repository.dismissTaskDraft(message.id)}) {Text("Descartar",color=KoiColors.Muted)}
+                            }
+                        }
+                    }
+                }
             }
         }
         if(busy && history!=null) ProcessingIndicator()
@@ -99,6 +113,17 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
                 enabled=!busy && history!=null && input.isNotBlank() && input.length<=8000)
         }
     }
+    reviewing?.let { message -> tasksRepo?.let { tasks ->
+        val saving by tasks.busy.collectAsState()
+        val info by tasks.info.collectAsState()
+        val initial=taskDraftFromJson(message.taskDraftJson)
+        if(initial!=null) key(message.id) {
+            TaskEditor(existing=null,onDismiss={if(!saving)reviewing=null},initial=initial,saving=saving,info=info) { draft ->
+                val id=UUID.nameUUIDFromBytes(("koi-task:"+message.id).toByteArray(Charsets.UTF_8)).toString()
+                tasks.save(draft,creationId=id,onSaved={repository.dismissTaskDraft(message.id);reviewing=null})
+            }
+        }
+    } }
 }
 
 @Composable

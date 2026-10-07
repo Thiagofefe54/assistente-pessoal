@@ -43,6 +43,8 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
         perform(message, true)
     }
 
+    fun dismissTaskDraft(id:String) { scope.launch { dao.dismissTaskDraft(id) } }
+
     private fun perform(message: ChatMessage, retry: Boolean) {
         _busy.value = true
         _error.value = null
@@ -56,8 +58,8 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
                     dao.insert(message)
                 }
                 val context = recentChatContext(dao.recentContext(message.id, message.occurredAt), message)
-                val reply = withContext(Dispatchers.IO) { backend.send(message.content, context) }
-                dao.complete(message, reply)
+                val reply = withContext(Dispatchers.IO) { backend.sendResult(message.content, context) }
+                dao.complete(message, reply.reply, reply.taskDraftJson)
                 try { onSaved() }
                 catch (scheduleError: Exception) {
                     if (scheduleError is CancellationException) throw scheduleError
