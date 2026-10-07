@@ -121,12 +121,12 @@ flowchart TD
     A <-->|HTTPS · conta e histórico| S[Supabase · Auth + Postgres + RLS]
     A -->|HTTPS · token da conta| B[FastAPI · chat autenticado]
     B -->|Verificação do usuário| S
-    B -->|Integração preparada · chave privada| I[Groq · GPT-OSS · cotas de uso]
+    B -->|IA ativa · chave privada| I[Groq · GPT-OSS · cotas de uso]
     W[Windows · planejado] -. mesma conta .-> S
     W -. chat futuro .-> B
 ```
 
-Em desenvolvimento, o Android também pode usar o simulador HTTP local. Esse caminho não recebe tokens da conta e é desabilitado no backend em produção. A autenticação preparada não significa que a hospedagem já esteja concluída.
+Em desenvolvimento, o Android também pode usar o simulador HTTP local. Esse caminho não recebe tokens da conta e é desabilitado no backend em produção. A instalação testada usa o backend HTTPS no Render Free.
 
 ### Privacidade e controle
 
@@ -137,7 +137,7 @@ Em desenvolvimento, o Android também pode usar o simulador HTTP local. Esse cam
 - O backend valida a identidade; um `user_id` enviado pelo cliente não determina o usuário.
 - O app usa HTTPS para autenticação e não segue redirecionamentos ao enviar tokens.
 
-Há um aviso de permissões pendente no projeto Supabase, descrito em [SUPABASE.md](docs/SUPABASE.md). Esta versão ainda não é apresentada como uma implantação de produção pronta.
+As permissões da função de inicialização RLS foram corrigidas; o aviso existente de proteção contra senhas vazadas está registrado em [SUPABASE.md](docs/SUPABASE.md). O projeto permanece em desenvolvimento.
 
 ## Executar em desenvolvimento
 
@@ -157,10 +157,10 @@ Copy-Item .env.example .env
 A demonstração funciona com `ENVIRONMENT=development` e não precisa de credenciais válidas. Para testar a rota protegida, configure o projeto Supabase em `.env` e use HTTPS. A documentação interativa local fica em `http://localhost:8000/docs`.
 
 Para respostas de IA, configure `GROQ_API_KEY` somente no `.env` do servidor.
-A integração Groq e o contexto recente foram implementados e testados localmente,
-inclusive com chamadas reais usando dados fictícios. A hospedagem HTTPS e a
-validação no aparelho ainda estão pendentes. O simulador HTTP
-continua com respostas demonstrativas. Detalhes em [IA_GROQ.md](docs/IA_GROQ.md).
+A integração Groq, o contexto recente e o backend HTTPS foram validados no Poco.
+O incremento de lembranças confirmadas já está no servidor; o novo APK aguarda
+validação no aparelho. O simulador HTTP continua com respostas demonstrativas.
+Detalhes em [IA_GROQ.md](docs/IA_GROQ.md) e [MEMORIA_CONFIRMADA.md](docs/MEMORIA_CONFIRMADA.md).
 
 ### 2. Aplicativo Android
 

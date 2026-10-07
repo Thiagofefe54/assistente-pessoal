@@ -7,9 +7,10 @@ A versão da especificação e o versionName do template Android não são relea
 
 Identidade e experiência Android refinadas e aprovadas. Histórico Room por conta,
 login Supabase, sessão criptografada, sincronização e consulta por dia funcionando.
-O backend tem uma demonstração local e uma rota preparada para autenticação HTTPS.
-Integração Groq com contexto recente implementada localmente; ativação real e
-hospedagem HTTPS ainda pendentes. Relatórios, cadastros de Rotina e Windows pendentes.
+Backend publicado no Render Free; conversa Groq autenticada com contexto recente
+validada no Poco e confirmada pelo usuário. Primeiro incremento de lembranças
+confirmadas publicado no servidor, com APK preparado para teste. Relatórios,
+cadastros de Rotina e Windows continuam pendentes.
 
 ## Etapas e critérios
 

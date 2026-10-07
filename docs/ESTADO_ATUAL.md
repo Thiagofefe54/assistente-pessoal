@@ -184,3 +184,13 @@ alterada a configuração de Auth nem contratado plano pago.
 Poco desconectado pelo usuário antes dos novos testes de aparelho. A nova tela
 não foi instalada nem validada no telefone nesta etapa. Publicação e verificação
 externa são registradas abaixo quando concluídas. Detalhes em MEMORIA_CONFIRMADA.md.
+
+### Publicação do incremento de memória
+
+Render confirmou deploy bem-sucedido do commit 628fed0. Verificação externa:
+health 200, chat sem sessão 401 e demonstração 404. Uma chamada real ao Groq
+recuperou Estação Lavanda da lembrança fictícia sem histórico recente. Esse teste
+validou o modelo, não substitui o teste autenticado da memória no Poco. O APK
+está preparado, mas a instalação ainda em uso no aparelho é a versão anterior.
+Os testes MemoryLiveTest e MemoryNavigationTest foram compilados e aguardam
+reconexão. Nenhuma fixture de banco foi mantida após a verificação SQL.

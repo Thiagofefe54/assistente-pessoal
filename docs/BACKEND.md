@@ -63,9 +63,10 @@ pelo cliente, falhas de rede/serviço, configuração e separação da demonstra
 Os testes Android verificam a escolha de rota, a exigência de HTTPS em release
 e a recusa de origens com credenciais ou parâmetros.
 
-A validação de ponta a ponta com uma conta real no servidor hospedado permanece
-pendente antes da publicação: chamadas reais ao Groq foram validadas localmente.
-O login e a sincronização Android/Supabase já foram confirmados pelo usuário.
+A conversa autenticada com contexto recente passou no backend hospedado e no Poco.
+O usuário também confirmou o uso real. Agora o servidor lê lembranças confirmadas
+com a sessão validada e RLS; o teste desta nova memória no Poco está pendente.
+Detalhes em MEMORIA_CONFIRMADA.md.
 
 Referência oficial: [getUser](https://supabase.com/docs/reference/javascript/auth-getuser)
 e [JWTs e validação](https://supabase.com/docs/guides/auth/jwts).

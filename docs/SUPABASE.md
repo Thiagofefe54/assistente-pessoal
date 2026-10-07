@@ -46,10 +46,13 @@ Os bancos de conversa e a sessão ficam fora do backup/transferência automátic
 do Android. A recuperação em outro aparelho é feita por login e sincronização
 no Supabase; conversas exclusivamente locais não têm backup externo nesta etapa.
 
-### Aviso de permissões pendente
+### Revisão de permissões em 07/10/2026
 
-O Security Advisor reporta a função public.rls_auto_enable() como executável
-por clientes. É a função do mecanismo automático de RLS criado pelo painel.
-A correção proposta é revogar apenas EXECUTE de PUBLIC, anon e authenticated,
-mantendo a execução pelo proprietário postgres/event trigger. A revisão automática
-exigiu autorização específica; o ajuste não foi aplicado.
+EXECUTE de public.rls_auto_enable() foi revogado de PUBLIC, anon e authenticated.
+O mecanismo de inicialização via event trigger foi preservado. O Advisor não
+reportou mais esses dois avisos. A tabela memory_facts tem RLS e quatro políticas
+de dono; isolamento, fonte e alterações concorrentes passaram em teste fictício
+com rollback. Nenhuma conversa ou senha existente foi alterada.
+
+Permanece o aviso existente de [proteção contra senhas vazadas desativada](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection).
+Não foi alterado o plano gratuito ou a configuração de Auth nesta etapa.

@@ -28,7 +28,7 @@ na data desta entrega. O limite atingido primeiro prevalece; não são promessas
   definida no servidor, separada dos textos da conversa.
 - Este contexto enviado pelo cliente é informação não confiável, não uma fonte
   para autorizar ações ou consultar dados de outras contas.
-- A memória de longo prazo, fatos, resumos e relatórios ainda não estão implementados.
+- Fatos confirmados já são consultados pelo servidor; resumos e relatórios são futuros.
 - O simulador /api/v1/chat/demo não chama Groq, e o Android não lhe envia histórico
   nem token. Não há nova rota de IA aberta sem autenticação.
 
@@ -74,3 +74,11 @@ Referências oficiais: [API](https://console.groq.com/docs/api-reference),
 [modelos](https://console.groq.com/docs/models),
 [limites](https://console.groq.com/docs/rate-limits) e
 [tratamento dos dados](https://console.groq.com/docs/your-data).
+
+
+## Incremento de lembranças confirmadas
+
+O servidor foi atualizado no Render com consulta de fatos da conta antes da
+resposta. Uma chamada real ao Groq recuperou Estação Lavanda de uma lembrança
+fictícia, sem histórico recente. O teste completo da memória no Poco permanece
+pendente após a desconexão do aparelho. A conversa online anterior já foi validada.
