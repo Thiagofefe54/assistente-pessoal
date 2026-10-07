@@ -3,6 +3,7 @@ package com.thiago.assistentepessoal
 import android.app.Application
 import com.thiago.assistentepessoal.chat.*
 import com.thiago.assistentepessoal.cloud.*
+import com.thiago.assistentepessoal.memory.MemoryRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -18,8 +19,15 @@ class KoiwaiApplication : Application() {
     private val databases = mutableMapOf<String, ChatDatabase>()
     private val repos = mutableMapOf<String, ChatRepository>()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
+    private val _memories = MutableStateFlow<MemoryRepository?>(null)
+    val memories = _memories.asStateFlow()
+    private var memoryOwner: String? = null
     private fun database(id: String?): ChatDatabase = databases.getOrPut(id ?: "local") { ChatDatabase.open(this, id) }
     private fun activate(account: Account?) {
+        if(memoryOwner != account?.id) {
+            memoryOwner = account?.id
+            _memories.value = account?.let { MemoryRepository(auth,it.id) }
+        }
         val sync = account?.let { CloudSync(this, auth, it.id, database(it.id).messages()) }
         cloudSync = sync
         current.value = repos.getOrPut(account?.id ?: "local") {

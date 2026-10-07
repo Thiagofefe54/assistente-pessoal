@@ -44,6 +44,7 @@ class AuthTests(unittest.IsolatedAsyncioTestCase):
         self.opener = patch('backend.app.core.auth.build_opener').start()
         self.addCleanup(patch.stopall)
         self.ai = patch('backend.app.api.routes.chat.reply', return_value='Olá, Mestre. Estou aqui.').start()
+        self.memory = patch('backend.app.api.routes.chat.confirmed_facts', return_value=[]).start()
 
     def upstream(self, user):
         self.opener.return_value.open.return_value = io.BytesIO(json.dumps(user).encode())
@@ -69,17 +70,28 @@ class AuthTests(unittest.IsolatedAsyncioTestCase):
         self.upstream({'id': USER})
         status, payload = await call(token='Bearer private-test-token')
         self.assertEqual((200, {'reply': 'Olá, Mestre. Estou aqui.'}), (status, payload))
+        self.assertEqual(USER, str(self.memory.call_args.args[0]))
+        self.assertEqual('Bearer private-test-token', self.memory.call_args.args[1])
 
     async def test_client_cannot_choose_owner(self):
         self.upstream({'id': USER})
         status, _ = await call(token='Bearer private-test-token', body={'message': 'oi', 'user_id': 'other'})
         self.assertEqual(422, status)
 
+    async def test_memory_failure_prevents_inference(self):
+        from fastapi import HTTPException
+        self.upstream({'id': USER})
+        self.memory.side_effect = HTTPException(503, 'Não consegui consultar suas lembranças.')
+        status, _ = await call(token='Bearer private-test-token')
+        self.assertEqual(503,status)
+        self.ai.assert_not_called()
+
     async def test_rejected_token(self):
         for code in (401, 403):
             self.opener.return_value.open.side_effect = HTTPError('https://project.supabase.co', code, '', {}, None)
             status, _ = await call(token='Bearer private-test-token')
             self.assertEqual(401, status)
+        self.memory.assert_not_called()
 
     async def test_service_failure_fails_closed(self):
         for error in (URLError('offline'), TimeoutError(),

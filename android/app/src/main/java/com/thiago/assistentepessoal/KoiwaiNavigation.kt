@@ -24,6 +24,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
 import com.thiago.assistentepessoal.chat.*
 import com.thiago.assistentepessoal.cloud.AccountScreen
+import com.thiago.assistentepessoal.memory.*
 import kotlinx.coroutines.delay
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -55,6 +56,7 @@ fun KoiwaiNavigation() {
     LaunchedEffect(account?.id) { day=null }
     fun back() { when {
         selected=="account" -> selected=accountReturn
+        selected=="facts" -> selected="memory"
         selected=="memory" && day!=null -> day=null
         selected=="routine" && category!=null -> category=null
         else -> selected="home"
@@ -69,7 +71,7 @@ fun KoiwaiNavigation() {
                     HorizontalDivider(color=KoiColors.Purple.copy(alpha=.18f))
                     NavigationBar(containerColor=Color.Transparent,tonalElevation=0.dp) {
                         tabs.forEach { (route,label) ->
-                            val active=selected==route
+                            val active=selected==route || (route=="memory" && selected=="facts")
                             NavigationBarItem(selected=active,onClick={ selected=route;day=null;category=null },
                                 icon={ KoiGlyph(route,if(active) KoiColors.Purple else KoiColors.Muted) },
                                 label={ Text(label,fontSize=11.sp,fontWeight=if(active) FontWeight.Bold else FontWeight.Normal) },
@@ -88,7 +90,8 @@ fun KoiwaiNavigation() {
                         when(route) {
                             "home" -> HomeScreen({selected="chat"},{selected="routine"},{openAccount("home")})
                             "chat" -> ChatScreen({back()},{openAccount("chat")})
-                            "memory" -> MemoryScreen(day,{day=it},{day=null})
+                            "memory" -> MemoryScreen(day,{day=it},{day=null},{selected="facts"})
+                            "facts" -> MemoriesScreen({selected="memory"},{openAccount("facts")})
                             "routine" -> RoutineScreen(category,{category=it},{category=null})
                             "settings" -> SettingsScreen {openAccount("settings")}
                             "account" -> AccountScreen {back()}
@@ -153,12 +156,16 @@ private fun HomeScreen(onChat: () -> Unit, onRoutine: () -> Unit, onAccount: () 
 }
 
 @Composable
-private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit) {
+private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit, onFacts: ()->Unit) {
     val app=LocalContext.current.applicationContext as KoiwaiApplication
     val repo by app.repositories.collectAsState()
     val history by repo.messages.collectAsState()
     val error by repo.error.collectAsState()
     val messages=history.orEmpty()
+    val memories by app.memories.collectAsState()
+    var remembering by remember { mutableStateOf<ChatMessage?>(null) }
+    var factText by remember { mutableStateOf("") }
+    var factCategory by remember { mutableStateOf("note") }
     var query by rememberSaveable { mutableStateOf("") }
     val days=remember(messages,query) { messages.groupBy {it.localDate}.filter { (date,entries)-> query.isBlank() || date.contains(query) || dayLabel(date).contains(query,true) || entries.any {it.content.contains(query,true)} }.toSortedMap(compareByDescending {it}) }
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
@@ -170,6 +177,13 @@ private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit) 
             Text("Suas conversas, organizadas por dia.",color=KoiColors.Muted,fontSize=13.sp)
         }
         if(day==null) {
+            item {
+                KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple,onClick=onFacts) {
+                    Eyebrow("O QUE A KOI LEVA COM ELA",KoiColors.Purple)
+                    Text("Lembranças confirmadas →",fontSize=20.sp,fontWeight=FontWeight.SemiBold)
+                    Text("Preferências, objetivos e detalhes que você escolhe guardar.",color=KoiColors.Muted,fontSize=13.sp)
+                }
+            }
             item {
                 Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                     val dayCount=messages.map{it.localDate}.distinct().size
@@ -208,7 +222,7 @@ private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit) 
                     }
                 }
             }
-            item { Text("Resumos e memórias importantes chegam em uma próxima etapa.",color=KoiColors.Muted,fontSize=12.sp) }
+            item { Text("Relatórios periódicos chegam em uma próxima etapa. Suas lembranças já podem ser revisadas acima.",color=KoiColors.Muted,fontSize=12.sp) }
         } else {
             item { TextButton(onClick=onBack) {Text("← Todos os dias")}; KoiChip("Registro original",KoiColors.Blue) }
             items(messages.filter{it.localDate==day},key={it.id}) { message ->
@@ -216,8 +230,18 @@ private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit) 
                     Eyebrow("${messageTime(message)}  /  ${if(message.role=="user") "VOCÊ" else "KOIWAI"}")
                     Text(message.content,fontSize=15.sp,lineHeight=23.sp)
                     if(message.status==MessageStatus.FAILED) Text("Falha no envio",color=KoiColors.Red,fontSize=11.sp)
+                    if(memories!=null && message.role=="user" && message.status==MessageStatus.SENT && message.synced) {
+                        TextButton(onClick={remembering=message;factText=message.content.take(500);factCategory="note"}) {Text("Guardar lembrança")}
+                    }
                 }
             }
+        }
+    }
+    remembering?.let { message ->
+        MemoryEditor(factText,{factText=it},factCategory,{factCategory=it},{remembering=null}) {
+            memories?.save(factText,factCategory,sourceId=message.id)
+            remembering=null
+            onFacts()
         }
     }
 }

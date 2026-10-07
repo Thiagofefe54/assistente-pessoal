@@ -8,6 +8,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator, model_valida
 from backend.app.core.auth import current_user
 from backend.app.core.config import settings
 from backend.app.core.ai import reply
+from backend.app.core.memory import confirmed_facts
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
@@ -51,10 +52,10 @@ def simulated_reply(request: ChatRequest) -> ChatResponse:
 
 
 @router.post("", response_model=ChatResponse)
-def chat(request: ChatRequest, user_id: UUID = Depends(current_user)):
-    # Auth runs before inference. The account-scoped Android database provides
-    # untrusted recent context; this route never reads another user's memory.
-    return ChatResponse(reply=reply(request.message, [item.model_dump() for item in request.history]))
+def chat(payload: ChatRequest, request: Request, user_id: UUID = Depends(current_user)):
+    # Owner comes from validated Auth, never from the body. RLS also protects reads.
+    facts = confirmed_facts(user_id, request.headers['authorization'])
+    return ChatResponse(reply=reply(payload.message, [item.model_dump() for item in payload.history], facts))
 
 
 @router.post("/demo", response_model=ChatResponse)

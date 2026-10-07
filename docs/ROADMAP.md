@@ -30,11 +30,12 @@ hospedagem HTTPS ainda pendentes. Relatórios, cadastros de Rotina e Windows pen
 
 ## Ordem imediata
 
-1. Concluído: checkpoint recuperável publicado e autenticação do backend preparada.
-2. Render Free escolhido e configuração de publicação preparada; Groq Free validado.
-3. Validar a comunicação autenticada Android/backend com conta real.
-4. Groq escolhido; testar configuração privada e limites reais antes de ativar no app.
-5. Testar fluxo completo e recuperação de falhas com o computador desligado.
+1. Concluído: Groq, publicação gratuita e conversa real autenticada no Poco.
+2. Em entrega: lembranças confirmadas, criação/edição/exclusão e uso no contexto.
+3. Ao reconectar o Poco: instalar o novo APK e validar a memória com dados fictícios.
+4. Próximo: sugestões revisáveis da IA e resumos diários com fontes.
+5. Pendências da fundação: recuperação de conta, limites próprios por usuário e
+   observação do uso com o computador fisicamente desligado.
 
 A meta inicial de custo é R$0. Isso não é promessa de servidor gratuito sempre
 disponível: limites, suspensão por inatividade e condições dos provedores precisam

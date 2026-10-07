@@ -41,7 +41,7 @@ A personagem é ilustrada: animação da personagem e voz própria são possibil
 | :--- | :--- |
 | **Home** | Personagem, saudação personalizável, data/hora reais, estado da conta e atalhos. |
 | **Chat** | Conversa por texto com Groq via servidor HTTPS, contexto recente limitado, histórico persistente, horários e nova tentativa após falha. |
-| **Memória** | Linha do tempo das conversas reais, navegação por dia e busca no histórico. |
+| **Memória** | Diário por dia e busca; nova área de lembranças confirmadas, com edição, exclusão e fonte original (APK preparado para teste). |
 | **Rotina** | Painel visual e navegação pelas categorias. Cadastros e execução de tarefas ainda estão em preparação. |
 | **Configurações** | Personalização da saudação, redução de movimento e acesso à conta. |
 | **Conta** | Cadastro/login por e-mail, confirmação de e-mail, sessão criptografada e sincronização. |
@@ -52,7 +52,7 @@ O histórico pode ser lido sem conexão. Receber uma resposta exige internet; a 
 
 ## O que a Koi poderá fazer
 
-- **Conversar com contexto:** usar um modelo de IA com acesso limitado ao histórico relevante.
+- **Ampliar o contexto:** melhorar a seleção de informações relevantes além da conversa recente já disponível.
 - **Construir memória útil:** separar registros diários, fatos confirmados e resumos com referências às conversas originais.
 - **Ajudar a organizar a vida:** agenda, tarefas, notas, treinos e finanças com dados estruturados.
 - **Falar e ouvir:** começar por um botão de voz, com interrupção da fala; estudar ativação por “Koi” depois.
