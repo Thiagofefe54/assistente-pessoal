@@ -36,6 +36,17 @@ async def call(path='/api/v1/chat', scheme='https', token=None, body=None, metho
 
 
 class AuthTests(unittest.IsolatedAsyncioTestCase):
+    async def test_journal_requires_auth_and_owner_is_never_accepted_from_body(self):
+        status,_ = await call(path='/api/v1/journal/summary',body={'local_date':'2026-10-07'})
+        self.assertEqual(401,status)
+        self.upstream({'id': USER})
+        with patch('backend.app.api.routes.journal.daily_report',return_value={'report':None,'stale':False,'available_count':0}) as report:
+            status,_=await call(path='/api/v1/journal/summary',token='Bearer private-test-token',body={'local_date':'2026-10-07','user_id':'foreign'})
+            self.assertEqual(422,status);report.assert_not_called()
+            self.upstream({'id': USER})
+            status,_=await call(path='/api/v1/journal/summary',token='Bearer private-test-token',body={'local_date':'2026-10-07'})
+            self.assertEqual(200,status);self.assertEqual(USER,str(report.call_args.args[0]))
+
     def setUp(self):
         self.config = patch.multiple(settings, environment='development',
             supabase_url='https://project.supabase.co', supabase_publishable_key='sb_publishable_test')

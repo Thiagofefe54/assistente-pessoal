@@ -62,12 +62,15 @@ class MemoryRepository(private val auth: CloudAuth, private val owner: String) {
         }
     }
     fun refresh() = action { fetch() }
-    fun save(content: String, category: String, sourceId: String? = null, existing: MemoryFact? = null) {
+    fun save(content: String, category: String, sourceId: String? = null, existing: MemoryFact? = null, onSaved: (() -> Unit)? = null) {
         val clean = content.trim()
         if(clean.isEmpty() || clean.length > 500 || category !in memoryCategories) return
         action {
             if(existing == null) {
                 fetch()
+                if(_facts.value.orEmpty().any { it.content==clean && it.category==category && it.sourceId==sourceId }) {
+                    _info.value="Esta lembrança já está confirmada.";onSaved?.invoke();return@action
+                }
                 val slot = (1..20).firstOrNull { candidate -> _facts.value.orEmpty().none { it.slot == candidate } }
                     ?: run { _info.value = "Você já tem 20 lembranças. Revise uma antes de adicionar outra."; return@action }
                 val body = JSONObject().put("user_id",owner).put("id",UUID.randomUUID().toString())
@@ -81,6 +84,7 @@ class MemoryRepository(private val auth: CloudAuth, private val owner: String) {
             }
             fetch()
             _info.value = "Lembrança confirmada. A Koi poderá usá-la nas próximas respostas."
+            onSaved?.invoke()
         }
     }
     private fun filter(fact: MemoryFact): String = "/rest/v1/memory_facts?user_id=eq.$owner&id=eq.${fact.id}&updated_at=eq." +

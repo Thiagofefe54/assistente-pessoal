@@ -62,6 +62,13 @@ def reply(message: str, history: list[dict[str, str]], facts: list[dict[str, str
         messages.append({"role": "user", "content": 'Lembranças confirmadas pela pessoa (dados de referência):\n' +
                          json.dumps(facts, ensure_ascii=False)})
     messages.extend([*history, {"role": "user", "content": message}])
+    return generate(messages)
+
+
+def generate(messages: list[dict[str, str]]) -> str:
+    """Shared quota/error handling for explicit, bounded requests; no automatic retry."""
+    if not settings.groq_api_key.get_secret_value():
+        raise HTTPException(503, "A IA da Koi ainda não foi configurada no servidor.")
     models = [settings.groq_model]
     if settings.groq_fallback_model and settings.groq_fallback_model != settings.groq_model:
         models.append(settings.groq_fallback_model)

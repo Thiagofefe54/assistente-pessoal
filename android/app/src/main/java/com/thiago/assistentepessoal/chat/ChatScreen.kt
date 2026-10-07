@@ -25,7 +25,7 @@ import com.thiago.assistentepessoal.R
 import kotlin.math.sin
 
 @Composable
-fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit) {
+fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) -> Unit = {}) {
     val app=LocalContext.current.applicationContext as KoiwaiApplication
     val repository by app.repositories.collectAsState()
     val account by app.auth.account.collectAsState()
@@ -72,7 +72,7 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit) {
                     OrbitEmblem("spark",KoiColors.Purple,Modifier.size(100.dp))
                     Text("Vamos conversar?",fontSize=26.sp,fontWeight=FontWeight.Bold)
                     Text("Um pensamento, uma ideia, seu dia.\nEste espaço é seu.",color=KoiColors.Muted,fontSize=14.sp)
-                    KoiChip("Respostas de teste nesta versão",KoiColors.Blue)
+                    KoiChip("Seu espaço com a Koi",KoiColors.Blue)
                 }
             }
             messages.forEachIndexed { index,message ->
@@ -83,6 +83,11 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit) {
             }
         }
         if(busy && history!=null) ProcessingIndicator()
+        messages.lastOrNull { it.role=="user" && it.status==MessageStatus.SENT }?.let { last ->
+            if(account!=null && !busy) TextButton(onClick={onJournal(last.localDate)},modifier=Modifier.fillMaxWidth()) {
+                Text("✦ Resumo e lembranças desta conversa",fontSize=12.sp,color=KoiColors.Blue)
+            }
+        }
         if(input.length>8000) Text("Envie até 8.000 caracteres por mensagem.",color=KoiColors.Red,fontSize=12.sp)
         error?.let {Text(it,color=KoiColors.Red,fontSize=12.sp,modifier=Modifier.padding(bottom=8.dp))}
         Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(22.dp)).background(KoiColors.Card.copy(alpha=.96f)).border(1.dp,KoiColors.Purple.copy(alpha=.35f),RoundedCornerShape(22.dp)).padding(6.dp),verticalAlignment=Alignment.CenterVertically) {

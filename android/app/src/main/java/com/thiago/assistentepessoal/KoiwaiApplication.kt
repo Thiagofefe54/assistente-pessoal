@@ -4,6 +4,8 @@ import android.app.Application
 import com.thiago.assistentepessoal.chat.*
 import com.thiago.assistentepessoal.cloud.*
 import com.thiago.assistentepessoal.memory.MemoryRepository
+import com.thiago.assistentepessoal.memory.JournalRepository
+import com.thiago.assistentepessoal.routine.TaskRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -21,12 +23,20 @@ class KoiwaiApplication : Application() {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val _memories = MutableStateFlow<MemoryRepository?>(null)
     val memories = _memories.asStateFlow()
+    private val _tasks = MutableStateFlow<TaskRepository?>(null)
+    val tasks = _tasks.asStateFlow()
+    private val _journal = MutableStateFlow<JournalRepository?>(null)
+    val journal = _journal.asStateFlow()
     private var memoryOwner: String? = null
     private fun database(id: String?): ChatDatabase = databases.getOrPut(id ?: "local") { ChatDatabase.open(this, id) }
     private fun activate(account: Account?) {
         if(memoryOwner != account?.id) {
             memoryOwner = account?.id
             _memories.value = account?.let { MemoryRepository(auth,it.id) }
+            _tasks.value?.close()
+            _journal.value?.close()
+            _tasks.value = account?.let { TaskRepository(auth,it.id) }
+            _journal.value = account?.let { JournalRepository(auth,it.id) }
         }
         val sync = account?.let { CloudSync(this, auth, it.id, database(it.id).messages()) }
         cloudSync = sync

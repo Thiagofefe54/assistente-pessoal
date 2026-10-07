@@ -25,6 +25,7 @@ import androidx.compose.ui.unit.*
 import com.thiago.assistentepessoal.chat.*
 import com.thiago.assistentepessoal.cloud.AccountScreen
 import com.thiago.assistentepessoal.memory.*
+import com.thiago.assistentepessoal.routine.TasksScreen
 import kotlinx.coroutines.delay
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -89,10 +90,10 @@ fun KoiwaiNavigation() {
                     states.SaveableStateProvider("$route:${account?.id ?: "local"}") {
                         when(route) {
                             "home" -> HomeScreen({selected="chat"},{selected="routine"},{openAccount("home")})
-                            "chat" -> ChatScreen({back()},{openAccount("chat")})
+                            "chat" -> ChatScreen({back()},{openAccount("chat")},{day=it;selected="memory"})
                             "memory" -> MemoryScreen(day,{day=it},{day=null},{selected="facts"})
                             "facts" -> MemoriesScreen({selected="memory"},{openAccount("facts")})
-                            "routine" -> RoutineScreen(category,{category=it},{category=null})
+                            "routine" -> if(category=="Tarefas") TasksScreen({category=null},{openAccount("routine")}) else RoutineScreen(category,{category=it},{category=null})
                             "settings" -> SettingsScreen {openAccount("settings")}
                             "account" -> AccountScreen {back()}
                         }
@@ -107,6 +108,9 @@ fun KoiwaiNavigation() {
 private fun HomeScreen(onChat: () -> Unit, onRoutine: () -> Unit, onAccount: () -> Unit) {
     val app=LocalContext.current.applicationContext as KoiwaiApplication
     val account by app.auth.account.collectAsState()
+    val tasksRepo by app.tasks.collectAsState()
+    val tasks=tasksRepo?.tasks?.collectAsState()?.value
+    LaunchedEffect(tasksRepo) {tasksRepo?.refresh()}
     val prefs=LocalContext.current.getSharedPreferences("koiwai-preferences",0)
     val treatment=prefs.getString("treatment","Mestre") ?: "Mestre"
     var now by remember { mutableStateOf(ZonedDateTime.now()) }
@@ -148,7 +152,9 @@ private fun HomeScreen(onChat: () -> Unit, onRoutine: () -> Unit, onAccount: () 
                 Text("Próximas tarefas",fontWeight=FontWeight.SemiBold,modifier=Modifier.weight(1f).padding(start=10.dp))
                 KoiGlyph("arrow",KoiColors.Muted,Modifier.size(20.dp))
             }
-            Text("Um espaço para seus próximos passos.",color=KoiColors.Muted,fontSize=13.sp)
+            Text(if(account==null) "Entre na sua conta para organizar suas missões."
+                else if(tasks==null) "Abra Rotina para conferir suas tarefas."
+                else "${tasks.count {it.completedAt==null}} pendentes • ${tasks.count {it.overdue()}} vencidas",color=KoiColors.Muted,fontSize=13.sp)
         }
         KoiAction("✦  Conversar comigo",onChat,Modifier.fillMaxWidth())
         Spacer(Modifier.height(4.dp))
@@ -225,6 +231,7 @@ private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit, 
             item { Text("Relatórios periódicos chegam em uma próxima etapa. Suas lembranças já podem ser revisadas acima.",color=KoiColors.Muted,fontSize=12.sp) }
         } else {
             item { TextButton(onClick=onBack) {Text("← Todos os dias")}; KoiChip("Registro original",KoiColors.Blue) }
+            item { JournalPanel(day,messages) }
             items(messages.filter{it.localDate==day},key={it.id}) { message ->
                 KoiPanel(Modifier.fillMaxWidth(),accent=if(message.role=="user") KoiColors.Purple else KoiColors.Blue) {
                     Eyebrow("${messageTime(message)}  /  ${if(message.role=="user") "VOCÊ" else "KOIWAI"}")
@@ -282,7 +289,7 @@ private fun RoutineScreen(category:String?,onCategory:(String)->Unit,onBack:()->
                         Column(Modifier.weight(1f)) { Eyebrow("SEU FOCO",KoiColors.Red); Spacer(Modifier.height(10.dp)); Text("Tarefas",fontSize=26.sp,fontWeight=FontWeight.Bold);Text(areas[0].subtitle,color=KoiColors.Muted,fontSize=13.sp) }
                         OrbitEmblem("tasks",KoiColors.Red,Modifier.size(88.dp))
                     }
-                    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){KoiChip("Em preparação",KoiColors.Red);KoiGlyph("arrow",KoiColors.Red)}
+                    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){KoiChip("Suas missões",KoiColors.Red);KoiGlyph("arrow",KoiColors.Red)}
                 }
             }
             items(areas.drop(1).chunked(2)) { pair ->

@@ -3,6 +3,7 @@ from fastapi import FastAPI
 
 from backend.app.api.routes.health import router as health_router
 from backend.app.core.config import settings
+from backend.app.api.routes.journal import router as journal_router
 
 
 app = FastAPI(
@@ -29,3 +30,4 @@ app.include_router(
     chat_router,
     prefix="/api/v1",
 )
+app.include_router(journal_router, prefix="/api/v1")
