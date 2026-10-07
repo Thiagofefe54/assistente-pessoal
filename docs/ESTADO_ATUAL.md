@@ -215,3 +215,9 @@ moderados e linguagem cotidiana; precisão e cuidado em assuntos sérios mantido
 “Dois! 😄 Essa eu tirei de letra. Brincadeira boa, hein? 😜”. Publicação desse
 ajuste é registrada abaixo. Resumo canônico em CONTINUIDADE_KOIWAI.md e instrução
 de retomada no AGENTS.md do repositório. Não foram gravados segredos no resumo.
+
+Render confirmou o ajuste de personalidade como Live no commit 85aada2.
+Health HTTPS respondeu 200 após a publicação. O texto do prompt é uma orientação
+de comportamento, não garantia de frases idênticas em toda conversa. A mudança
+já vale para próximas chamadas do APK instalado. A observação do tom pelo usuário
+fica como próxima conferência, sem necessidade de outra instalação.

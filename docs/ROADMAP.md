@@ -33,7 +33,7 @@ cadastros de Rotina e Windows continuam pendentes.
 
 1. Concluído: Groq, publicação gratuita e conversa real autenticada no Poco.
 2. Concluído: lembranças confirmadas, criação/edição/exclusão e uso no contexto.
-3. Ajuste de personalidade alegre e natural em publicação; observar no uso real.
+3. Ajuste de personalidade alegre e natural publicado; observar no uso real.
 4. Próximo: sugestões revisáveis da IA e resumos diários com fontes.
 5. Pendências da fundação: recuperação de conta, limites próprios por usuário e
    observação do uso com o computador fisicamente desligado.

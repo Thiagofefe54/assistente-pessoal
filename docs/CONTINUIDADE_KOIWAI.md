@@ -21,11 +21,17 @@ emojis moderados; nada de tom técnico ou burocrático sem necessidade. A identi
 apelidos/elogios, inventar fatos ou fingir ações. Isso é configuração de instruções,
 não treinamento de um modelo do zero. Prompt em backend/app/core/ai.py.
 
+A especificação original DOCX e o chat Antigo orientaram o plano em entregas
+anteriores. Não foram reabertos neste checkpoint; este resumo deriva do código,
+da documentação existente, das decisões do usuário e dos testes registrados.
+
 ## Onde está o trabalho
 
 - Repositório real: `C:/Thiago/Projetos/assistente-pessoal`.
 - GitHub: https://github.com/Thiagofefe54/assistente-pessoal, branch main.
 - Backend: https://koiwai-backend.onrender.com, Render Free, deploy manual.
+  Último código publicado: commit 85aada2, personalidade mais alegre; Live e health 200.
+  Commits posteriores de documentação podem ser mais recentes sem novo deploy.
 - Android: Kotlin/Compose, Room e WorkManager; backend: Python/FastAPI.
 - Supabase: projeto Koiwai, Auth e Postgres com RLS por dono.
 - A pasta do projeto ChatGPT é um espelho de referências; `sources/` é somente leitura.
@@ -104,7 +110,8 @@ seguro. Gestão de chaves pelo app ainda não implementada.
 
 ## O que falta e próximos pequenos objetivos
 
-1. Publicar o ajuste de personalidade; memória e navegação já verificadas no Poco.
+1. Observar no uso real o ajuste de personalidade já publicado; memória e navegação
+   verificadas no Poco. Próxima implementação: sugestões revisáveis e resumos diários.
 2. Observar o tom no uso real e testar uso com PC realmente desligado quando conveniente.
 3. Sugerir lembranças a partir de conversas, sempre com revisão antes de salvar.
 4. Resumo diário com fontes, cobertura explícita e atualização após sincronização tardia.
