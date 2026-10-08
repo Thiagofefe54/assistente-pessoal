@@ -36,6 +36,23 @@ async def call(path='/api/v1/chat', scheme='https', token=None, body=None, metho
 
 
 class AuthTests(unittest.IsolatedAsyncioTestCase):
+    async def test_image_search_and_personal_undo_require_auth(self):
+        import base64
+        for body in ({'message':'Pesquise na internet Android'}, {'message':'Analise','image_jpeg_base64':base64.b64encode(b'\xff\xd8\xff\xe0fixture').decode()}):
+            with patch('backend.app.api.routes.chat.generate') as model:
+                status,_=await call(body=body)
+                self.assertEqual(401,status);model.assert_not_called()
+        status,_=await call(path='/api/v1/chat/personal-actions/00000000-0000-0000-0000-000000000001/undo')
+        self.assertEqual(401,status)
+
+    async def test_search_does_not_forward_private_history_or_mutate_records(self):
+        self.upstream({'id':USER})
+        with patch('backend.app.api.routes.chat.generate',return_value='Fonte pública') as model,patch('backend.app.api.routes.chat.personal_conversation') as personal:
+            status,result=await call(token='Bearer private-test-token',body={'message':'Pesquise na internet documentação do Android','history':[{'role':'user','content':'Private history should stay out'}]})
+        self.assertEqual(200,status);self.assertIsNone(result['action_receipt'])
+        self.assertEqual(2,len(model.call_args.args[0]));self.assertTrue(model.call_args.kwargs['web'])
+        self.memory.assert_not_called();self.tasks.assert_not_called();personal.assert_not_called()
+
     async def test_direct_chat_requires_identity_and_reports_require_verified_auth(self):
         self.upstream({'id': USER})
         status,_=await call(token='Bearer private-test-token',body={'message':'Crie tarefa','task_mode':'direct'})

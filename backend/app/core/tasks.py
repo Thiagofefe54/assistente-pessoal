@@ -48,9 +48,10 @@ class TaskProposal(BaseModel):
         return self
 
 
-def task_context(owner: UUID, authorization: str, timezone: str, message: str) -> dict:
+def task_context(owner: UUID, authorization: str, timezone: str, message: str, requested_at: datetime | None = None) -> dict:
     try:
-        today = datetime.now(ZoneInfo(timezone)).date()
+        now = (requested_at or datetime.now(ZoneInfo(timezone))).astimezone(ZoneInfo(timezone))
+        today = now.date()
     except (ValueError, ZoneInfoNotFoundError):
         raise HTTPException(422, 'Escolha um fuso horário válido.') from None
     rows = []
@@ -87,7 +88,7 @@ def task_context(owner: UUID, authorization: str, timezone: str, message: str) -
         same=[t for t in rows if t['title'].casefold()==r['title'].casefold() and (t.get('completed_at') is None)==(r.get('completed_at') is None) and (t.get('archived_at') is None)==(r.get('archived_at') is None)]
         r['same_title_count']=len(same)
         r['same_title_date_count']=sum(t.get('due_date')==r.get('due_date') for t in same)
-    return {'today': today.isoformat(), 'timezone': timezone, 'focus_date': focus.isoformat(),
+    return {'today': today.isoformat(), 'now': now.isoformat(), 'timezone': timezone, 'focus_date': focus.isoformat(),
         'total': len(rows), 'pending': sum(r.get('archived_at') is None and r.get('completed_at') is None for r in rows),
         'focus_pending': sum(r.get('archived_at') is None and r.get('completed_at') is None and r.get('due_date') == focus.isoformat() for r in rows),
         'complete_list': len(rows) <= 60, 'shown': len(selected), 'tasks': selected}

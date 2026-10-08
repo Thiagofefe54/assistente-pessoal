@@ -8,6 +8,7 @@ import com.thiago.assistentepessoal.memory.JournalRepository
 import com.thiago.assistentepessoal.memory.PeriodReports
 import com.thiago.assistentepessoal.routine.TaskRepository
 import com.thiago.assistentepessoal.routine.TaskReminders
+import com.thiago.assistentepessoal.routine.PersonalRepository
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
@@ -31,6 +32,8 @@ class KoiwaiApplication : Application() {
     val memories = _memories.asStateFlow()
     private val _tasks = MutableStateFlow<TaskRepository?>(null)
     val tasks = _tasks.asStateFlow()
+    private val _personal=MutableStateFlow<PersonalRepository?>(null)
+    val personal=_personal.asStateFlow()
     private val _journal = MutableStateFlow<JournalRepository?>(null)
     val journal = _journal.asStateFlow()
     private var memoryOwner: String? = null
@@ -46,6 +49,8 @@ class KoiwaiApplication : Application() {
             _memories.value?.close()
             _memories.value = account?.let { MemoryRepository(auth,it.id) }
             _tasks.value?.close()
+            _personal.value?.close()
+            _personal.value=account?.let {PersonalRepository(auth,it.id)}
             _journal.value?.close()
             _tasks.value = account?.let { account -> TaskRepository(auth,account.id) { tasks ->
                 if(auth.account.value?.id==account.id) reminders.reconcile(account.id,tasks)
@@ -58,6 +63,10 @@ class KoiwaiApplication : Application() {
             ChatRepository(database(account?.id), onSaved = { sync?.schedule() },
                 tokenProvider = { account?.let { auth.token(it.id) } },onTaskChanged={ receipt ->
                     if(auth.account.value?.id==account?.id) {
+                        val tool=org.json.JSONObject(receipt)
+                        if(tool.optString("tool")=="personal") {
+                            if(tool.optString("target_kind")=="memory")_memories.value?.refresh() else _personal.value?.refresh()
+                        }
                         org.json.JSONObject(receipt).optString("task_id").takeIf {it.isNotBlank()}?.let {reminders.invalidate(it)}
                         _tasks.value?.refresh()
                     }

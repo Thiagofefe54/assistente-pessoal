@@ -26,6 +26,9 @@ import com.thiago.assistentepessoal.chat.*
 import com.thiago.assistentepessoal.cloud.AccountScreen
 import com.thiago.assistentepessoal.memory.*
 import com.thiago.assistentepessoal.routine.TasksScreen
+import com.thiago.assistentepessoal.routine.PersonalScreen
+import com.thiago.assistentepessoal.tools.ToolsScreen
+import com.thiago.assistentepessoal.tools.WeatherPanel
 import kotlinx.coroutines.delay
 import java.time.*
 import java.time.format.DateTimeFormatter
@@ -95,12 +98,19 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null) {
                     states.SaveableStateProvider("$route:${account?.id ?: "local"}") {
                         when(route) {
                             "home" -> HomeScreen({selected="chat"},{selected="routine"},{openAccount("home")})
-                            "chat" -> ChatScreen({back()},{openAccount("chat")},{day=it;selected="memory"})
+                            "chat" -> ChatScreen({back()},{openAccount("chat")},{day=it;selected="memory"},{selected="routine";category="Ferramentas"},{area->
+                                if(area=="Lembranças") selected="facts" else {selected="routine";category=area}
+                            })
                             "memory" -> MemoryScreen(day,{day=it},{day=null},{selected="facts"},{selected="reports"})
                             "reports" -> key(reportRequest) {ReportsScreen({selected="memory"},{day=it;selected="memory"},
                                 reportRequest?.split('|')?.get(0) ?: "week",reportRequest?.split('|')?.get(1) ?: java.time.LocalDate.now().toString())}
                             "facts" -> MemoriesScreen({selected="memory"},{openAccount("facts")})
-                            "routine" -> if(category=="Tarefas") TasksScreen({category=null},{openAccount("routine")}) else RoutineScreen(category,{category=it},{category=null})
+                            "routine" -> when(category) {
+                                "Tarefas","Agenda","Hábitos" -> key(category){TasksScreen({category=null},{openAccount("routine")},category ?: "Tarefas")}
+                                "Notas","Listas","Metas","Treinos","Finanças","Registros" -> key(category){PersonalScreen(if(category=="Registros") "Notas" else category!!,{category=null},{openAccount("routine")})}
+                                "Ferramentas" -> ToolsScreen({category=null})
+                                else -> RoutineScreen(null,{category=it},{category=null})
+                            }
                             "settings" -> SettingsScreen {openAccount("settings")}
                             "account" -> AccountScreen {back()}
                         }
@@ -142,11 +152,6 @@ private fun HomeScreen(onChat: () -> Unit, onRoutine: () -> Unit, onAccount: () 
             Text("Sua assistente pessoal",color=KoiColors.Muted,fontSize=13.sp)
         }
         Row(horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-            KoiPanel(Modifier.weight(1f),accent=KoiColors.Purple) {
-                Eyebrow("CLIMA",KoiColors.Purple)
-                Text("— °C",fontSize=27.sp,fontWeight=FontWeight.Light)
-                Text("Ainda não configurado",color=KoiColors.Muted,fontSize=11.sp)
-            }
             KoiPanel(Modifier.weight(1f),accent=KoiColors.Blue,onClick=onAccount) {
                 Eyebrow("SUA CONTA",KoiColors.Blue)
                 Text(if(account==null) "Local" else "Conectada",fontSize=21.sp,fontWeight=FontWeight.SemiBold)
@@ -164,6 +169,7 @@ private fun HomeScreen(onChat: () -> Unit, onRoutine: () -> Unit, onAccount: () 
                 else "${tasks.count {it.completedAt==null && it.archivedAt==null}} pendentes • ${tasks.count {it.overdue()}} vencidas",color=KoiColors.Muted,fontSize=13.sp)
         }
         KoiAction("✦  Conversar comigo",onChat,Modifier.fillMaxWidth())
+        WeatherPanel(compact=true)
         Spacer(Modifier.height(4.dp))
     }
 }
@@ -271,7 +277,11 @@ private val areas=listOf(
     RoutineArea("Agenda","agenda","Tempo para o que importa.",KoiColors.Blue),
     RoutineArea("Notas","notes","Dê espaço às suas ideias.",KoiColors.Purple),
     RoutineArea("Treinos","training","Sua evolução em movimento.",KoiColors.Purple),
-    RoutineArea("Finanças","finance","Clareza para suas escolhas.",KoiColors.Blue))
+    RoutineArea("Finanças","finance","Clareza para suas escolhas.",KoiColors.Blue),
+    RoutineArea("Listas","notes","Cada item é uma conquista.",KoiColors.Blue),
+    RoutineArea("Metas","tasks","Seus planos ganham forma.",KoiColors.Red),
+    RoutineArea("Hábitos","training","Constância sem cobrança.",KoiColors.Purple),
+    RoutineArea("Ferramentas","spark","Calcular, pesquisar e compartilhar.",KoiColors.Blue))
 
 @Composable
 private fun RoutineScreen(category:String?,onCategory:(String)->Unit,onBack:()->Unit) {
@@ -312,7 +322,7 @@ private fun RoutineScreen(category:String?,onCategory:(String)->Unit,onBack:()->
                             Spacer(Modifier.height(3.dp))
                             Text(item.name,fontSize=19.sp,fontWeight=FontWeight.SemiBold)
                             Text(item.subtitle,color=KoiColors.Muted,fontSize=12.sp,lineHeight=17.sp)
-                            Text("Em preparação",color=item.accent,fontSize=10.sp)
+                            Text("Abrir →",color=item.accent,fontSize=10.sp)
                         }
                     }
                 }
@@ -329,6 +339,7 @@ private fun SettingsScreen(onAccount:()->Unit) {
     val prefs=LocalContext.current.getSharedPreferences("koiwai-preferences",0)
     var treatment by rememberSaveable {mutableStateOf(prefs.getString("treatment","Mestre") ?: "Mestre")}
     var reduced by remember {mutableStateOf(prefs.getBoolean("reduce-motion",false))}
+    var speak by remember {mutableStateOf(prefs.getBoolean("speak-replies",false))}
     var saved by remember {mutableStateOf(false)}
     var detail by rememberSaveable {mutableStateOf<String?>(null)}
     LazyColumn(Modifier.fillMaxSize().imePadding(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
@@ -347,7 +358,11 @@ private fun SettingsScreen(onAccount:()->Unit) {
             }
         }
         item {
-            Eyebrow("EXPERIÊNCIA")
+            Eyebrow("EXPERIÊNCIA • V1.0")
+            Row(verticalAlignment=Alignment.CenterVertically){
+                Column(Modifier.weight(1f)){Text("Ouvir novas respostas");Text("Voz do Android enquanto o chat está aberto",fontSize=12.sp,color=KoiColors.Muted)}
+                Switch(checked=speak,onCheckedChange={speak=it;prefs.edit().putBoolean("speak-replies",it).apply()})
+            }
             Spacer(Modifier.height(10.dp))
             KoiPanel(Modifier.fillMaxWidth()) {
                 Row(verticalAlignment=Alignment.CenterVertically) {

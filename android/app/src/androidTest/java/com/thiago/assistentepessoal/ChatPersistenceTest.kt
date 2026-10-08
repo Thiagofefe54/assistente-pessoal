@@ -10,6 +10,16 @@ import java.time.Instant
 import java.util.UUID
 
 class ChatPersistenceTest {
+    @Test fun selectedImageSurvivesTextOnlyCloudReconciliation() = runBlocking {
+        val context=InstrumentationRegistry.getInstrumentation().targetContext
+        val db=Room.inMemoryDatabaseBuilder(context,ChatDatabase::class.java).build()
+        try{
+            val message=ChatMessage(role="user",content="Imagem fictícia",imageJpegBase64="fixture-base64")
+            db.messages().insert(message)
+            db.messages().merge(listOf(message.copy(sequence=0,synced=true,imageJpegBase64=null)))
+            assertEquals("fixture-base64",db.messages().find(message.id)?.imageJpegBase64)
+        }finally{db.close()}
+    }
     @Test fun actionReceiptSurvivesSyncAndUndoKeepsConversation() = runBlocking {
         val context=InstrumentationRegistry.getInstrumentation().targetContext
         val db=Room.inMemoryDatabaseBuilder(context,ChatDatabase::class.java).build()
@@ -56,7 +66,7 @@ class ChatPersistenceTest {
         sqlite.version = 1
         sqlite.close()
         val db = Room.databaseBuilder(context, ChatDatabase::class.java, name)
-            .addMigrations(ChatDatabase.MIGRATION_1_2,ChatDatabase.MIGRATION_2_3,ChatDatabase.MIGRATION_3_4).build()
+            .addMigrations(ChatDatabase.MIGRATION_1_2,ChatDatabase.MIGRATION_2_3,ChatDatabase.MIGRATION_3_4,ChatDatabase.MIGRATION_4_5).build()
         try {
             val saved = db.messages().getMessages().single()
             assertEquals("Conversa anterior", saved.content)

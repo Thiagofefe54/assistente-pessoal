@@ -1,7 +1,11 @@
 # Roadmap da Koiwai
 
-Documento de evolução, atualizado em 07/10/2026. Sem datas de entrega prometidas.
-A versão da especificação e o versionName do template Android não são releases.
+Documento de evolução, atualizado em 08/10/2026. Sem datas de entrega prometidas.
+Numeração atual definida pelo usuário: **V1.0** para o pacote móvel amplo,
+**V1.1** para correções, **V2.0** para a etapa definitiva após validação.
+[Entrega V1.0 e próximos miniobjetivos](ENTREGA_V1_0.md). O APK ainda aguarda
+instalação/testes físicos; Windows continua posterior. A tabela histórica abaixo
+é um planejamento anterior e não substitui essa numeração.
 
 Checkpoint atual: [Pack 2](PACK_2.md) implementa ações diretas e reversíveis de
 tarefas no chat, relatórios por período e preparação/notificação opcionais no

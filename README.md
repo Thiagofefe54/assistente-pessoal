@@ -21,6 +21,8 @@
 
 Para retomar o desenvolvimento, leia o [resumo de continuidade](docs/CONTINUIDADE_KOIWAI.md).
 
+**Pacote móvel V1.0 em validação:** novas áreas, voz, imagens e pesquisa. [Relatório completo e limites](docs/ENTREGA_V1_0.md). O novo APK aguarda instalação e conferência no Poco; implementação não equivale a validação física.
+
 ## O projeto
 
 A Koiwai nasceu de uma vontade: ter uma assistente pessoal que acompanhe a vida de verdade, com identidade própria, continuidade entre dispositivos e uma memória que possa ser consultada e corrigida.
@@ -42,10 +44,11 @@ A personagem é ilustrada: animação da personagem e voz própria são possibil
 | Área | Entrega atual |
 | :--- | :--- |
 | **Home** | Personagem, saudação personalizável, data/hora reais, estado da conta, contagem de tarefas e atalhos. |
-| **Chat** | Conversa por texto com Groq via HTTPS; contexto recente, lembranças e tarefas atuais. Novo APK do Pack 2 executa pedidos claros de criar, concluir, editar, reabrir, arquivar e desfazer, sem revisão repetida. |
+| **Chat** | Conversa com Groq via HTTPS; contexto recente, lembranças e tarefas atuais. V1.0 acrescenta registros pessoais, ditado, leitura em voz, imagens escolhidas e pesquisa explícita na internet com fontes. Novo APK do Pack 2 executa pedidos claros de criar, concluir, editar, reabrir, arquivar e desfazer, sem revisão repetida. |
 | **Memória** | Diário por dia e busca; lembranças confirmadas; sugestões revisáveis e resumos diários. Pack 2 acrescenta semana, mês, semestre e ano com fontes e preparação opcional pelo Android. |
-| **Rotina** | Tarefas reais na conta: criar, editar, concluir, reabrir e apagar; data, horário, repetição e últimas conquistas. Agenda, notas, treinos e finanças continuam planejados. |
-| **Configurações** | Personalização da saudação, redução de movimento e acesso à conta. |
+| **Rotina** | Tarefas reais na conta: criar, editar, concluir, reabrir e apagar; data, horário, repetição e últimas conquistas. V1.0 acrescenta agenda e hábitos como vistas das tarefas, notas, listas, metas, registros de treino e finanças BRL; consulta e edição na conta, arquivos recuperáveis e desfazer. |
+| **Configurações** | Personalização da saudação, redução de movimento, leitura opcional das novas respostas e acesso à conta. |
+| **Ferramentas V1.0** | Calculadora local, clima por cidade, busca no navegador, timer de foco, TXT e compartilhamento; formulário no calendário instalado. |
 | **Conta** | Cadastro/login por e-mail, confirmação de e-mail, sessão criptografada e sincronização. |
 | **Dados** | Banco local por conta, importação explícita do histórico local e reconciliação por UUID na nuvem. |
 | **Servidor** | API FastAPI; rota protegida validando a conta no Supabase; demonstração separada, disponível apenas em desenvolvimento. |
@@ -58,8 +61,8 @@ No novo APK, experimente “Quais são minhas tarefas de hoje?”, “Adicione e
 
 - **Ampliar o contexto:** melhorar a seleção de informações relevantes além da conversa recente já disponível.
 - **Construir memória útil:** separar registros diários, fatos confirmados e resumos com referências às conversas originais.
-- **Ajudar a organizar a vida:** agenda, tarefas, notas, treinos e finanças com dados estruturados.
-- **Falar e ouvir:** começar por um botão de voz, com interrupção da fala; estudar ativação por “Koi” depois.
+- **Ampliar a organização:** prioridades/subtarefas, calendário integrado, offline para registros pessoais e busca de notas longas.
+- **Ampliar a voz:** validar o botão de ditado/leitura da V1.0 no aparelho; estudar ativação por “Koi” depois.
 - **Acompanhar vários dispositivos:** manter uma conta e continuidade entre Android e Windows.
 - **Agir com autorização:** executar ações permitidas, conferir resultados e pedir confirmação para operações sensíveis.
 - **Ser proativa quando configurada:** oferecer lembretes e relatórios sem depender de manter o computador ligado.

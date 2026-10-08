@@ -32,9 +32,10 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
         }
     }
 
-    fun send(text: String): String? {
+    fun send(text: String,imageJpegBase64:String?=null): String? {
         if (_busy.value || messages.value == null || text.isBlank() || text.trim().length > 8000) return null
-        val message = ChatMessage(role = "user", content = text.trim(), status = MessageStatus.SENDING)
+        if(imageJpegBase64!=null && imageJpegBase64.length>1100000)return null
+        val message = ChatMessage(role = "user", content = text.trim(), status = MessageStatus.SENDING,imageJpegBase64=imageJpegBase64)
         perform(message, false)
         return message.id
     }
@@ -57,8 +58,8 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
         scope.launch {
             try {
                 val id=org.json.JSONObject(message.actionReceiptJson).getString("request_id")
-                val reply=withContext(Dispatchers.IO){backend.undo(id)}
-                val user=ChatMessage(role="user",content="Desfaça a ação anterior sobre esta tarefa.")
+                val reply=withContext(Dispatchers.IO){backend.undo(id,org.json.JSONObject(message.actionReceiptJson).optString("tool")=="personal")}
+                val user=ChatMessage(role="user",content="Desfaça esta ação salva.")
                 dao.saveUndo(user,reply,message.id)
                 scheduleSaved(message.actionReceiptJson)
             } catch(e:Exception) {
@@ -81,7 +82,10 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
                     dao.insert(message)
                 }
                 val context = recentChatContext(dao.recentContext(message.id, message.occurredAt), message)
-                val reply = withContext(Dispatchers.IO) { backend.sendResult(message.content, context,message.id,message.timezone) }
+                val reply = withContext(Dispatchers.IO) {
+                    (if(message.imageJpegBase64==null)com.thiago.assistentepessoal.tools.calculationReply(message.content) else null)?.let{ChatResult(it)}
+                        ?: backend.sendResult(message.content, context,message.id,message.timezone,message.occurredAt,message.imageJpegBase64)
+                }
                 dao.complete(message, reply.reply, reply.taskDraftJson,reply.actionReceiptJson)
                 scheduleSaved(reply.actionReceiptJson)
             } catch (e: Exception) {

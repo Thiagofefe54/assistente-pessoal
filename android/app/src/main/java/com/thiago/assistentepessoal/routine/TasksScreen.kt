@@ -22,7 +22,7 @@ import kotlinx.coroutines.delay
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun TasksScreen(onBack: () -> Unit, onAccount: () -> Unit) {
+fun TasksScreen(onBack: () -> Unit, onAccount: () -> Unit, mode:String="Tarefas") {
     val app=LocalContext.current.applicationContext as KoiwaiApplication
     val repo by app.tasks.collectAsState()
     if(repo==null) Column(Modifier.fillMaxSize().padding(22.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
@@ -30,11 +30,11 @@ fun TasksScreen(onBack: () -> Unit, onAccount: () -> Unit) {
         Text("Suas missões",fontSize=32.sp,fontWeight=FontWeight.Bold)
         Text("Entre na sua conta para salvar e sincronizar tarefas.",color=KoiColors.Muted)
         KoiAction("Minha conta",onAccount,Modifier.fillMaxWidth())
-    } else key(repo) { ConnectedTasks(repo!!,onBack) }
+    } else key(repo) { ConnectedTasks(repo!!,onBack,mode) }
 }
 
 @Composable
-private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
+private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit, mode:String) {
     val tasks by repo.tasks.collectAsState()
     val busy by repo.busy.collectAsState()
     val info by repo.info.collectAsState()
@@ -47,13 +47,13 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
     var now by remember { mutableStateOf(Instant.now()) }
     LaunchedEffect(Unit) {while(true) {now=Instant.now();delay(30000)}}
     LaunchedEffect(repo) { repo.refresh() }
-    val visible=tasks.orEmpty().filter { when(filter) {"today"->it.today(now);"archived"->it.archivedAt!=null;"done"->it.archivedAt==null && it.completedAt!=null;"late"->it.overdue(now);else->it.archivedAt==null && it.completedAt==null} }
+    val visible=tasks.orEmpty().filter { (mode!="Agenda" || it.date!=null) && (mode!="Hábitos" || it.recurrence!="none") }.filter { when(filter) {"today"->it.today(now);"archived"->it.archivedAt!=null;"done"->it.archivedAt==null && it.completedAt!=null;"late"->it.overdue(now);else->it.archivedAt==null && it.completedAt==null} }
         .sortedWith(compareBy<KoiTask> { it.date ?: "9999-12-31" }.thenBy { it.time ?: "23:59" })
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
         item {
             TextButton(onClick=onBack) { Text("← Rotina") }
             Eyebrow("PAINEL DE MISSÕES",KoiColors.Red)
-            Text("Um passo.\nUma conquista.",fontSize=32.sp,lineHeight=38.sp,fontWeight=FontWeight.Bold)
+            Text(if(mode=="Tarefas") "Um passo.\nUma conquista." else mode,fontSize=32.sp,lineHeight=38.sp,fontWeight=FontWeight.Bold)
             Text("Seus próximos passos, salvos na sua conta.",color=KoiColors.Muted)
         }
         item {
@@ -102,7 +102,7 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit) {
             }
         }
     }
-    if(editor) TaskEditor(editing,{if(!busy)editor=false},saving=busy,info=info) {
+    if(editor) TaskEditor(editing,{if(!busy)editor=false},initial=if(mode=="Hábitos")TaskDraft("","",LocalDate.now().toString(),"","daily") else if(mode=="Agenda")TaskDraft("","",LocalDate.now().toString(),"","none") else null,saving=busy,info=info) {
         repo.save(it,editing,creationId=creationId,onSaved={editor=false})
     }
     deleting?.let { task -> AlertDialog(onDismissRequest={deleting=null},title={Text("Apagar tarefa?")},

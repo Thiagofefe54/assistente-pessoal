@@ -25,7 +25,7 @@ android {
         applicationId = "com.thiago.assistentepessoal"
         minSdk = 26
         targetSdk = 37
-        versionCode = 1
+        versionCode = 2
         versionName = "1.0"
 
         // Pass -PkoiBackendUrl=https://your-server.example for cloud builds.

@@ -25,10 +25,19 @@ import com.thiago.assistentepessoal.R
 import kotlin.math.sin
 import com.thiago.assistentepessoal.routine.TaskEditor
 import java.util.UUID
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import android.app.Activity
+import android.content.Intent
+import android.speech.RecognizerIntent
+import com.thiago.assistentepessoal.tools.*
+import kotlinx.coroutines.*
+import androidx.compose.ui.graphics.asImageBitmap
 
 @Composable
-fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) -> Unit = {}) {
-    val app=LocalContext.current.applicationContext as KoiwaiApplication
+fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) -> Unit = {},onTools:()->Unit={},onOpenAction:(String)->Unit={}) {
+    val context=LocalContext.current
+    val app=context.applicationContext as KoiwaiApplication
     val repository by app.repositories.collectAsState()
     val account by app.auth.account.collectAsState()
     val history by repository.messages.collectAsState()
@@ -38,6 +47,22 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
     var reviewing by remember(repository) {mutableStateOf<ChatMessage?>(null)}
     val messages=history.orEmpty()
     var input by rememberSaveable {mutableStateOf("")}
+    var image by remember{mutableStateOf<String?>(null)}
+    var mediaInfo by remember{mutableStateOf<String?>(null)}
+    val mediaScope=rememberCoroutineScope()
+    val voice=rememberKoiVoice()
+    val voiceLauncher=rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()){result->
+        if(result.resultCode==Activity.RESULT_OK)result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()?.let{input=it.take(8000)}
+    }
+    val imageLauncher=rememberLauncherForActivityResult(ActivityResultContracts.GetContent()){uri->if(uri!=null)mediaScope.launch{
+        try{image=withContext(Dispatchers.IO){imageForKoi(context,uri)};mediaInfo="Imagem pronta. Toque em Enviar para mandar à IA. A imagem fica guardada neste celular."}
+        catch(e:Exception){if(e is CancellationException)throw e;mediaInfo=e.message ?: "Não consegui abrir a imagem."}
+    }}
+    val cameraLauncher=rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()){bitmap->if(bitmap!=null)mediaScope.launch{
+        try{image=withContext(Dispatchers.IO){jpegForKoi(bitmap)};mediaInfo="Foto pronta. Toque em Enviar para a Koi analisar."}
+        catch(e:Exception){if(e is CancellationException)throw e;mediaInfo="Não consegui preparar a foto."}
+        finally{bitmap.recycle()}
+    }}
     var pendingId by rememberSaveable {mutableStateOf<String?>(null)}
     var pendingText by rememberSaveable {mutableStateOf("")}
     val listState=rememberLazyListState()
@@ -46,6 +71,7 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
         if(pendingId!=null && messages.any{it.id==pendingId}) {
             if(input==pendingText) input=""
             pendingId=null
+            image=null
         }
     }
     LaunchedEffect(messages.lastOrNull()?.id) {
@@ -53,6 +79,11 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
             val headers=messages.indices.count{it==0 || messages[it-1].localDate!=messages[it].localDate}
             if(motion) listState.animateScrollToItem(messages.lastIndex+headers) else listState.scrollToItem(messages.lastIndex+headers)
         }
+    }
+    var observedReply by remember(repository){mutableStateOf<String?>(null)}
+    LaunchedEffect(messages.lastOrNull{it.role=="assistant"}?.id){
+        val last=messages.lastOrNull{it.role=="assistant"}
+        if(last!=null){if(observedReply!=null && last.id!=observedReply && context.getSharedPreferences("koiwai-preferences",0).getBoolean("speak-replies",false))voice.speak(last.content);observedReply=last.id}
     }
     Column(Modifier.fillMaxSize().imePadding().padding(horizontal=18.dp,vertical=10.dp)) {
         Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(10.dp)) {
@@ -86,6 +117,17 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
                 item(key=message.id) {
                     Column {
                         MessageBubble(message,busy){repository.retry(message)}
+                        if(message.role=="assistant")Row{
+                            TextButton(onClick={voice.speak(message.content)},enabled=voice.ready){Text("Ouvir")}
+                            TextButton(onClick={shareText(context,"Koiwai",message.content)}){Text("Compartilhar")}
+                        }
+                        if(message.role=="assistant"){
+                            val urls=remember(message.content){Regex("https://[^\\s<>]+") .findAll(message.content).map{it.value.trimEnd('.',',',')',']')}.distinct().take(6).toList()}
+                            if(urls.isNotEmpty())Row(Modifier.horizontalScroll(rememberScrollState())){urls.forEachIndexed{index,url->TextButton(onClick={com.thiago.assistentepessoal.tools.openIntent(context,Intent(Intent.ACTION_VIEW,android.net.Uri.parse(url)))}){Text("Abrir fonte ${index+1}")}}}
+                        }
+                        message.actionReceiptJson?.let{raw->val receipt=org.json.JSONObject(raw)
+                            TextButton(onClick={onOpenAction(if(receipt.optString("tool")=="personal")if(receipt.optString("target_kind")=="memory")"Lembranças" else when(receipt.optString("record_kind")){"list"->"Listas";"goal"->"Metas";"workout"->"Treinos";"expense","income"->"Finanças";else->"Notas"} else "Tarefas")}){Text("Ver resultado salvo →")}
+                        }
                         if(message.actionReceiptJson!=null && org.json.JSONObject(message.actionReceiptJson).optString("type")!="undo") TextButton(onClick={repository.undoAction(message)},enabled=!busy) {
                             Text("↶ Desfazer ação",color=KoiColors.Blue)
                         }
@@ -107,13 +149,26 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
         }
         if(input.length>8000) Text("Envie até 8.000 caracteres por mensagem.",color=KoiColors.Red,fontSize=12.sp)
         error?.let {Text(it,color=KoiColors.Red,fontSize=12.sp,modifier=Modifier.padding(bottom=8.dp))}
+        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())){
+            TextButton(onClick={try{voiceLauncher.launch(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM).putExtra(RecognizerIntent.EXTRA_LANGUAGE,"pt-BR").putExtra(RecognizerIntent.EXTRA_PROMPT,"Fale com a Koi"))}catch(e:android.content.ActivityNotFoundException){mediaInfo="Reconhecimento de voz não disponível. Confira o serviço de voz do Android."}},enabled=!busy){Text("🎙 Voz")}
+            TextButton(onClick={if(account!=null)imageLauncher.launch("image/*") else mediaInfo="Entre na sua conta para analisar imagens."},enabled=!busy){Text("Imagem")}
+            TextButton(onClick={try{if(account!=null)cameraLauncher.launch(null) else mediaInfo="Entre na sua conta para analisar fotos."}catch(e:android.content.ActivityNotFoundException){mediaInfo="Não há aplicativo de câmera disponível."}},enabled=!busy){Text("Câmera")}
+            TextButton(onClick=onTools){Text("Ferramentas")}
+            TextButton(onClick={voice.stop()}){Text("Parar voz")}
+        }
+        (mediaInfo ?: voice.info)?.let{Text(it,color=KoiColors.Muted,fontSize=11.sp,maxLines=3)}
+        image?.let{encoded->Row(verticalAlignment=Alignment.CenterVertically){
+            val preview=remember(encoded){runCatching{val bytes=android.util.Base64.decode(encoded,android.util.Base64.DEFAULT);android.graphics.BitmapFactory.decodeByteArray(bytes,0,bytes.size)?.asImageBitmap()}.getOrNull()}
+            preview?.let{Image(it,"Imagem escolhida",Modifier.size(60.dp))}
+            TextButton(onClick={image=null;mediaInfo=null}){Text("Remover imagem")}
+        }}
         Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(22.dp)).background(KoiColors.Card.copy(alpha=.96f)).border(1.dp,KoiColors.Purple.copy(alpha=.35f),RoundedCornerShape(22.dp)).padding(6.dp),verticalAlignment=Alignment.CenterVertically) {
             TextField(value=input,onValueChange={input=it},placeholder={Text("Digite uma mensagem…",fontSize=14.sp)},
                 modifier=Modifier.weight(1f),maxLines=4,
                 colors=TextFieldDefaults.colors(focusedContainerColor=Color.Transparent,unfocusedContainerColor=Color.Transparent,
                     focusedIndicatorColor=Color.Transparent,unfocusedIndicatorColor=Color.Transparent,cursorColor=KoiColors.Purple))
-            KoiAction(if(busy) "…" else "Enviar",{pendingText=input;pendingId=repository.send(input)},
-                enabled=!busy && history!=null && input.isNotBlank() && input.length<=8000)
+            KoiAction(if(busy) "…" else "Enviar",{pendingText=input;pendingId=repository.send(input.ifBlank{"Analise esta imagem, Koi."},image)},
+                enabled=!busy && history!=null && (input.isNotBlank() || image!=null) && input.length<=8000)
         }
     }
     reviewing?.let { message -> tasksRepo?.let { tasks ->
@@ -152,6 +207,11 @@ private fun MessageBubble(message:ChatMessage,busy:Boolean,onRetry:()->Unit) {
             .background(Brush.linearGradient(if(user) listOf(Color(0xFF54328E),Color(0xFF34285C)) else listOf(Color(0xFF201B32),Color(0xFF17182B))))
             .border(1.dp,(if(user) KoiColors.Purple else KoiColors.Blue).copy(alpha=.23f),shape).padding(15.dp),verticalArrangement=Arrangement.spacedBy(7.dp)) {
             Text(if(user) "VOCÊ" else "✦ KOIWAI",color=if(user) Color(0xFFD9C4FF) else Color(0xFF9AAFFF),fontSize=10.sp,letterSpacing=1.sp,fontWeight=FontWeight.Bold)
+            message.imageJpegBase64?.let{encoded->
+                val preview=remember(encoded){runCatching{val data=android.util.Base64.decode(encoded,android.util.Base64.DEFAULT);android.graphics.BitmapFactory.decodeByteArray(data,0,data.size)?.asImageBitmap()}.getOrNull()}
+                preview?.let{Image(it,"Imagem enviada",Modifier.fillMaxWidth().heightIn(max=180.dp))}
+                Text("Imagem guardada neste celular",fontSize=10.sp,color=KoiColors.Muted)
+            }
             SelectionContainer {Text(message.content,color=Color.White,fontSize=15.sp,lineHeight=23.sp)}
             val status=when(message.status){MessageStatus.SENDING->" • Enviando…";MessageStatus.FAILED->" • Falha no envio";else->""}
             Text(messageTime(message)+status,color=KoiColors.Muted,fontSize=10.sp,modifier=Modifier.align(Alignment.End))

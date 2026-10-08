@@ -30,7 +30,8 @@ data class ChatMessage(
     val error: String? = null,
     @ColumnInfo(defaultValue = "0") val synced: Boolean = false,
     val taskDraftJson: String? = null,
-    val actionReceiptJson: String? = null
+    val actionReceiptJson: String? = null,
+    val imageJpegBase64: String? = null
 )
 
 @Dao
@@ -87,11 +88,14 @@ abstract class ChatDao {
     }
 }
 
-@Database(entities = [ChatMessage::class], version = 4, exportSchema = true)
+@Database(entities = [ChatMessage::class], version = 5, exportSchema = true)
 abstract class ChatDatabase : RoomDatabase() {
     abstract fun messages(): ChatDao
 
     companion object {
+        val MIGRATION_4_5 = object:Migration(4,5) {
+            override fun migrate(db:SupportSQLiteDatabase){db.execSQL("ALTER TABLE messages ADD COLUMN imageJpegBase64 TEXT")}
+        }
         val MIGRATION_3_4 = object:Migration(3,4) {
             override fun migrate(db:SupportSQLiteDatabase) {db.execSQL("ALTER TABLE messages ADD COLUMN actionReceiptJson TEXT")}
         }
@@ -108,6 +112,6 @@ abstract class ChatDatabase : RoomDatabase() {
 
         fun open(context: Context, userId: String? = null): ChatDatabase = Room.databaseBuilder(
             context.applicationContext, ChatDatabase::class.java, if (userId == null) "koiwai-chat.db" else "koiwai-$userId.db"
-        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4).build()
+        ).addMigrations(MIGRATION_1_2, MIGRATION_2_3, MIGRATION_3_4, MIGRATION_4_5).build()
     }
 }

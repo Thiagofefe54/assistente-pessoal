@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     supabase_publishable_key: str = ""
     groq_api_key: SecretStr = SecretStr("")
     groq_model: str = "openai/gpt-oss-120b"
+    groq_vision_model: str = "qwen/qwen3.8-27b"
     groq_fallback_model: str = "openai/gpt-oss-20b"
     groq_timeout_seconds: int = Field(default=30, ge=5, le=45)
     groq_max_completion_tokens: int = Field(default=1536, ge=128, le=4096)

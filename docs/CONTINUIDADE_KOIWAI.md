@@ -1,5 +1,36 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint prioritário — pacote móvel V1.0, 08/10/2026
+
+LEIA ENTREGA_V1_0.md antes dos checkpoints históricos. Usuário pediu ampliação
+móvel completa e revisão enquanto o Poco fica desconectado. Não instalar nem
+alegar validação física nesta sessão. V1.0 é o nome escolhido; V1.1 para correções
+posteriores e V2.0 definitiva quando validada. Não resetar dados.
+
+Código: prazo relativo usa o instante original persistido; Rotina com agenda,
+hábitos, notas/listas/metas/treinos/finanças; registros pessoais e memória pelo
+chat com recibos/CAS/desfazer; voz do Android, imagem escolhida/câmera miniatura,
+pesquisa explícita Groq com fontes, clima Open-Meteo, calculadora, foco/TXT e
+formulário externo de calendário. Histórico migra Room 4→5; fotos locais, texto
+sincronizado. Sem vigilância contínua, pagamentos, WhatsApp ou controle Windows.
+Novos registros precisam de internet; não prometer fila offline durável.
+
+Supabase: migração personal_records_and_reversible_memory já aplicada. SQL com
+duas contas fictícias/rollback aprovado; nenhum dado pessoal alterado. RLS e CAS.
+Segurança sem novos alertas; aviso Auth de senhas vazadas desativado permanece.
+Groq real com referências fictícias/escritas simuladas confirmou nota/lista/meta/
+despesa/lembrança/consulta; ferramenta/schema separados corrigiram confusão de
+nota com memória. Pesquisa, visão de figura fictícia e clima públicos passaram.
+Backend: 73 testes. Android: 25 testes unitários, compilação e lint inicial sem
+erros (65 avisos). Nova navegação e persistência de imagem preparadas, NÃO rodadas.
+
+Build final aprovado: 25 testes Android; lint zero erros/66 avisos. APK de instalação
+android/build/releases/Koiwai-1.0.apk; hash f8090d34cef01c9d619c438f3b525579bf7ca0d874b96ad761a3f7ce33577b4e.
+GitHub/Render desta ampliação serão registrados no relatório após confirmação.
+Último APK instalado ainda é o checkpoint de conexão abaixo, não esta V1.0.
+Próximo com Poco: instalar preservando dados, conferir migração, áreas, comandos,
+voz/fotos/layout, notificações e relatórios. Só marcar o que foi executado.
+
 ## Correção mais recente — chat real, 08/10/2026
 
 O checkpoint de conexão abaixo foi insuficiente: a tela mostrou envio novo com
