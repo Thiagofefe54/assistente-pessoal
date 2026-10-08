@@ -141,7 +141,39 @@ além da recomendação de usar ExifInterface AndroidX. Voz/câmera precisam de 
 físico. Nenhum teste do novo APK foi executado no Poco nesta sessão.
 
 APK: `android/build/releases/Koiwai-1.0.apk`, versão 1.0, versionCode 2, Room 5.
-SHA256: `f8090d34cef01c9d619c438f3b525579bf7ca0d874b96ad761a3f7ce33577b4e`.
+SHA256: `5a0b32f69ba2ac920d3fd05af3876ee0b6b5b0ac305da5a0e26b17394c06ea55`.
 Não foi instalado. Código principal publicado no GitHub: `489f6d22885fccaf6fc0ec246ca1223e7065a2c5`.
-Render Free confirmou Live no deploy `dep-db3sor2j9qps738tgv7g`. Ajuste final
-de proteção de conteúdo longo e totais por período será publicado em seguida. O GitHub não recebe APKs, dados ou chaves.
+Render Free confirmou Live no deploy `dep-db3sor2j9qps738tgv7g`. Ajuste final de conteúdo longo e totais por período publicado em
+`1550f687e468388b58f6c31a2d8a9c938bee338f`; Render confirmou Live no deploy
+`dep-db3sqqid0e5s73f014ng`. Continua no plano Free. O GitHub não recebe APKs, dados ou chaves.
+
+## Exemplos para testar depois da instalação
+
+- “Crie uma tarefa me lembrando de arrumar a casa daqui 10 minutos.”
+- “Já terminei a tarefa arrumar a casa.”
+- “Crie uma lista chamada Compras de teste com leite e pão.”
+- “Marque leite como comprado na lista Compras de teste.”
+- “Crie uma nota chamada Ideia de teste com o texto estudar matemática.”
+- “Crie uma meta chamada Leitura de teste com progresso de 20%.”
+- “Registre uma despesa chamada Lanche de teste de R$12,50.”
+- “Quanto gastei hoje?” / “Quais são minhas despesas deste mês?”
+- “Lembre que gosto de roxo.” / “Quais lembranças você tem sobre mim?”
+- “Pesquise na internet a documentação oficial do Android sobre voz.”
+
+Use registros fictícios identificados como teste. Conferir na área correspondente
+é parte da validação; a resposta da IA sozinha não prova que o registro foi salvo.
+Ações mostram o recibo confirmado e oferecem desfazer. Perguntas ambíguas podem
+pedir esclarecimento para não modificar o registro errado.
+
+Verificação HTTPS após o último deploy: health 200; chat e desfazer pessoal sem
+sessão 401; demonstração em produção 404. Logs de aplicação no intervalo do
+último deploy sem registros de nível error. Durante a troca de versão, a primeira
+sondagem de duas rotas retornou 502; depois de Live elas retornaram 401 e a
+verificação completa passou novamente. Não houve teste autenticado deste APK
+no aparelho, que permanece desconectado.
+
+Acabamento final de voz: a primeira resposta nova também pode ser lida quando a
+opção está ativa; histórico antigo não dispara leitura, e novas respostas recebidas
+com o aplicativo em segundo plano não iniciam fala automática. A fala para ao
+sair do aplicativo. Esse comportamento está implementado e precisa de conferência
+física com o serviço de voz instalado no Poco.

@@ -25,9 +25,13 @@ Backend: 76 testes. Android: 25 testes unitários, compilação e lint inicial s
 erros (65 avisos). Nova navegação e persistência de imagem preparadas, NÃO rodadas.
 
 Build final aprovado: 25 testes Android; lint zero erros/66 avisos. APK de instalação
-android/build/releases/Koiwai-1.0.apk; hash f8090d34cef01c9d619c438f3b525579bf7ca0d874b96ad761a3f7ce33577b4e.
-Código principal GitHub 489f6d2; Render Free Live dep-db3sor2j9qps738tgv7g.
-Ajuste final de registros longos/totais por período será registrado após publicação.
+android/build/releases/Koiwai-1.0.apk; hash 5a0b32f69ba2ac920d3fd05af3876ee0b6b5b0ac305da5a0e26b17394c06ea55.
+Código principal GitHub 489f6d2; correção final backend 1550f68 publicada:
+Render Free Live dep-db3sqqid0e5s73f014ng. Health 200, chat/desfazer pessoal
+sem sessão 401, demo produção 404; logs recentes de aplicação sem nível error.
+Durante o deploy houve duas sondagens 502, resolvidas após Live.
+Acabamento de voz lê primeira resposta nova, preserva silêncio no histórico
+antigo e não inicia fala automática em segundo plano. Conferir no Poco.
 Último APK instalado ainda é o checkpoint de conexão abaixo, não esta V1.0.
 Próximo com Poco: instalar preservando dados, conferir migração, áreas, comandos,
 voz/fotos/layout, notificações e relatórios. Só marcar o que foi executado.

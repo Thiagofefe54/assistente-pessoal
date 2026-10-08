@@ -81,9 +81,13 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
         }
     }
     var observedReply by remember(repository){mutableStateOf<String?>(null)}
-    LaunchedEffect(messages.lastOrNull{it.role=="assistant"}?.id){
+    var voiceHistoryLoaded by remember(repository){mutableStateOf(false)}
+    LaunchedEffect(history!=null,messages.lastOrNull{it.role=="assistant"}?.id){
+        if(history==null)return@LaunchedEffect
         val last=messages.lastOrNull{it.role=="assistant"}
-        if(last!=null){if(observedReply!=null && last.id!=observedReply && context.getSharedPreferences("koiwai-preferences",0).getBoolean("speak-replies",false))voice.speak(last.content);observedReply=last.id}
+        val foreground=(context as? androidx.lifecycle.LifecycleOwner)?.lifecycle?.currentState?.isAtLeast(androidx.lifecycle.Lifecycle.State.RESUMED)==true
+        if(voiceHistoryLoaded && last!=null && last.id!=observedReply && foreground && context.getSharedPreferences("koiwai-preferences",0).getBoolean("speak-replies",false))voice.speak(last.content)
+        observedReply=last?.id;voiceHistoryLoaded=true
     }
     Column(Modifier.fillMaxSize().imePadding().padding(horizontal=18.dp,vertical=10.dp)) {
         Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(10.dp)) {
