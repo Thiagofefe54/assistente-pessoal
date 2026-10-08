@@ -19,6 +19,7 @@ import kotlinx.coroutines.*
 fun ToolsScreen(onBack:()->Unit){
     val context=LocalContext.current
     val scope=rememberCoroutineScope()
+    var section by rememberSaveable{mutableStateOf("Ferramentas")}
     var expression by rememberSaveable{mutableStateOf("")}
     var result by rememberSaveable{mutableStateOf("")}
     var query by rememberSaveable{mutableStateOf("")}
@@ -43,8 +44,14 @@ fun ToolsScreen(onBack:()->Unit){
     }}
     LazyColumn(Modifier.fillMaxSize().imePadding(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(16.dp)){
         item{TextButton(onClick=onBack){Text("← Rotina")};Eyebrow("SEU KIT DA KOI",KoiColors.Blue);Text("Ferramentas",fontSize=32.sp)}
-        item{DeviceAccessPanel()}
-        item{ConnectionsPanel()}
+        item{Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
+            listOf("Ferramentas","Celular","Conexões").forEach{label ->
+                FilterChip(selected=section==label,onClick={section=label},label={Text(label)})
+            }
+        }}
+        if(section=="Celular") item{DeviceAccessPanel()}
+        if(section=="Conexões") item{ConnectionsPanel()}
+        if(section=="Ferramentas") {
         item{WeatherPanel()}
         item{KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple){
             Text("Calculadora",fontSize=22.sp)
@@ -79,6 +86,7 @@ fun ToolsScreen(onBack:()->Unit){
             KoiAction("Abrir no calendário",{openIntent(context,Intent(Intent.ACTION_INSERT,CalendarContract.Events.CONTENT_URI).putExtra(CalendarContract.Events.TITLE,title))},enabled=title.isNotBlank())
             Text("Escolha a data e salve no aplicativo de calendário. A Koi só abre o formulário.",fontSize=12.sp,color=KoiColors.Muted)
         }}
+        }
         info?.let{item{Text(it,color=KoiColors.Blue)}}
     }
 }

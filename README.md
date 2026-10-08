@@ -1,3 +1,5 @@
+> **Entrega atual: V1.1 instalada no Poco (08/10/2026).** Configurações e ferramentas reorganizadas; painel interativo com testes guiados, limites e próximos módulos. [Entrega e verificações](docs/ENTREGA_V1_1_2026_10_08.md) · [Painel ilustrativo](docs/dashboard/index.html).
+
 <div align="center">
 
 <img src="android/app/src/main/res/drawable/koiwai.png" width="230" alt="Koiwai, a personagem do assistente pessoal" />

@@ -1,5 +1,18 @@
 # Koiwai — leia primeiro ao retomar
 
+## Entrega mais recente — V1.1 instalada no Poco, 08/10/2026
+
+Leia ENTREGA_V1_1_2026_10_08.md. Atualização preservou os dados; versionCode 3,
+versionName 1.1 confirmados. Voz agrupada, atalhos duplicados removidos, ferramentas
+separadas em Ferramentas/Celular/Conexões. Dashboard compacto interativo com filtros,
+detalhes, checklist persistente, pedidos para copiar e mapa. Painel local no PC.
+25 unitários Android + 6 persistência no Poco passaram; build/lint passaram.
+Navegação automática bloqueada ao lançar atividade; toques remotos negados pelo
+Android. Abertura manual e Home conferidas; novas abas precisam de teste manual.
+Home mostra conta Local: usuário precisa entrar novamente para chat online.
+Sem novo reset, nenhum pagamento, nenhum deploy backend nesta entrega.
+APK SHA256 db4d69524f3c5cd3d4b7b8de095b454e9cc4321f978728d881ff8de58990dad2.
+
 ## Checkpoint prioritário — revisão funcional V1.1, 08/10/2026
 
 Leia REVISAO_FUNCIONAL_2026_10_08.md. Direção aprovada: companheira que organiza a
@@ -10,9 +23,8 @@ Correções: vocativo Koi e negativas não autorizam escrita; totais semanais/m�
 anterior e exclusão de datas futuras dos períodos atuais; resposta vazia recusada;
 Android aceita 1.234,56 e trata bloqueio de abertura externa. Personalidade ajustada.
 79 testes backend, 25 unitários Android, build/lint: zero erros/69 avisos.
-APK V1.1 versionCode 3 em android/build/releases/Koiwai-1.1.apk, NÃO instalado.
-SHA256: 502a74dea3280a7f7abd3fff26b3c703077b40bb6b0e127d8b68a93217833c8d.
-Celular desconectado; nenhuma nova limpeza. V1.0 segue a última instalada.
+APK preparado na revisão anterior foi substituído pela entrega V1.1 acima.
+Estado histórico: celular estava desconectado naquela revisão; agora foi instalado.
 Supabase: 9 tabelas RLS habilitado, aviso antigo de senhas vazadas; limite real
 200 registros pessoais compartilhados/arquivados, precisa crescer para uso diário.
 Render continua Free. Pagar não cria proatividade: os jobs atuais são Android;

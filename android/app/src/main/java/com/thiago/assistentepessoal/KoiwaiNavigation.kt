@@ -360,12 +360,7 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
             }
         }
         item {
-            Eyebrow("EXPERIÊNCIA • V1.0")
-            Row(verticalAlignment=Alignment.CenterVertically){
-                Column(Modifier.weight(1f)){Text("Ouvir novas respostas");Text("Voz do Android enquanto o chat está aberto",fontSize=12.sp,color=KoiColors.Muted)}
-                Switch(checked=speak,onCheckedChange={speak=it;prefs.edit().putBoolean("speak-replies",it).apply()})
-            }
-            Spacer(Modifier.height(10.dp))
+            Eyebrow("APARÊNCIA • V${BuildConfig.VERSION_NAME}")
             KoiPanel(Modifier.fillMaxWidth()) {
                 Row(verticalAlignment=Alignment.CenterVertically) {
                     Column(Modifier.weight(1f)) { Text("Reduzir movimento",fontWeight=FontWeight.SemiBold);Text("Fundos estáticos e transições diretas",color=KoiColors.Muted,fontSize=12.sp) }
@@ -388,6 +383,10 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
         item {
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple) {
                 Eyebrow("VOZ DA KOI",KoiColors.Purple)
+                Row(verticalAlignment=Alignment.CenterVertically){
+                    Column(Modifier.weight(1f)){Text("Ouvir novas respostas");Text("Enquanto o chat está aberto",fontSize=12.sp,color=KoiColors.Muted)}
+                    Switch(checked=speak,onCheckedChange={speak=it;prefs.edit().putBoolean("speak-replies",it).apply()})
+                }
                 Text("Escolha a voz em português no seu celular.",color=KoiColors.Muted,fontSize=12.sp)
                 KoiAction("Testar voz",{voice.speak("Oi! Eu sou a Koi. Vamos cuidar do seu dia juntas? 💜")},Modifier.fillMaxWidth(),voice.ready)
                 Row {
@@ -400,9 +399,8 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
         item {
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue) {
                 Eyebrow("ATALHOS DA SUA KOI",KoiColors.Blue)
-                KoiAction("Clima e ferramentas",onTools,Modifier.fillMaxWidth())
+                KoiAction("Ferramentas e celular",onTools,Modifier.fillMaxWidth())
                 KoiAction("Gerenciar lembranças",onFacts,Modifier.fillMaxWidth())
-                KoiAction("Celular e conexões",onTools,Modifier.fillMaxWidth())
                 TextButton(onClick={com.thiago.assistentepessoal.tools.openIntent(context,android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,android.net.Uri.parse("package:${context.packageName}")))}){Text("Permissões e acessos do celular")}
                 TextButton(onClick={com.thiago.assistentepessoal.tools.openIntent(context,android.content.Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(android.provider.Settings.EXTRA_APP_PACKAGE,context.packageName))}){Text("Permissões de notificações")}
             }
@@ -419,7 +417,7 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
         val description=when(title) {
             "Voz e notificações"->"No Chat, Voz transforma sua fala em texto para revisar antes de enviar. Ouvir lê uma resposta; ative Ouvir novas respostas para leitura automática enquanto o chat estiver aberto. Configure e teste a voz acima. Lembretes precisam de data, horário e permissão de notificações; o Android pode atrasá-los. Ativação por “Koi” ainda não está disponível."
             "Memória e privacidade"->"Você pode revisar, editar e apagar lembranças confirmadas na área Memória. Conversas, lembranças e tarefas ficam separadas por conta. O chat envia o pedido, parte da conversa recente, lembranças confirmadas e uma lista limitada de tarefas ao provedor de IA. Não há limpeza automática. Exportação e exclusão completa ainda estão em preparação."
-            else->"Koi é sua assistente pessoal. Esta versão 1.0 reúne tarefas, agenda, hábitos, notas, listas, metas, treinos e finanças, além de memória, relatórios, voz, imagens e pesquisa. Conversas ficam no celular e no Supabase quando sincronizadas; fotos enviadas ficam no histórico deste celular. O servidor gratuito pode demorar para despertar após ficar sem uso."
+            else->"Koi é sua assistente pessoal. Esta versão ${BuildConfig.VERSION_NAME} reúne tarefas, agenda, hábitos, notas, listas, metas, treinos e finanças, além de memória, relatórios, voz, imagens e pesquisa. Conversas ficam no celular e no Supabase quando sincronizadas; fotos enviadas ficam no histórico deste celular. O servidor gratuito pode demorar para despertar após ficar sem uso."
         }
         AlertDialog(onDismissRequest={detail=null},title={Text(title)},text={Text(description)},confirmButton={TextButton(onClick={detail=null}){Text("Entendi")}})
     }
