@@ -1,5 +1,20 @@
 # Koiwai — leia primeiro ao retomar
 
+## Correção mais recente — chat real, 08/10/2026
+
+O checkpoint de conexão abaixo foi insuficiente: a tela mostrou envio novo com
+503. Reproduzido com histórico real; log seguro identificou Groq 400
+json_validate_failed. Correção 90d5a9f publicada, Render Free Live
+(dep-db3qpu4s728c73fstf7g): formato JSON explícito e respostas históricas
+apresentadas no protocolo atual; preserva história, validações e RLS. App
+atualizado distingue erro de formato de indisponibilidade. Sem retry automático.
+60 testes backend/22 Android; build e lint aprovados. Reenvio REAL da saudação
+pendente pelo ChatRepository passou em 4,673 s e salvou SENT após o deploy.
+APK SHA256 6e54d882e29a5f87833ca92b765f3a38079d678c3f727d1384b1c983ef76adbe.
+Detalhes e limites em CONEXAO_2026_10_08.md, seção posterior. Não atribuir esta
+falha à VPN nem tratar toda recusa como ausência de chave. Pack 2 físico segue
+parcial; escola/VPN e teste físico PC desligado ainda pendentes.
+
 ## Checkpoint prioritário — conexão, 08/10/2026
 
 Leia CONEXAO_2026_10_08.md. Erro relatado era resolução DNS do servidor Render,
