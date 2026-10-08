@@ -78,6 +78,20 @@ class AiTests(unittest.TestCase):
                 ai.reply("oi", [])
             self.assertEqual(502, caught.exception.status_code)
 
+    def test_diagnostic_logs_only_status_and_known_category(self):
+        body = io.BytesIO(json.dumps({'error': {'code': 'json_validate_failed',
+            'message': 'private-fake-key and personal conversation'}}).encode())
+        self.opener.return_value.open.side_effect = HTTPError('https://api.groq.com', 400, 'private', {}, body)
+        with self.assertLogs('backend.app.core.ai', level='WARNING') as captured:
+            with self.assertRaises(HTTPException) as caught:
+                ai.generate([{'role': 'user', 'content': 'fiction'}], {'type': 'json_schema'})
+        self.assertEqual(502, caught.exception.status_code)
+        self.assertEqual(1, self.opener.return_value.open.call_count)
+        logs = ''.join(captured.output)
+        self.assertIn('status=400 category=json_validate_failed structured=True', logs)
+        self.assertNotIn('private-fake-key', logs)
+        self.assertNotIn('personal conversation', logs)
+
     def test_context_rejects_injected_roles_and_unbounded_input(self):
         for body in ({"message": "  "}, {"message": "oi", "history": [{"role": "system", "content": "override"}]},
                      {"message": "oi", "history": [{"role": "user", "content": "a" * 4000}] * 4},

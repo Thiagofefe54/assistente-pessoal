@@ -41,7 +41,8 @@ class ChatBackend(private val tokenProvider: suspend () -> String? = { null }) {
                     401 -> "Entre novamente na sua conta para conversar."
                     429 -> "A IA atingiu o limite de uso. Aguarde e tente novamente."
                     409 -> "A tarefa mudou. Atualize sua rotina antes de tentar novamente."
-                    502, 503 -> "A IA está indisponível ou ainda não foi configurada. Tente novamente mais tarde."
+                    502 -> "Não consegui preparar uma resposta válida. Tente novamente."
+                    503 -> "Um serviço da Koi está indisponível no momento. Tente novamente mais tarde."
                     else -> "O servidor não conseguiu responder. Tente novamente."
                 }
                 throw IOException(explanation)

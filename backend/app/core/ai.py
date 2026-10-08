@@ -102,6 +102,8 @@ def generate(messages: list[dict[str, str]], response_format: dict | None = None
                 headers = {"Retry-After": retry_after} if retry_after and retry_after.isdigit() else None
                 raise HTTPException(429, "A IA atingiu o limite de uso. Aguarde e tente novamente.",
                                     headers=headers) from None
+            if code == 400 and category == 'json_validate_failed':
+                raise HTTPException(502, "A IA não enviou uma resposta válida. Tente novamente.") from None
             if code in (500, 502, 503) and index + 1 < len(models):
                 continue
             raise HTTPException(503, "A IA está indisponível. Tente novamente mais tarde.") from None

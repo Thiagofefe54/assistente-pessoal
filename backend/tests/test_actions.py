@@ -62,6 +62,17 @@ class ActionTests(unittest.TestCase):
             result=actions.direct_conversation('Quais tarefas?',[],[],{'tasks':[]},OWNER,'Bearer fiction',REQUEST,'UTC')
             self.assertIsNone(result['action_receipt']);self.assertEqual(1,cloud.call_count)
 
+    def test_historical_replies_use_the_current_protocol_without_executing_actions(self):
+        history=[{'role':'user','content':'Já terminei estudar'}, {'role':'assistant','content':'Missão concluída 💜'}]
+        with patch.object(actions,'cloud',return_value=[]),patch.object(actions,'generate',return_value=json.dumps({'reply':'Oi 💜','action':None})) as model:
+            actions.direct_conversation('oi',history,[],{'tasks':[]},OWNER,'Bearer fiction',REQUEST,'UTC')
+        sent=model.call_args.args[0]
+        self.assertIn('objeto JSON',sent[0]['content'])
+        self.assertEqual(history[0],sent[-3])
+        self.assertEqual({'reply':history[1]['content'],'action':None},json.loads(sent[-2]['content']))
+        self.assertEqual('oi',sent[-1]['content'])
+        self.assertEqual('Missão concluída 💜',history[1]['content'])
+
     def test_undo_carries_task_identity_for_reminder_and_list_refresh(self):
         with patch.object(actions,'cloud',return_value={'task':ROW}) as cloud:
             value=actions.undo_action(OWNER,'Bearer fiction',REQUEST)
