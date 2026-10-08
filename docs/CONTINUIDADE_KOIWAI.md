@@ -1,5 +1,18 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint prioritário — conexão, 08/10/2026
+
+Leia CONEXAO_2026_10_08.md. Erro relatado era resolução DNS do servidor Render,
+também observado com PC ligado. Causa na escola ainda não reproduzida. No Poco
+conectado agora, resolução do domínio e conversa real fictícia passaram antes e
+depois da atualização. Não houve mudança de DNS/VPN/rede ou backend.
+Novo APK instalado preservando dados: mensagens claras para falhas de conexão,
+inclusive erro DNS antigo salvo. 22 testes Android; lint 0 erros/55 avisos;
+LiveBackendTest passou após instalação (1 teste, 2,833 s).
+SHA256 dcea49ae43a538ac705eea2d565b9fe3aa86c598688d341406a9bb7e0bc396b4.
+Envio antigo só é reenviado manualmente; teste com PC desligado/VPN da escola
+continua pendente. Isso não aprova os novos fluxos funcionais do Pack 2 abaixo.
+
 ## Checkpoint prioritário — Pack 2, 07/10/2026
 
 **Leia este bloco e PACK_2.md antes dos registros históricos abaixo.** Usuário

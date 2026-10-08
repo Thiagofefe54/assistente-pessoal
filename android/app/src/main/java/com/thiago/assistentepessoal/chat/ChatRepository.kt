@@ -3,6 +3,7 @@ package com.thiago.assistentepessoal.chat
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import java.io.IOException
+import com.thiago.assistentepessoal.cloud.connectionMessage
 
 // This scope belongs to the app, so leaving the chat does not interrupt an active send.
 class ChatRepository(private val database: ChatDatabase, private val onSaved: () -> Unit = {},
@@ -62,7 +63,7 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
                 scheduleSaved(message.actionReceiptJson)
             } catch(e:Exception) {
                 if(e is CancellationException)throw e
-                _error.value=if(e is IOException)e.message else "Não consegui atualizar o resultado. Reabra a conversa para conferir."
+                _error.value=if(e is IOException)connectionMessage(e) else "Não consegui atualizar o resultado. Reabra a conversa para conferir."
             } finally {_busy.value=false}
         }
     }
@@ -88,7 +89,7 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
                 try {
                     if (dao.find(message.id) != null) {
                         dao.updateStatus(message.id, MessageStatus.FAILED,
-                            if (e is IOException) e.message ?: "Confira a conexão e tente novamente."
+                            if (e is IOException) connectionMessage(e)
                             else "Não consegui concluir o envio. Confira a conexão e tente novamente.")
                     } else {
                         _error.value = "Não consegui salvar a mensagem. Seu texto continua no campo de entrada."

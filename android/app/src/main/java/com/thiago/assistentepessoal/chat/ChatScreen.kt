@@ -156,7 +156,7 @@ private fun MessageBubble(message:ChatMessage,busy:Boolean,onRetry:()->Unit) {
             val status=when(message.status){MessageStatus.SENDING->" • Enviando…";MessageStatus.FAILED->" • Falha no envio";else->""}
             Text(messageTime(message)+status,color=KoiColors.Muted,fontSize=10.sp,modifier=Modifier.align(Alignment.End))
             if(user && message.status==MessageStatus.FAILED) {
-                Text(message.error ?: "Envio não concluído.",color=Color(0xFFFFB4C3),fontSize=12.sp)
+                Text(com.thiago.assistentepessoal.cloud.savedConnectionMessage(message.error),color=Color(0xFFFFB4C3),fontSize=12.sp)
                 TextButton(onClick=onRetry,enabled=!busy){Text("Tentar novamente",color=Color.White)}
             }
         }
