@@ -51,9 +51,11 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
     var mediaInfo by remember{mutableStateOf<String?>(null)}
     val mediaScope=rememberCoroutineScope()
     val voice=rememberKoiVoice()
-    val voiceLauncher=rememberLauncherForActivityResult(ActivityResultContracts.StartActivityForResult()){result->
-        if(result.resultCode==Activity.RESULT_OK)result.data?.getStringArrayListExtra(RecognizerIntent.EXTRA_RESULTS)?.firstOrNull()?.let{input=it.take(8000)}
+    var voiceCapture by remember{mutableStateOf(false)}
+    val microphone=rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()){granted ->
+        if(granted)voiceCapture=true else mediaInfo="Permita o microfone para falar com a Koi."
     }
+    if(voiceCapture)KoiVoiceCapture(onText={input=it},onClose={voiceCapture=false})
     val imageLauncher=rememberLauncherForActivityResult(ActivityResultContracts.GetContent()){uri->if(uri!=null)mediaScope.launch{
         try{image=withContext(Dispatchers.IO){imageForKoi(context,uri)};mediaInfo="Imagem pronta. Toque em Enviar para mandar à IA. A imagem fica guardada neste celular."}
         catch(e:Exception){if(e is CancellationException)throw e;mediaInfo=e.message ?: "Não consegui abrir a imagem."}
@@ -129,10 +131,18 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
                             val urls=remember(message.content){Regex("https://[^\\s<>]+") .findAll(message.content).map{it.value.trimEnd('.',',',')',']')}.distinct().take(6).toList()}
                             if(urls.isNotEmpty())Row(Modifier.horizontalScroll(rememberScrollState())){urls.forEachIndexed{index,url->TextButton(onClick={com.thiago.assistentepessoal.tools.openIntent(context,Intent(Intent.ACTION_VIEW,android.net.Uri.parse(url)))}){Text("Abrir fonte ${index+1}")}}}
                         }
-                        message.actionReceiptJson?.let{raw->val receipt=org.json.JSONObject(raw)
+                        message.actionReceiptJson?.takeIf{org.json.JSONObject(it).optString("tool")=="device"}?.let{raw ->
+                            var outcome by remember(message.id){mutableStateOf<String?>(null)}
+                            KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue){
+                                Text("Ação no seu celular",color=KoiColors.Blue)
+                                TextButton(onClick={outcome=executeKoiDeviceAction(context,raw)}){Text("Abrir ação preparada →")}
+                                outcome?.let{Text(it,fontSize=12.sp,color=KoiColors.Muted)}
+                            }
+                        }
+                        message.actionReceiptJson?.takeIf{org.json.JSONObject(it).optString("tool")!="device"}?.let{raw->val receipt=org.json.JSONObject(raw)
                             TextButton(onClick={onOpenAction(if(receipt.optString("tool")=="personal")if(receipt.optString("target_kind")=="memory")"Lembranças" else when(receipt.optString("record_kind")){"list"->"Listas";"goal"->"Metas";"workout"->"Treinos";"expense","income"->"Finanças";else->"Notas"} else "Tarefas")}){Text("Ver resultado salvo →")}
                         }
-                        if(message.actionReceiptJson!=null && org.json.JSONObject(message.actionReceiptJson).optString("type")!="undo") TextButton(onClick={repository.undoAction(message)},enabled=!busy) {
+                        if(message.actionReceiptJson!=null && org.json.JSONObject(message.actionReceiptJson).optString("tool")!="device" && org.json.JSONObject(message.actionReceiptJson).optString("type")!="undo") TextButton(onClick={repository.undoAction(message)},enabled=!busy) {
                             Text("↶ Desfazer ação",color=KoiColors.Blue)
                         }
                         if(message.role=="assistant" && message.taskDraftJson!=null && tasksRepo!=null) {
@@ -154,7 +164,11 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
         if(input.length>8000) Text("Envie até 8.000 caracteres por mensagem.",color=KoiColors.Red,fontSize=12.sp)
         error?.let {Text(it,color=KoiColors.Red,fontSize=12.sp,modifier=Modifier.padding(bottom=8.dp))}
         Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())){
-            TextButton(onClick={try{voiceLauncher.launch(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM).putExtra(RecognizerIntent.EXTRA_LANGUAGE,"pt-BR").putExtra(RecognizerIntent.EXTRA_PROMPT,"Fale com a Koi"))}catch(e:android.content.ActivityNotFoundException){mediaInfo="Reconhecimento de voz não disponível. Confira o serviço de voz do Android."}},enabled=!busy){Text("🎙 Voz")}
+            TextButton(onClick={
+                if(androidx.core.content.ContextCompat.checkSelfPermission(context,android.Manifest.permission.RECORD_AUDIO)==android.content.pm.PackageManager.PERMISSION_GRANTED)voiceCapture=true
+                else microphone.launch(android.Manifest.permission.RECORD_AUDIO)
+            },enabled=!busy){Text("🎙 Voz")}
+
             TextButton(onClick={if(account!=null)imageLauncher.launch("image/*") else mediaInfo="Entre na sua conta para analisar imagens."},enabled=!busy){Text("Imagem")}
             TextButton(onClick={try{if(account!=null)cameraLauncher.launch(null) else mediaInfo="Entre na sua conta para analisar fotos."}catch(e:android.content.ActivityNotFoundException){mediaInfo="Não há aplicativo de câmera disponível."}},enabled=!busy){Text("Câmera")}
             TextButton(onClick=onTools){Text("Ferramentas")}

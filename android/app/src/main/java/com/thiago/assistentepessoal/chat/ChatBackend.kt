@@ -10,7 +10,7 @@ import com.thiago.assistentepessoal.cloud.readBoundedText
 
 class ChatBackend(private val tokenProvider: suspend () -> String? = { null }) {
     suspend fun send(message: String, history: List<ChatContextEntry> = emptyList()): String = sendResult(message,history).reply
-    suspend fun sendResult(message: String, history: List<ChatContextEntry> = emptyList(), requestId:String?=null, timezone:String=java.time.ZoneId.systemDefault().id,requestedAt:Long=System.currentTimeMillis(),imageJpegBase64:String?=null): ChatResult {
+    suspend fun sendResult(message: String, history: List<ChatContextEntry> = emptyList(), requestId:String?=null, timezone:String=java.time.ZoneId.systemDefault().id,requestedAt:Long=System.currentTimeMillis(),imageJpegBase64:String?=null,captureReports:Boolean=false): ChatResult {
         val endpoint = BackendEndpoint.resolve(BuildConfig.BACKEND_URL, BuildConfig.DEBUG)
         // Never even retrieve credentials for the HTTP development simulator.
         val token = if (endpoint.authenticated) tokenProvider()
@@ -28,6 +28,7 @@ class ChatBackend(private val tokenProvider: suspend () -> String? = { null }) {
                 val payload = JSONObject().put("message", message)
                 // The HTTP development simulator never receives personal history.
                 if (endpoint.authenticated) {
+                    payload.put("contextual_mode",true).put("capture_reports",captureReports)
                     payload.put("timezone",timezone)
                     payload.put("requested_at",java.time.Instant.ofEpochMilli(requestedAt).toString())
                     imageJpegBase64?.let{payload.put("image_jpeg_base64",it)}

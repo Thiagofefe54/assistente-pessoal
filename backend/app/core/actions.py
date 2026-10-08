@@ -76,9 +76,9 @@ FORMAT={'type':'json_schema','json_schema':{'name':'koi_action','strict':True,'s
 def explicit_intent(message,kind):
     text=''.join(c for c in unicodedata.normalize('NFKD',message.lower()) if not unicodedata.combining(c))
     text=re.sub(r'"[^"\n]*"|\u201c[^\u201d\n]*\u201d|\x27[^\x27\n]*\x27','',text)
-    text=re.sub(r'^\s*(?:koiwai|koi)\b[\s,!:\-]*','',text)
+    text=re.sub(r'^\s*(?:koiwai|coiwai|koi|coi)\b[\s,!:\-]*','',text)
     if re.search(r'^(como\b|o que\b|se\b)|\b(e se|hipoteticamente|por exemplo|suponha)\b',text.strip()): return False
-    verbs={'create':'crie criar cria adicione adicionar adiciona anote anotar anota registre registrar registra agende agendar agenda marque marcar marca lembre lembrar lembra coloque coloca colocar',
+    verbs={'create':'guarde guardar guarda salve salvar salva crie criar cria adicione adicionar adiciona anote anotar anota registre registrar registra agende agendar agenda marque marcar marca lembre lembrar lembra coloque coloca colocar',
         'complete':'conclua conclui concluir concluido concluida finalize finaliza finalizar finalizei terminei termine termina terminar feito feita fiz realizei complete completar marque marcar marca',
         'update':'altere altera alterar mude muda mudar troque troca trocar atualize atualiza atualizar remarque remarca remarcar adie adia adiar coloque coloca colocar mova move mover passe passa passar',
         'reopen':'reabra reabre reabrir restaure restaura restaurar recupere recupera recuperar',
@@ -124,7 +124,7 @@ def existing_action(owner,authorization,request_id,source_hash):
         return action_response(dict(rows[0]['result'],undone=rows[0]['undone']))
 
 
-def direct_conversation(message,history,facts,tasks,owner,authorization,request_id,timezone):
+def direct_conversation(message,history,facts,tasks,owner,authorization,request_id,timezone,semantic=None):
     recent=cloud('koi_action_receipts?'+urlencode({'user_id':'eq.'+str(owner),'undone':'eq.false','select':'request_id,result','order':'created_at.desc','limit':5}),authorization)
     recent=[{'request_id':r['request_id'],'action':r['result']['action'],'title':r['result']['task']['title']} for r in recent if r['result']['action']!='undo']
     instructions=KOI_INSTRUCTIONS+'''
@@ -157,6 +157,8 @@ A lista consultada supera respostas antigas; lista incompleta não é lista inte
 Nunca declare execução em reply: a aplicação verificará e escreverá o resultado.
 Se action null, responda naturalmente sem fingir que salvou ou concluiu algo.
 '''
+    if semantic is not None:
+        instructions += '\nIntenção atual: '+json.dumps(semantic.model_dump(),ensure_ascii=False)+'\nOperação da ferramenta: '+semantic.tool_operation+'. Pedidos indiretos claros, mesmo em forma de pergunta, são pedidos. read/none usam action null. Execute somente a operação interpretada sobre dados fornecidos; se faltar alvo, esclareça.\n'
     try:
         due=relative_deadline(message,tasks['now'],timezone) if tasks.get('now') else None
         title=simple_relative_title(message) if due else None
@@ -172,7 +174,8 @@ Se action null, responda naturalmente sem fingir que salvou ou concluiu algo.
         if not plan.reply.strip(): raise ValueError('Empty reply')
         if plan.action is None: return {'reply':plan.reply.strip(),'task_draft':None,'action_receipt':None}
         action=plan.action
-        if not explicit_intent(message,action.type):
+        authorized = semantic.permits('task',action.type,message) if semantic is not None else explicit_intent(message,action.type)
+        if not authorized:
             return {'reply':'Quer mudar alguma tarefa? Me diga o nome e o que fazer com ela 💜','task_draft':None,'action_receipt':None}
         if action.type=='undo':
             if not any(r['request_id']==action.task_id for r in recent): raise ValueError('Unknown action')

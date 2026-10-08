@@ -61,7 +61,7 @@ class KoiwaiApplication : Application() {
         cloudSync = sync
         current.value = repos.getOrPut(account?.id ?: "local") {
             ChatRepository(database(account?.id), onSaved = { sync?.schedule() },
-                tokenProvider = { account?.let { auth.token(it.id) } },onTaskChanged={ receipt ->
+                tokenProvider = { account?.let { auth.token(it.id) } },captureReports={getSharedPreferences("koiwai-preferences",0).getBoolean("capture-reports",false)},onTaskChanged={ receipt ->
                     if(auth.account.value?.id==account?.id) {
                         val tool=org.json.JSONObject(receipt)
                         if(tool.optString("tool")=="personal") {

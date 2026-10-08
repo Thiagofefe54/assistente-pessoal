@@ -7,7 +7,7 @@ import com.thiago.assistentepessoal.cloud.connectionMessage
 
 // This scope belongs to the app, so leaving the chat does not interrupt an active send.
 class ChatRepository(private val database: ChatDatabase, private val onSaved: () -> Unit = {},
-    tokenProvider: suspend () -> String? = { null },private val onTaskChanged:(String)->Unit={}) {
+    tokenProvider: suspend () -> String? = { null },private val onTaskChanged:(String)->Unit={},private val captureReports:()->Boolean={false}) {
     private val dao = database.messages()
     private val backend = ChatBackend(tokenProvider)
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
@@ -53,7 +53,7 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
         }
     } }
     fun undoAction(message:ChatMessage) {
-        if(_busy.value || message.actionReceiptJson==null) return
+        if(_busy.value || message.actionReceiptJson==null || org.json.JSONObject(message.actionReceiptJson).optString("tool")=="device") return
         _busy.value=true;_error.value=null
         scope.launch {
             try {
@@ -84,7 +84,7 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
                 val context = recentChatContext(dao.recentContext(message.id, message.occurredAt), message)
                 val reply = withContext(Dispatchers.IO) {
                     (if(message.imageJpegBase64==null)com.thiago.assistentepessoal.tools.calculationReply(message.content) else null)?.let{ChatResult(it)}
-                        ?: backend.sendResult(message.content, context,message.id,message.timezone,message.occurredAt,message.imageJpegBase64)
+                        ?: backend.sendResult(message.content, context,message.id,message.timezone,message.occurredAt,message.imageJpegBase64,captureReports())
                 }
                 dao.complete(message, reply.reply, reply.taskDraftJson,reply.actionReceiptJson)
                 scheduleSaved(reply.actionReceiptJson)

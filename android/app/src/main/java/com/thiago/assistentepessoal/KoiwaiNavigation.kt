@@ -342,6 +342,7 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
     var treatment by rememberSaveable {mutableStateOf(prefs.getString("treatment","Mestre") ?: "Mestre")}
     var reduced by remember {mutableStateOf(prefs.getBoolean("reduce-motion",false))}
     var speak by remember {mutableStateOf(prefs.getBoolean("speak-replies",false))}
+    var capture by remember {mutableStateOf(prefs.getBoolean("capture-reports",false))}
     var saved by remember {mutableStateOf(false)}
     var detail by rememberSaveable {mutableStateOf<String?>(null)}
     LazyColumn(Modifier.fillMaxSize().imePadding(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
@@ -376,6 +377,16 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
                 KoiAction(if(saved) "Preferência salva ✓" else "Salvar preferência",{
                     treatment=treatment.trim();prefs.edit().putString("treatment",treatment).apply();saved=true
                 },Modifier.fillMaxWidth(),treatment.trim().isNotEmpty() && treatment.trim().length<=30)
+            }
+        }
+        item {
+            KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue) {
+                Eyebrow("CONVERSA E MEMÓRIA",KoiColors.Blue)
+                Row(verticalAlignment=Alignment.CenterVertically){
+                    Column(Modifier.weight(1f)){Text("Guardar relatos do dia");Text("Preferências, acontecimentos e dinheiro informado",fontSize=12.sp,color=KoiColors.Muted)}
+                    Switch(checked=capture,onCheckedChange={capture=it;prefs.edit().putBoolean("capture-reports",it).apply()})
+                }
+                Text("Opcional. A Koi pode registrar relatos claros sem você dizer salve. Confira o resultado no chat e use Desfazer se precisar. Diário aparece em Notas; não lê sua conta bancária.",fontSize=12.sp,color=KoiColors.Muted)
             }
         }
         item {com.thiago.assistentepessoal.routine.ReminderSettings()}
