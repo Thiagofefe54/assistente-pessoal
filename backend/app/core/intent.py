@@ -29,7 +29,7 @@ class Interpretation(BaseModel):
     def permits(self, domain, operation, message, capture=False):
         if self.domain != domain or self.tool_operation != operation:
             return False
-        if self.speech_act != 'request' and not (capture and self.speech_act == 'report' and operation == 'create'):
+        if self.speech_act != 'request' and not (capture and self.speech_act == 'report' and (operation == 'create' or (self.domain=='record' and self.operation=='complete' and operation=='update'))):
             return False
         # Exact current-message provenance, not a quotation from older context.
         evidence = self.evidence.strip()
@@ -80,6 +80,11 @@ Não escolha alteração por causa de uma sugestão da assistente no histórico.
 "minha cor preferida é roxo" é memory/report; "hoje gastei 12 reais" é record/report;
 "vou ganhar dinheiro" não é receita recebida. Relato não vira tarefa automaticamente.
 "guarde como lembrança" é memory/create/request, não uma nota.
+Contas a pagar, vencimentos, recorrência e limite de gastos mensal são record.
+"Paguei a conta de internet" ou "marque a conta como paga" é record/complete.
+"quais contas faltam pagar?" é record/read. Conta futura não é gasto já realizado.
+"como foi minha semana?" ou "faça meu balanço da semana" é diary/read, não criar
+um relato fictício. Diário consulta acontecimentos registrados; não é pesquisa web.
 Uma ordem para guardar um fato continua sendo REQUEST, mesmo quando o conteúdo
 da lembrança é um relato. Não classifique a ordem inteira como report.
 Para device use operation create e speech_act request.

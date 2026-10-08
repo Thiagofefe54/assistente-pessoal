@@ -48,7 +48,7 @@ fun KoiwaiTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null) {
+fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:String?=null) {
     var selected by rememberSaveable { mutableStateOf("home") }
     var accountReturn by rememberSaveable { mutableStateOf("settings") }
     var day by rememberSaveable { mutableStateOf<String?>(null) }
@@ -59,6 +59,7 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null) {
     val motion = LocalKoiMotion.current
     LaunchedEffect(account?.id) { day=null }
     LaunchedEffect(taskRequest) { if(taskRequest>0) {selected="routine";category="Tarefas";day=null} }
+    LaunchedEffect(lifeRequest){lifeRequest?.split('|')?.firstOrNull()?.takeIf{it in listOf("Contas","Orçamento","Diário")}?.let{selected="routine";category=it;day=null}}
     LaunchedEffect(reportRequest) {reportRequest?.split('|')?.let { parts ->
         if(parts[0]=="day") {day=parts[1];selected="memory"} else {day=null;selected="reports"}
     }}
@@ -106,6 +107,7 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null) {
                                 reportRequest?.split('|')?.get(0) ?: "week",reportRequest?.split('|')?.get(1) ?: java.time.LocalDate.now().toString())}
                             "facts" -> MemoriesScreen({selected="memory"},{openAccount("facts")})
                             "routine" -> when(category) {
+                                "Contas","Orçamento","Diário" -> com.thiago.assistentepessoal.routine.LifeScreen(category!!,{category=null},{openAccount("routine")})
                                 "Tarefas","Agenda","Hábitos" -> key(category){TasksScreen({category=null},{openAccount("routine")},category ?: "Tarefas")}
                                 "Notas","Listas","Metas","Treinos","Finanças","Registros" -> key(category){PersonalScreen(if(category=="Registros") "Notas" else category!!,{category=null},{openAccount("routine")})}
                                 "Ferramentas" -> ToolsScreen({category=null})
@@ -278,6 +280,9 @@ private val areas=listOf(
     RoutineArea("Notas","notes","Dê espaço às suas ideias.",KoiColors.Purple),
     RoutineArea("Treinos","training","Sua evolução em movimento.",KoiColors.Purple),
     RoutineArea("Finanças","finance","Clareza para suas escolhas.",KoiColors.Blue),
+    RoutineArea("Contas","finance","Seus vencimentos em ordem.",KoiColors.Red),
+    RoutineArea("Orçamento","finance","Um limite para este mês.",KoiColors.Blue),
+    RoutineArea("Diário","memory","Seu dia, do seu jeito.",KoiColors.Purple),
     RoutineArea("Listas","notes","Cada item é uma conquista.",KoiColors.Blue),
     RoutineArea("Metas","tasks","Seus planos ganham forma.",KoiColors.Red),
     RoutineArea("Hábitos","training","Constância sem cobrança.",KoiColors.Purple),
@@ -390,6 +395,7 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
             }
         }
         item {com.thiago.assistentepessoal.routine.ReminderSettings()}
+        item {com.thiago.assistentepessoal.routine.LifeReminderSettings()}
         item {ReportSettings()}
         item {
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple) {

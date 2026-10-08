@@ -13,6 +13,8 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 
 class KoiwaiApplication : Application() {
+    lateinit var lifeReminders:com.thiago.assistentepessoal.routine.LifeReminders
+        private set
     lateinit var reports:PeriodReports
         private set
     lateinit var reminders: TaskReminders
@@ -44,13 +46,14 @@ class KoiwaiApplication : Application() {
         activeChatOwner=account?.id
         reminders.account(account?.id)
         reports.account(account?.id)
+        lifeReminders.account(account?.id)
         if(memoryOwner != account?.id) {
             memoryOwner = account?.id
             _memories.value?.close()
             _memories.value = account?.let { MemoryRepository(auth,it.id) }
             _tasks.value?.close()
             _personal.value?.close()
-            _personal.value=account?.let {PersonalRepository(auth,it.id)}
+            _personal.value=account?.let {a->PersonalRepository(auth,a.id){records,payments->if(auth.account.value?.id==a.id)lifeReminders.notify(a.id,records,payments)}}
             _journal.value?.close()
             _tasks.value = account?.let { account -> TaskRepository(auth,account.id) { tasks ->
                 if(auth.account.value?.id==account.id) reminders.reconcile(account.id,tasks)
@@ -79,6 +82,7 @@ class KoiwaiApplication : Application() {
         auth = CloudAuth(SessionStore(this))
         reminders = TaskReminders(this)
         reports = PeriodReports(this)
+        lifeReminders=com.thiago.assistentepessoal.routine.LifeReminders(this)
         current = MutableStateFlow(ChatRepository(database(null)))
         repos["local"] = current.value
         repositories = current.asStateFlow()

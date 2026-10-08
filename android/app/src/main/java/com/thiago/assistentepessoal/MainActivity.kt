@@ -13,6 +13,8 @@ class MainActivity : ComponentActivity() {
     private val taskRequest = mutableIntStateOf(0)
     private val reportRequest=mutableStateOf<String?>(null)
     private var reportCounter=0
+    private val lifeRequest=mutableStateOf<String?>(null)
+    private fun lifeIntent(intent:Intent){intent.getStringExtra("openLife")?.takeIf{it in listOf("Contas","Orçamento","Diário")}?.let{lifeRequest.value="$it|${System.nanoTime()}"}}
     private fun reportIntent(intent:Intent) {
         val kind=intent.getStringExtra("reportKind") ?: return
         val anchor=intent.getStringExtra("reportAnchor") ?: return
@@ -24,13 +26,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         if(intent.getBooleanExtra("openTasks",false)) taskRequest.intValue++
         reportIntent(intent)
+        lifeIntent(intent)
         enableEdgeToEdge(statusBarStyle=SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), navigationBarStyle=SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
-        setContent { KoiwaiTheme { MotionEnvironment { KoiwaiNavigation(taskRequest.intValue,reportRequest.value) } } }
+        setContent { KoiwaiTheme { MotionEnvironment { KoiwaiNavigation(taskRequest.intValue,reportRequest.value,lifeRequest.value) } } }
     }
     override fun onNewIntent(intent:Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
         if(intent.getBooleanExtra("openTasks",false)) taskRequest.intValue++
         reportIntent(intent)
+        lifeIntent(intent)
     }
 }

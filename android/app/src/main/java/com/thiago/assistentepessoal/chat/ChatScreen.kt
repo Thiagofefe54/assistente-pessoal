@@ -140,7 +140,7 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
                             }
                         }
                         message.actionReceiptJson?.takeIf{org.json.JSONObject(it).optString("tool")!="device"}?.let{raw->val receipt=org.json.JSONObject(raw)
-                            TextButton(onClick={onOpenAction(if(receipt.optString("tool")=="personal")if(receipt.optString("target_kind")=="memory")"Lembranças" else when(receipt.optString("record_kind")){"list"->"Listas";"goal"->"Metas";"workout"->"Treinos";"expense","income"->"Finanças";else->"Notas"} else "Tarefas")}){Text("Ver resultado salvo →")}
+                            TextButton(onClick={onOpenAction(if(receipt.optString("tool")=="personal")if(receipt.optString("target_kind")=="memory")"Lembranças" else when(receipt.optString("record_kind")){"list"->"Listas";"goal"->"Metas";"workout"->"Treinos";"expense","income"->"Finanças";"bill"->"Contas";"budget"->"Orçamento";"diary"->"Diário";else->"Notas"} else "Tarefas")}){Text("Ver resultado salvo →")}
                         }
                         if(message.actionReceiptJson!=null && org.json.JSONObject(message.actionReceiptJson).optString("tool")!="device" && org.json.JSONObject(message.actionReceiptJson).optString("type")!="undo") TextButton(onClick={repository.undoAction(message)},enabled=!busy) {
                             Text("↶ Desfazer ação",color=KoiColors.Blue)

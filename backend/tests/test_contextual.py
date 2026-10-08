@@ -92,13 +92,13 @@ class ContextualTests(unittest.TestCase):
             result=personal.personal_conversation(text,[],OWNER,'Bearer fixture',REQUEST,'UTC','2026-10-08T12:00:00+00:00',semantic=meaning(text,'memory','read','question'))
         self.assertIsNone(result['action_receipt']);self.assertEqual(3,cloud.call_count)
 
-    def test_diary_capture_saves_note_with_source_without_task(self):
+    def test_diary_capture_saves_event_without_task(self):
         text='Cheguei do trabalho agora'
-        plan=dict(reply='Bem-vindo',action='create',target_kind='record',record_id=None,fields=dict(kind='note',title='Chegada do trabalho',content=text,happened_on='2026-10-08'))
-        receipt=dict(record=dict(id=str(UUID(int=3)),kind='note',title='Chegada do trabalho'),target_kind='record',action='create',request_id=str(REQUEST))
+        plan=dict(reply='Bem-vindo',action='create',target_kind='record',record_id=None,fields=dict(kind='diary',title='Chegada do trabalho',content=text,happened_on='2026-10-08',details=dict(category='work')))
+        receipt=dict(record=dict(id=str(UUID(int=3)),kind='diary',title='Chegada do trabalho'),target_kind='record',action='create',request_id=str(REQUEST))
         with patch.object(personal,'cloud',side_effect=[[],[],[],receipt]) as cloud,patch.object(personal,'generate',return_value=json.dumps(plan)):
             result=personal.personal_conversation(text,[],OWNER,'Bearer fixture',REQUEST,'UTC','2026-10-08T12:00:00+00:00',semantic=meaning(text,'diary',speech_act='report'),capture=True)
-        self.assertEqual('note',result['action_receipt']['record_kind'])
+        self.assertEqual('diary',result['action_receipt']['record_kind'])
         self.assertEqual(text,cloud.call_args.args[3]['fields']['content'])
 
     def test_device_route_only_prepares_fixed_capability(self):

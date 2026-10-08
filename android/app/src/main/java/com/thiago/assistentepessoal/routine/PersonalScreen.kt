@@ -43,7 +43,7 @@ fun PersonalScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
             TextButton(onClick=onBack){Text("← Rotina")};Eyebrow("SEU ESPAÇO",accent);Text(category,fontSize=32.sp)
             Text(when(category){"Listas"->"Um item de cada vez.";"Metas"->"Transforme planos em progresso.";"Treinos"->"Registre o que você fez e acompanhe a evolução.";"Finanças"->"Receitas e despesas registradas por você, em reais.";else->"Ideias que acompanham você."},color=KoiColors.Muted)
             Spacer(Modifier.height(12.dp))
-            KoiAction("＋ Novo registro",{editing=null;creationId=UUID.randomUUID().toString();editor=true},Modifier.fillMaxWidth(),!busy && records!=null && records!!.size<200)
+            KoiAction("＋ Novo registro",{editing=null;creationId=UUID.randomUUID().toString();editor=true},Modifier.fillMaxWidth(),!busy && records!=null && records!!.size<2000)
             OutlinedTextField(query,{query=it},label={Text("Buscar")},singleLine=true,modifier=Modifier.fillMaxWidth())
             Row{FilterChip(selected=!archived,onClick={archived=false},label={Text("Ativos")});Spacer(Modifier.width(8.dp));FilterChip(selected=archived,onClick={archived=true},label={Text("Arquivados")})}
             if(category=="Finanças")Row{FilterChip(selected=monthOnly,onClick={monthOnly=true},label={Text("Este mês")});Spacer(Modifier.width(8.dp));FilterChip(selected=!monthOnly,onClick={monthOnly=false},label={Text("Todos")})}
