@@ -1,3 +1,5 @@
+> **V1.2 contextual instalada no Poco (08/10/2026):** interpretação por IA, memória corrigida, relatos opcionais, cartões de ações Android e microfone dentro da Koi. [Entrega, verificação e limites](docs/ENTREGA_CONTEXTUAL_V1_2_2026_10_08.md).
+
 > **Entrega atual: V1.1 instalada no Poco (08/10/2026).** Configurações e ferramentas reorganizadas; painel interativo com testes guiados, limites e próximos módulos. [Entrega e verificações](docs/ENTREGA_V1_1_2026_10_08.md) · [Painel ilustrativo](docs/dashboard/index.html).
 
 <div align="center">

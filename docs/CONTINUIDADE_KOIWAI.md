@@ -1,5 +1,28 @@
 # Koiwai — leia primeiro ao retomar
 
+## Entrega atual — V1.2 contextual, 08/10/2026
+
+Leia ENTREGA_CONTEXTUAL_V1_2_2026_10_08.md. V1.2 instalada no Poco (code 4), sem
+reset. Classificação semântica, Coi, memória corrigida, captura opcional de relatos
+(em Notas/fatos/finanças), cartões Android e microfone dentro da Koi. 93 backend,
+25 unitários e 6 persistência no Poco passaram; testes Groq fictícios passaram.
+Novos fluxos físicos precisam de teste manual. Usuário usa Inter e nextJoy;
+Itaú foi apenas pesquisa. Código 48bec44 publicado; deploy dep-db40ij4s728c73fgdt50
+confirmado Live; health 200, chat sem sessão 401 e demo 404. Plano Free.
+Saudação autenticada enviada pelo Poco ao servidor publicado passou (1 teste,
+4,588 s), sem gravação no histórico. Esse teste usa o caminho direto anterior;
+não comprova todos os novos fluxos semânticos ou físicos no celular.
+
+## Pesquisa mais recente — expansão contextual, 08/10/2026
+
+Leia PESQUISA_EXPANSAO_KOIWAI_2026_10_08.md: matriz de possibilidades, fontes,
+dependências, custos e critérios. Usuário relata testes guiados aprovados exceto
+memória. Prioridade: corrigir memória, aliases Coi e interpretação semântica com
+ferramentas reais; diário, ações Android, contas/proatividade e integrações depois.
+Pesquisa NÃO implementou nem instalou novos recursos, concedeu permissões ou pagou
+serviços. Inter API oficial é PJ; Spotify API dev exige Premium; não prometer
+integrações bancárias/ChatGPT ou controle irrestrito. Visual completo posterior.
+
 ## Entrega mais recente — V1.1 instalada no Poco, 08/10/2026
 
 Leia ENTREGA_V1_1_2026_10_08.md. Atualização preservou os dados; versionCode 3,
