@@ -1,5 +1,25 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint mais recente — instalada e zerada, 08/10/2026
+
+Leia ATUALIZACAO_CELULAR_2026_10_08.md antes dos registros históricos abaixo.
+V1.0 instalada no Poco, versionCode 2. Usuário autorizou explicitamente reset;
+nove tabelas da conta na nuvem e armazenamento local foram zerados. Conta Auth
+preservada. Sete testes físicos de persistência/estado vazio passaram. App abriu.
+Novos controles em Config.: voz, ferramentas, lembranças, notificações, permissões
+e Celular e conexões. Ferramentas abre apps, discador, contatos, alarmes e Wi-Fi;
+atalhos Google/ChatGPT abrem serviços, não conectam dados. Sem acesso irrestrito.
+Build/lint aprovado: zero erros, 69 avisos. APK SHA256
+6617b5e23113a2e3a0cdcd7c00e73d4260d8a700932de73adffd457061cd3e4d.
+Navegação/configurações automatizadas pendentes: ActivityScenario travou no
+lançamento, interrompido para reset. Não afirmar aprovação visual desses fluxos.
+Próximo: login e testes manuais; módulos Google OAuth, notificações/contatos,
+outras telas, ChatGPT e bancos Inter/nextJoy. Usuário pediu tudo, mas credenciais,
+concessões sensíveis e pagamentos precisam de autorização específica no momento.
+Google Cloud aberto: nenhum cliente OAuth configurado. Sem novos segredos/deploy.
+Dashboard ilustrativo local em docs/dashboard/index.html. Não é monitor ao vivo.
+Usuário desconectará o celular; APK final já instalado. Não limpar de novo.
+
 ## Checkpoint prioritário — pacote móvel V1.0, 08/10/2026
 
 LEIA ENTREGA_V1_0.md antes dos checkpoints históricos. Usuário pediu ampliação

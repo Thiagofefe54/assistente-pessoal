@@ -111,7 +111,7 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null) {
                                 "Ferramentas" -> ToolsScreen({category=null})
                                 else -> RoutineScreen(null,{category=it},{category=null})
                             }
-                            "settings" -> SettingsScreen {openAccount("settings")}
+                            "settings" -> SettingsScreen({openAccount("settings")},{selected="routine";category="Ferramentas"},{selected="facts"})
                             "account" -> AccountScreen {back()}
                         }
                     }
@@ -333,8 +333,10 @@ private fun RoutineScreen(category:String?,onCategory:(String)->Unit,onBack:()->
 }
 
 @Composable
-private fun SettingsScreen(onAccount:()->Unit) {
-    val app=LocalContext.current.applicationContext as KoiwaiApplication
+private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit) {
+    val context=LocalContext.current
+    val app=context.applicationContext as KoiwaiApplication
+    val voice=com.thiago.assistentepessoal.tools.rememberKoiVoice()
     val account by app.auth.account.collectAsState()
     val prefs=LocalContext.current.getSharedPreferences("koiwai-preferences",0)
     var treatment by rememberSaveable {mutableStateOf(prefs.getString("treatment","Mestre") ?: "Mestre")}
@@ -383,6 +385,28 @@ private fun SettingsScreen(onAccount:()->Unit) {
         }
         item {com.thiago.assistentepessoal.routine.ReminderSettings()}
         item {ReportSettings()}
+        item {
+            KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple) {
+                Eyebrow("VOZ DA KOI",KoiColors.Purple)
+                Text("Escolha a voz em português no seu celular.",color=KoiColors.Muted,fontSize=12.sp)
+                KoiAction("Testar voz",{voice.speak("Oi! Eu sou a Koi. Vamos cuidar do seu dia juntas? 💜")},Modifier.fillMaxWidth(),voice.ready)
+                Row {
+                    TextButton(onClick={com.thiago.assistentepessoal.tools.openIntent(context,android.content.Intent("com.android.settings.TTS_SETTINGS"))}){Text("Configurar voz")}
+                    TextButton(onClick={voice.stop()}){Text("Parar voz")}
+                }
+                voice.info?.let{Text(it,color=KoiColors.Muted,fontSize=12.sp)}
+            }
+        }
+        item {
+            KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue) {
+                Eyebrow("ATALHOS DA SUA KOI",KoiColors.Blue)
+                KoiAction("Clima e ferramentas",onTools,Modifier.fillMaxWidth())
+                KoiAction("Gerenciar lembranças",onFacts,Modifier.fillMaxWidth())
+                KoiAction("Celular e conexões",onTools,Modifier.fillMaxWidth())
+                TextButton(onClick={com.thiago.assistentepessoal.tools.openIntent(context,android.content.Intent(android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS,android.net.Uri.parse("package:${context.packageName}")))}){Text("Permissões e acessos do celular")}
+                TextButton(onClick={com.thiago.assistentepessoal.tools.openIntent(context,android.content.Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(android.provider.Settings.EXTRA_APP_PACKAGE,context.packageName))}){Text("Permissões de notificações")}
+            }
+        }
         item {Eyebrow("SOBRE SUA KOI")}
         items(listOf("Voz e notificações","Memória e privacidade","Sobre a Koiwai")) { title ->
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue,onClick={detail=title}) {
@@ -393,9 +417,9 @@ private fun SettingsScreen(onAccount:()->Unit) {
     }
     detail?.let { title ->
         val description=when(title) {
-            "Voz e notificações"->"Lembretes de tarefas podem ser ativados acima. Precisam de data e horário; o Android pode atrasá-los. Voz por botão e respostas faladas ainda estão em preparação. A ativação por “Koi” será testada depois."
+            "Voz e notificações"->"No Chat, Voz transforma sua fala em texto para revisar antes de enviar. Ouvir lê uma resposta; ative Ouvir novas respostas para leitura automática enquanto o chat estiver aberto. Configure e teste a voz acima. Lembretes precisam de data, horário e permissão de notificações; o Android pode atrasá-los. Ativação por “Koi” ainda não está disponível."
             "Memória e privacidade"->"Você pode revisar, editar e apagar lembranças confirmadas na área Memória. Conversas, lembranças e tarefas ficam separadas por conta. O chat envia o pedido, parte da conversa recente, lembranças confirmadas e uma lista limitada de tarefas ao provedor de IA. Não há limpeza automática. Exportação e exclusão completa ainda estão em preparação."
-            else->"Koi é sua assistente pessoal. O chat usa IA na nuvem e suas conversas ficam no celular e no Supabase quando sincronizadas. O servidor gratuito pode levar um pouco para despertar após ficar sem uso. Tarefas, lembranças e resumos diários já estão disponíveis; as demais áreas continuam em preparação."
+            else->"Koi é sua assistente pessoal. Esta versão 1.0 reúne tarefas, agenda, hábitos, notas, listas, metas, treinos e finanças, além de memória, relatórios, voz, imagens e pesquisa. Conversas ficam no celular e no Supabase quando sincronizadas; fotos enviadas ficam no histórico deste celular. O servidor gratuito pode demorar para despertar após ficar sem uso."
         }
         AlertDialog(onDismissRequest={detail=null},title={Text(title)},text={Text(description)},confirmButton={TextButton(onClick={detail=null}){Text("Entendi")}})
     }

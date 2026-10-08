@@ -43,6 +43,8 @@ fun ToolsScreen(onBack:()->Unit){
     }}
     LazyColumn(Modifier.fillMaxSize().imePadding(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(16.dp)){
         item{TextButton(onClick=onBack){Text("← Rotina")};Eyebrow("SEU KIT DA KOI",KoiColors.Blue);Text("Ferramentas",fontSize=32.sp)}
+        item{DeviceAccessPanel()}
+        item{ConnectionsPanel()}
         item{WeatherPanel()}
         item{KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple){
             Text("Calculadora",fontSize=22.sp)

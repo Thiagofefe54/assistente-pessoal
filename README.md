@@ -21,7 +21,7 @@
 
 Para retomar o desenvolvimento, leia o [resumo de continuidade](docs/CONTINUIDADE_KOIWAI.md).
 
-**Pacote móvel V1.0 em validação:** novas áreas, voz, imagens e pesquisa. [Relatório completo e limites](docs/ENTREGA_V1_0.md). O novo APK aguarda instalação e conferência no Poco; implementação não equivale a validação física.
+**Pacote móvel V1.0 instalado:** novas áreas, voz, imagens, pesquisa e botões do celular. Sete testes de dados passaram no Poco; conferência visual e novas conexões continuam pendentes. [Atualização e limites](docs/ATUALIZACAO_CELULAR_2026_10_08.md) · [Dashboard ilustrativo — baixe e abra no navegador](docs/dashboard/index.html). Os atalhos Google/ChatGPT abrem serviços, ainda não conectam os dados das contas.
 
 ## O projeto
 
