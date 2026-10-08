@@ -1,5 +1,6 @@
 """Groq adapter: credentials stay on the server; confirmed memory is data, not tools."""
 import json
+import logging
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, build_opener
 
@@ -86,6 +87,15 @@ def generate(messages: list[dict[str, str]], response_format: dict | None = None
         except HTTPError as error:
             code = error.code
             retry_after = error.headers.get("Retry-After") if error.headers else None
+            # Record bounded categories only, never prompts, provider messages or credentials.
+            category = 'unknown'
+            try:
+                provider_code = json.loads(error.read(8192)).get('error', {}).get('code')
+                if provider_code in ('json_validate_failed', 'context_length_exceeded', 'rate_limit_exceeded', 'invalid_api_key'):
+                    category = provider_code
+            except (ValueError, TypeError, AttributeError, OSError):
+                pass
+            logging.getLogger(__name__).warning('AI upstream status=%s category=%s structured=%s', code, category, response_format is not None)
             error.close()
             if code == 429:
                 # Quotas may be shared: don't bypass cooldown by switching models.
