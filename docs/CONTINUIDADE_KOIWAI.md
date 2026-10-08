@@ -21,12 +21,13 @@ Segurança sem novos alertas; aviso Auth de senhas vazadas desativado permanece.
 Groq real com referências fictícias/escritas simuladas confirmou nota/lista/meta/
 despesa/lembrança/consulta; ferramenta/schema separados corrigiram confusão de
 nota com memória. Pesquisa, visão de figura fictícia e clima públicos passaram.
-Backend: 73 testes. Android: 25 testes unitários, compilação e lint inicial sem
+Backend: 76 testes. Android: 25 testes unitários, compilação e lint inicial sem
 erros (65 avisos). Nova navegação e persistência de imagem preparadas, NÃO rodadas.
 
 Build final aprovado: 25 testes Android; lint zero erros/66 avisos. APK de instalação
 android/build/releases/Koiwai-1.0.apk; hash f8090d34cef01c9d619c438f3b525579bf7ca0d874b96ad761a3f7ce33577b4e.
-GitHub/Render desta ampliação serão registrados no relatório após confirmação.
+Código principal GitHub 489f6d2; Render Free Live dep-db3sor2j9qps738tgv7g.
+Ajuste final de registros longos/totais por período será registrado após publicação.
 Último APK instalado ainda é o checkpoint de conexão abaixo, não esta V1.0.
 Próximo com Poco: instalar preservando dados, conferir migração, áreas, comandos,
 voz/fotos/layout, notificações e relatórios. Só marcar o que foi executado.

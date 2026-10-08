@@ -57,7 +57,10 @@ garantia de ausência de erros. Instalação e validação física continuam sep
   isolamento entre contas. Nenhum registro pessoal foi usado no teste.
 - Consulta pessoal lê até 200 registros; a IA recebe até 20, com conteúdo de cada
   um limitado a 350 caracteres e indicação de truncamento. Totais financeiros
-  são calculados pela aplicação, com todos os registros lidos.
+  são calculados pela aplicação, com todos os registros lidos, também para
+  hoje, ontem e mês atual. Um registro citado pelo nome pode fornecer até 8.000
+  caracteres completos; alterações do conteúdo são bloqueadas se o contexto
+  estiver truncado, evitando perda de trechos que a IA não viu.
 - As novas telas pessoais precisam de rede para consultar/salvar. Não há fila
   offline durável para criação manual. No chat, a mensagem e a identidade do
   pedido ficam persistidas para reenvio explícito. Não fechar o editor e iniciar
@@ -74,7 +77,7 @@ garantia de ausência de erros. Instalação e validação física continuam sep
 
 ## Revisão e evidências
 
-- Testes automatizados do servidor: 73 passaram, incluindo relógio original,
+- Testes automatizados do servidor: 76 passaram, incluindo relógio original,
   prazo cruzando meia-noite, proteção de pedidos citados/negados, centavos,
   versão atual, conflito, reenvio, seleção da ferramenta e autenticação.
 - Testes unitários Android: 25 passaram na primeira verificação completa.
@@ -139,5 +142,6 @@ físico. Nenhum teste do novo APK foi executado no Poco nesta sessão.
 
 APK: `android/build/releases/Koiwai-1.0.apk`, versão 1.0, versionCode 2, Room 5.
 SHA256: `f8090d34cef01c9d619c438f3b525579bf7ca0d874b96ad761a3f7ce33577b4e`.
-Não foi instalado. Código pronto para publicação; confirmação do deploy será
-acrescentada após o Render informar Live. O GitHub não recebe APKs, dados ou chaves.
+Não foi instalado. Código principal publicado no GitHub: `489f6d22885fccaf6fc0ec246ca1223e7065a2c5`.
+Render Free confirmou Live no deploy `dep-db3sor2j9qps738tgv7g`. Ajuste final
+de proteção de conteúdo longo e totais por período será publicado em seguida. O GitHub não recebe APKs, dados ou chaves.

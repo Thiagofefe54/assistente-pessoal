@@ -93,6 +93,31 @@ class MobileV1Tests(unittest.TestCase):
             self.assertEqual(1,cloud.call_count)
             with self.assertRaises(HTTPException):personal.existing(OWNER,'Bearer fiction',REQUEST,'b'*64)
 
+    def test_truncated_long_record_cannot_be_overwritten_with_partial_text(self):
+        row=dict(ROW,kind='note',content='important text '*100,amount_cents=None)
+        plan=dict(reply='Vou editar',action='update',target_kind='record',record_id=TARGET,fields=dict(content='short partial replacement'))
+        with patch.object(personal,'cloud',side_effect=[[],[],[row]]) as cloud,patch.object(personal,'generate',return_value=json.dumps(plan)):
+            result=personal.personal_conversation('Altere minha nota',[],OWNER,'Bearer fixture',REQUEST,'UTC','2026-10-08T13:00:00+00:00')
+        self.assertIsNone(result['action_receipt']);self.assertEqual(3,cloud.call_count)
+
+    def test_named_long_record_is_supplied_completely_before_an_edit(self):
+        row=dict(ROW,kind='note',content='important text '*100,amount_cents=None)
+        with patch.object(personal,'cloud',side_effect=[[],[],[row]]),patch.object(personal,'generate',return_value=json.dumps(dict(reply='Conteúdo',action=None,target_kind=None,record_id=None,fields=None))) as model:
+            personal.personal_conversation('Resuma a nota Lanche',[],OWNER,'Bearer fixture',REQUEST,'UTC','2026-10-08T13:00:00+00:00')
+        snapshot=json.loads(model.call_args.args[0][1]['content'].split('\n',1)[1])['records'][0]
+        self.assertEqual(row['content'],snapshot['content']);self.assertFalse(snapshot['content_truncated'])
+
+    def test_financial_periods_are_exact_and_use_local_date_not_utc(self):
+        rows=[ROW,dict(ROW,id=str(UUID(int=4)),amount_cents=3000,happened_on='2026-09-20'),dict(ROW,id=str(UUID(int=5)),amount_cents=900,archived_at='archived')]
+        plan=dict(reply='Total',action=None,target_kind=None,record_id=None,fields=None)
+        with patch.object(personal,'cloud',side_effect=[[],[],rows]),patch.object(personal,'generate',return_value=json.dumps(plan)) as model:
+            personal.personal_conversation('Quais despesas de hoje?',[],OWNER,'Bearer fixture',REQUEST,'America/Sao_Paulo','2026-10-09T01:00:00+00:00')
+        data=json.loads(model.call_args.args[0][1]['content'].split('\n',1)[1])
+        self.assertEqual(4250,data['financial_cents']['expense'])
+        self.assertEqual(1250,data['financial_periods_cents']['today']['expense'])
+        self.assertEqual(1250,data['financial_periods_cents']['this_month']['expense'])
+        self.assertEqual('2026-10-08T22:00:00-03:00',data['now'])
+
     def test_image_and_clock_validation(self):
         for image in ('https://example.com/private','!invalid!',base64.b64encode(b'notjpeg').decode()):
             with self.assertRaises(ValidationError):ChatRequest(message='veja',image_jpeg_base64=image)
