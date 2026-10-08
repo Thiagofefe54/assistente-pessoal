@@ -107,7 +107,7 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:St
                                 reportRequest?.split('|')?.get(0) ?: "week",reportRequest?.split('|')?.get(1) ?: java.time.LocalDate.now().toString())}
                             "facts" -> MemoriesScreen({selected="memory"},{openAccount("facts")})
                             "routine" -> when(category) {
-                                "Contas","Orçamento","Diário" -> com.thiago.assistentepessoal.routine.LifeScreen(category!!,{category=null},{openAccount("routine")})
+                                "Contas","Orçamento","Diário" -> key(category){com.thiago.assistentepessoal.routine.LifeScreen(category!!,{category=null},{openAccount("routine")})}
                                 "Tarefas","Agenda","Hábitos" -> key(category){TasksScreen({category=null},{openAccount("routine")},category ?: "Tarefas")}
                                 "Notas","Listas","Metas","Treinos","Finanças","Registros" -> key(category){PersonalScreen(if(category=="Registros") "Notas" else category!!,{category=null},{openAccount("routine")})}
                                 "Ferramentas" -> ToolsScreen({category=null})

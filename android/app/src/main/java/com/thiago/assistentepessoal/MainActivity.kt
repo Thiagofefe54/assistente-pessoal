@@ -14,7 +14,11 @@ class MainActivity : ComponentActivity() {
     private val reportRequest=mutableStateOf<String?>(null)
     private var reportCounter=0
     private val lifeRequest=mutableStateOf<String?>(null)
-    private fun lifeIntent(intent:Intent){intent.getStringExtra("openLife")?.takeIf{it in listOf("Contas","Orçamento","Diário")}?.let{lifeRequest.value="$it|${System.nanoTime()}"}}
+    private fun lifeIntent(intent:Intent){
+        val raw=intent.getStringExtra("openLife")
+        val area=when(raw){"bills"->"Contas";"budget"->"Orçamento";"diary"->"Diário";else->raw}
+        area?.takeIf{it in listOf("Contas","Orçamento","Diário")}?.let{lifeRequest.value="$it|${System.nanoTime()}"}
+    }
     private fun reportIntent(intent:Intent) {
         val kind=intent.getStringExtra("reportKind") ?: return
         val anchor=intent.getStringExtra("reportAnchor") ?: return

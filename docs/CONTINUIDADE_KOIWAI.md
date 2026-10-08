@@ -1,5 +1,21 @@
 # Koiwai — leia primeiro ao retomar
 
+## Entrega atual — V1.3 vida organizada, 08/10/2026
+
+Leia ENTREGA_VIDA_V1_3_2026_10_08.md. Contas recorrentes, pagamento/despesa atômicos,
+orçamento total mensal, diário estruturado/categorias/sono e balanço semanal local.
+Acompanhamento opt-in até 1 aviso/dia, descanso, internet/Android, sem scheduler cloud.
+Migração koi_life_pack aplicada: details, novos tipos, RLS pagamentos e capacidade
+2.000 registros; dados anteriores preservados. Notas antigas continuam Notas.
+Backend 843cd93 publicado, Render Free Live dep-db411ejl550s73c7i5ag, health 200.
+V1.3/code5 instalada no Poco. 102 backend +30 unitários +6 persistência +1 saudação
+real passaram; SQL transação revertida e 4 cenários Groq/banco simulado passaram.
+Painel atualizado e verificado no Brave. Revisão final de navegação instalada;
+Contas, Diário e Orçamento conferidos no Poco. APK final SHA256 começa 83D113A4;
+hash completo no relatório. Avisos reais/formulários por toque ainda precisam de teste manual.
+Não prometer banco conectado, voz própria, toda paráfrase perfeita ou push exato.
+Nenhum plano pago, reset ou permissões ativadas. Usuário mantém Inter e nextJoy.
+
 ## Entrega atual — V1.2 contextual, 08/10/2026
 
 Leia ENTREGA_CONTEXTUAL_V1_2_2026_10_08.md. V1.2 instalada no Poco (code 4), sem
