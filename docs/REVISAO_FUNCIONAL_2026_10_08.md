@@ -99,3 +99,18 @@ Fonte: https://render.com/docs/free
 
 Dashboard atualizado: docs/dashboard/index.html. Ilustrativo, sem leitura de dados
 pessoais ou pedidos reais à IA; exemplos e checkboxes não concedem permissões.
+
+## Fechamento verificado
+
+Código fa797b0 publicado no GitHub. Backend Render Free Live:
+dep-db3un0nf3r2c73dlluq0 (08/10/2026). Health HTTP 200, chat sem sessão 401 e
+demo produção 404. Consulta Groq real com registros fictícios e cloud substituída
+por fixture respondeu sem ação/escrita; não usou informações pessoais.
+Testes locais verificam os cálculos exatos; não afirmar que o texto da IA é
+determinístico. Sem conversa autenticada no Poco nesta sessão.
+Dashboard recarregado no navegador; exemplo “Recebi dinheiro” e filtro de próximos
+módulos verificados. V1.1 segue preparada, não instalada. Nenhum reset realizado.
+Limites de crescimento também a tratar: histórico local carrega mensagens/fotos
+na lista e precisa avaliação de memória/paginação; resumo de um dia tem limite
+500 mensagens/60 mil caracteres e síntese tem limite de entrada. Vida inteira
+não cabe no contexto do modelo; seleção de fontes e retenção são parte do próximo pacote.

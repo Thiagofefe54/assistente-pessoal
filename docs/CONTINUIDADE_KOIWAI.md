@@ -21,7 +21,9 @@ Dashboard ampliado em docs/dashboard/index.html: exemplos ilustrativos, limites,
 correções, pacotes, autorizações e estado de testes. Não é monitor ao vivo.
 Próximo: diário estruturado e consulta com fontes; contas/orçamento/histórico;
 proatividade opt-in; voz/assistente; redesign e uso prolongado, depois Windows.
-Deploy da revisão e hash final estão no fechamento abaixo quando confirmados.
+Backend revisão publicado: fa797b0, Render Free Live dep-db3un0nf3r2c73dlluq0.
+Health 200; chat sem sessão 401; demo produção 404. Consulta Groq real fictícia
+passou, sem escrita. Dashboard exemplos/filtros verificados no navegador.
 
 ## Checkpoint mais recente — instalada e zerada, 08/10/2026
 
