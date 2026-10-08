@@ -16,7 +16,8 @@ fun personalRecord(row:JSONObject)=PersonalRecord(row.getString("id"),row.getStr
     if(row.isNull("happened_on"))null else row.getString("happened_on"),!row.isNull("archived_at"),row.getString("updated_at"))
 fun money(cents:Long)=java.text.NumberFormat.getCurrencyInstance(java.util.Locale.forLanguageTag("pt-BR")).format(java.math.BigDecimal.valueOf(cents,2))
 fun parseCents(text:String):Long?=runCatching {
-    val normalized=text.trim().replace("R$","").trim().replace(",",".")
+    val input=text.trim().removePrefix("R$").trim()
+    val normalized=if(Regex("[0-9]{1,3}(\\.[0-9]{3})+,[0-9]{1,2}").matches(input))input.replace(".","").replace(",",".") else input.replace(",",".")
     require(Regex("[0-9]{1,9}(\\.[0-9]{1,2})?").matches(normalized))
     java.math.BigDecimal(normalized).movePointRight(2).longValueExact().also{require(it in 0..100000000000L)}
 }.getOrNull()

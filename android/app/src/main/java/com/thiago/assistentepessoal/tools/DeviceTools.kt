@@ -9,6 +9,7 @@ import android.net.Uri
 fun openIntent(context:Context,intent:Intent){
     try{context.startActivity(intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK))}
     catch(e:ActivityNotFoundException){Toast.makeText(context,"Nenhum aplicativo disponível para esta ação.",Toast.LENGTH_LONG).show()}
+    catch(e:SecurityException){Toast.makeText(context,"O Android bloqueou esta abertura. Confira as permissões ou abra o aplicativo diretamente.",Toast.LENGTH_LONG).show()}
 }
 fun shareText(context:Context,title:String,text:String)=openIntent(context,Intent.createChooser(Intent(Intent.ACTION_SEND).apply{
     type="text/plain";putExtra(Intent.EXTRA_SUBJECT,title);putExtra(Intent.EXTRA_TEXT,"$title\n\n$text")

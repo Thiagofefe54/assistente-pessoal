@@ -20,6 +20,8 @@ class AssistantToolsTest{
     }
     @Test fun financialInputUsesExactCentsAndRejectsAmbiguousFractions(){
         assertEquals(1250L,parseCents("R$ 12,50"));assertEquals(30L,parseCents("0.30"))
+        assertEquals(123456L,parseCents("R$ 1.234,56"))
+        assertNull(parseCents("1.23,45"));assertNull(parseCents("1.234"))
         assertNull(parseCents("12,345"));assertNull(parseCents("-10"));assertNull(parseCents("1e3"))
     }
 }

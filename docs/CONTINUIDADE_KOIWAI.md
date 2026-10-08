@@ -1,5 +1,28 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint prioritário — revisão funcional V1.1, 08/10/2026
+
+Leia REVISAO_FUNCIONAL_2026_10_08.md. Direção aprovada: companheira que organiza a
+vida por conversa; diário/rotina/sono/dinheiro/contas/lembretes conectados. Não
+priorizar plugins indiscriminados. Usuário não gostou da organização visual atual;
+redesign vem DEPOIS das funcionalidades, mantendo identidade e animações.
+Correções: vocativo Koi e negativas não autorizam escrita; totais semanais/mês
+anterior e exclusão de datas futuras dos períodos atuais; resposta vazia recusada;
+Android aceita 1.234,56 e trata bloqueio de abertura externa. Personalidade ajustada.
+79 testes backend, 25 unitários Android, build/lint: zero erros/69 avisos.
+APK V1.1 versionCode 3 em android/build/releases/Koiwai-1.1.apk, NÃO instalado.
+SHA256: 502a74dea3280a7f7abd3fff26b3c703077b40bb6b0e127d8b68a93217833c8d.
+Celular desconectado; nenhuma nova limpeza. V1.0 segue a última instalada.
+Supabase: 9 tabelas RLS habilitado, aviso antigo de senhas vazadas; limite real
+200 registros pessoais compartilhados/arquivados, precisa crescer para uso diário.
+Render continua Free. Pagar não cria proatividade: os jobs atuais são Android;
+não existe agendador de acompanhamento/push em nuvem. Nenhum plano pago ativado.
+Dashboard ampliado em docs/dashboard/index.html: exemplos ilustrativos, limites,
+correções, pacotes, autorizações e estado de testes. Não é monitor ao vivo.
+Próximo: diário estruturado e consulta com fontes; contas/orçamento/histórico;
+proatividade opt-in; voz/assistente; redesign e uso prolongado, depois Windows.
+Deploy da revisão e hash final estão no fechamento abaixo quando confirmados.
+
 ## Checkpoint mais recente — instalada e zerada, 08/10/2026
 
 Leia ATUALIZACAO_CELULAR_2026_10_08.md antes dos registros históricos abaixo.

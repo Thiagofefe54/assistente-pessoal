@@ -21,6 +21,11 @@
 
 Para retomar o desenvolvimento, leia o [resumo de continuidade](docs/CONTINUIDADE_KOIWAI.md).
 
+**Revisão funcional V1.1:** 79 testes de servidor e 25 testes unitários Android
+aprovados. Correções de comandos negados, comparações financeiras e entrada de
+valores; APK preparado, aguardando celular. [Relatório e próximos pacotes](docs/REVISAO_FUNCIONAL_2026_10_08.md).
+A prioridade é acompanhar a vida por conversa; reorganização visual vem depois.
+
 **Pacote móvel V1.0 instalado:** novas áreas, voz, imagens, pesquisa e botões do celular. Sete testes de dados passaram no Poco; conferência visual e novas conexões continuam pendentes. [Atualização e limites](docs/ATUALIZACAO_CELULAR_2026_10_08.md) · [Dashboard ilustrativo — baixe e abra no navegador](docs/dashboard/index.html). Os atalhos Google/ChatGPT abrem serviços, ainda não conectam os dados das contas.
 
 ## O projeto

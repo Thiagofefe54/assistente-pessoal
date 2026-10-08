@@ -101,8 +101,14 @@ def personal_conversation(message,history,owner,authorization,request_id,timezon
          'content_truncated':r['id']!=named and len(r['content'])>350} for r in records[:20]]
     financial={k:sum(r['amount_cents'] for r in records if r['kind']==k and not r['archived_at']) for k in ('expense','income')}
     periods={name:{k:sum(r['amount_cents'] for r in records if r['kind']==k and not r['archived_at'] and
-        (r['happened_on'] or '').startswith(prefix)) for k in ('expense','income')}
+        (r['happened_on'] or '').startswith(prefix) and r['happened_on']<=clock.date().isoformat()) for k in ('expense','income')}
         for name,prefix in (('today',clock.date().isoformat()),('yesterday',(clock.date()-timedelta(days=1)).isoformat()),('this_month',clock.date().isoformat()[:7]))}
+    monday=clock.date()-timedelta(days=clock.weekday())
+    for name,start,end in (('this_week',monday,clock.date()+timedelta(days=1)),
+                           ('last_week',monday-timedelta(days=7),monday),
+                           ('last_month',(clock.date().replace(day=1)-timedelta(days=1)).replace(day=1),clock.date().replace(day=1))):
+        periods[name]={k:sum(r['amount_cents'] for r in records if r['kind']==k and not r['archived_at'] and
+            r['happened_on'] and start.isoformat()<=r['happened_on']<end.isoformat()) for k in ('expense','income')}
     text=plain(message)
     memory_request=bool(re.match(r'^\s*(?:koi[,!]?\s*)?(?:lembre|lembra|guarde|registre|esqueca)(?:-se)?\s+que\b',text)) or (
         bool(re.search(r'\b(lembrancas?|memoria)\b',text)) and not re.search(r'\b(notas?|listas?|metas?|treinos?|despesas?|receitas?)\b',text))
@@ -137,8 +143,12 @@ reply não declara execução: aplicação confirmará o resultado. action null 
 Saldo fornecido é soma exata de registros BRL, não saldo bancário nem dinheiro disponível.
 Snapshot só mostra 20 registros; informe quando faltarem registros na consulta.
 Os totais financeiros abrangem todos os registros mostrados em total_records (limite 200).
-financial_periods_cents fornece totais exatos de hoje, ontem e mês atual usando
-o fuso da pessoa. Use o período correto; não trate o total geral como mensal.
+financial_periods_cents fornece totais exatos de hoje, ontem, semana atual,
+semana anterior, mês atual e mês anterior usando o fuso da pessoa. Semanas vão
+de segunda a domingo; semana/mês atual podem estar incompletos. Compare entradas
+e gastos registrados, sem deduzir saldo bancário, salário futuro ou orçamento.
+Totais dos períodos correntes incluem só datas até hoje; registros futuros não
+provam dinheiro recebido ou gasto. Use o período correto; não trate o total geral como mensal.
 Datas relativas usam now/timezone fornecidos. Você não pesquisa na internet aqui.
 '''+f'\nFerramenta escolhida pela aplicação: target_kind {selected}. Use somente essa ferramenta ou action null. Notas nomeadas são record/kind note; lembranças sobre a pessoa são memory.\n'
     plan=PersonalPlan.model_validate_json(generate([{'role':'system','content':instructions},
@@ -146,7 +156,8 @@ Datas relativas usam now/timezone fornecidos. Você não pesquisa na internet aq
             'memories':memories,'records':snapshot,'total_records':len(records),'financial_cents':financial,'financial_periods_cents':periods},ensure_ascii=False)},
         *[dict(h,content=json.dumps({'reply':h['content'],'action':None,'target_kind':None,'record_id':None,'fields':None},ensure_ascii=False)) if h['role']=='assistant' else h for h in history],
         {'role':'user','content':message}],response_format=schema))
-    if plan.action is None: return {'reply':plan.reply,'task_draft':None,'action_receipt':None}
+    if not plan.reply.strip(): raise ValueError('Empty reply')
+    if plan.action is None: return {'reply':plan.reply.strip(),'task_draft':None,'action_receipt':None}
     operation=plan.action
     kind=plan.target_kind
     equivalents={'create':'create','update':'update','archive':'archive','restore':'reopen','delete':'archive'}

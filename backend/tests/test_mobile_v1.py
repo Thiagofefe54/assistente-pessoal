@@ -76,7 +76,8 @@ class MobileV1Tests(unittest.TestCase):
 
     def test_query_and_negation_cannot_authorize_model_mutation(self):
         plan=dict(reply='Vou salvar',action='create',target_kind='record',record_id=None,fields=dict(kind='expense',title='Lanche',amount_cents=1250))
-        for message in ('Não registre essa despesa','Como registrar despesas?','Ela disse "registre uma despesa"'):
+        for message in ('Não registre essa despesa','Como registrar despesas?','Ela disse "registre uma despesa"',
+                        'Agora não registre essa despesa','Koi, como registrar despesas?'):
             result,cloud=self.run_plan(message,plan)
             self.assertIsNone(result['action_receipt']);self.assertEqual(3,cloud.call_count)
 

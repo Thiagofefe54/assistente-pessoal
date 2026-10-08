@@ -76,6 +76,7 @@ FORMAT={'type':'json_schema','json_schema':{'name':'koi_action','strict':True,'s
 def explicit_intent(message,kind):
     text=''.join(c for c in unicodedata.normalize('NFKD',message.lower()) if not unicodedata.combining(c))
     text=re.sub(r'"[^"\n]*"|\u201c[^\u201d\n]*\u201d|\x27[^\x27\n]*\x27','',text)
+    text=re.sub(r'^\s*(?:koiwai|koi)\b[\s,!:\-]*','',text)
     if re.search(r'^(como\b|o que\b|se\b)|\b(e se|hipoteticamente|por exemplo|suponha)\b',text.strip()): return False
     verbs={'create':'crie criar cria adicione adicionar adiciona anote anotar anota registre registrar registra agende agendar agenda marque marcar marca lembre lembrar lembra coloque coloca colocar',
         'complete':'conclua conclui concluir concluido concluida finalize finaliza finalizar finalizei terminei termine termina terminar feito feita fiz realizei complete completar marque marcar marca',
@@ -84,8 +85,10 @@ def explicit_intent(message,kind):
         'archive':'arquive arquiva arquivar apague apaga apagar remova remove remover exclua exclui excluir cancele cancela cancelar retire retira retirar tire tira tirar',
         'undo':'desfaca desfaz desfazer reverta reverte reverter'}
     for match in re.finditer(r'\b('+ '|'.join(verbs[kind].split()) +r')\b',text):
-        prefix=text[max(0,match.start()-35):match.start()]
-        if not re.search(r'\b(nao|nunca)\b',prefix) or re.search(r'\b(mas|agora)\b',prefix): return True
+        # "Agora" does not cancel a negation. Only a new clause may authorize
+        # another action, e.g. "não apague, mas crie uma tarefa".
+        prefix=re.split(r'[.!?;\n]|\bmas\b',text[:match.start()])[-1]
+        if not re.search(r'\b(nao|nunca|sem)\b',prefix): return True
     return False
 
 def digest(message,timezone):

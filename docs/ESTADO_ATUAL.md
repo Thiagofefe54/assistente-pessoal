@@ -1,5 +1,9 @@
 # Estado atual da Koiwai
 
+Checkpoint mais recente: [revisão funcional V1.1](REVISAO_FUNCIONAL_2026_10_08.md)
+e [continuidade](CONTINUIDADE_KOIWAI.md). Os registros abaixo são históricos;
+não substituem instalação, testes, prioridades e limites do checkpoint atual.
+
 ## Dia 02 — Histórico local do chat
 
 O Android usa Kotlin e Compose; o backend FastAPI ainda responde com saudações e eco.
