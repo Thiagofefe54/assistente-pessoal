@@ -4,7 +4,7 @@ Decisão atual: usuário retirou Outlook/Microsoft do escopo e não quer cadastr
 As referências Microsoft abaixo registram a investigação anterior, sem ação pendente.
 
 Estado em 09/10/2026: fluxo OAuth, armazenamento cifrado e painel Android V1.12
-implementados; APK preparado, publicação em andamento. Nenhuma das três contas
+implementados; APK instalado e servidor publicado (commit28efa33). Nenhuma das três contas
 Google foi autorizada pessoalmente na Koi ainda. Cliente WEB, três usuários de teste
 e segredos estão configurados; tabelas privadas aplicadas no Supabase. Consultas
 disponíveis no código: eventos da agenda principal, agendas, listas Tasks,
@@ -32,8 +32,8 @@ na ordem técnica necessária, sem tratar a lista inteira como já implementada.
 Retorno Google configurado no cliente:
 https://koiwai-backend.onrender.com/api/v1/connections/google/callback
 Esse endpoint está implementado com state/PKCE/cookie e persistência cifrada.
-Antes de iniciar autorizações, verificar publicação e APIs habilitadas e instalar
-o APK. A autorização de cada conta é concluída pessoalmente pelo usuário.
+Servidor publicado, quatro APIs habilitadas e APK instalado. Conferência manual
+do painel pendente. A autorização de cada conta é concluída pessoalmente pelo usuário.
 
 ## Ordem de entrega
 

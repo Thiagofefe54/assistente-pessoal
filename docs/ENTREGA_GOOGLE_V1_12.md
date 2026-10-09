@@ -13,14 +13,16 @@ limitados, identificando a conta de origem. Não usa pontos Poe.
   preservada; gerar outra sem migração torna tokens existentes ilegíveis.
 - Backend: 202 testes aprovados, incluindo contas alheias, replay, autorização
   recusada, proteção criptográfica, respostas malformadas e minimização Gmail.
-- Android: 53 testes aprovados, build V1.12/code14 concluído. APK preparado;
-  instalação e conferência no Poco pendentes, pois USB não estava disponível.
-- Publicação em andamento; registrar commit/deploy confirmado no checkpoint.
+- Android: 53 testes aprovados, build V1.12/code14 instalado no Poco por install -r.
+  Versão confirmada por dumpsys e Home com conta conectada; painel Google manual
+  pendente, pois o Poco bloqueia injeção de toques ADB.
+- Publicado: commit28efa33, Render dep-db4kh8rncjis73fsllrg, live20:04:40Z.
+  HTTPS health200; Google status/connect anônimos401; callback inválido400.
 - APIs Calendar/Tasks/Gmail/Drive ativadas e verificadas, após aprovação dos termos.
 - Autorizações pessoais e consultas reais pendentes. Não há tokens pessoais
   Google gravados nem uso de dados reais Google nestes testes.
 
-## Usar depois de instalar
+## Usar no app atualizado
 
 1. Entre na conta Koi e abra Rotina → Ferramentas → Conexões.
 2. Em Google com a Koi, toque Adicionar / reautorizar conta Google.

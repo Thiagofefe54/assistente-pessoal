@@ -13,10 +13,14 @@ específica, salvas no .env ignorado e Render. Não gerar outra chave de cifrage
 sem migração dos tokens. GOOGLE_ENABLED=true no servidor. Segredos fora do APK/Git.
 
 Backend: 202 testes PASS. Android: 53 testes PASS, APK V1.12/code14 preparado em
-android/build/releases/Koiwai-1.12.apk. Ainda NÃO instalado: adb devices vazio.
-Publicação da nova implementação em andamento; conferir deploy antes de anunciar.
+android/build/releases/Koiwai-1.12.apk. INSTALADO no Poco por install -r, Success;
+dumpsys confirmou code14/name1.12. Home aberta, conta conectada preservada.
+Toques ADB bloqueados pelo Poco (INJECT_EVENTS); usuário confere painel manualmente.
+PUBLICADO Render commit28efa33, dep-db4kh8rncjis73fsllrg live20:04:40Z.
+Smoke HTTPS: health200, Google status/connect sem sessão401, callback inválido400.
 Calendar, Tasks, Gmail e Drive habilitados e verificados após autorização dos termos.
 Nenhuma conta Google pessoal foi autorizada pelo aplicativo ou consultada ainda.
+Pendente resposta manual: painel Google aparece e botão Adicionar está disponível?
 Android: Rotina → Ferramentas → Conexões → Google com a Koi; conectar/reautorizar,
 atualizar, consultar e desconectar individualmente. Consultas sem IA/cache:
 20 eventos da agenda principal, 20 agendas, 20 LISTAS Tasks, cinco cabeçalhos Gmail
