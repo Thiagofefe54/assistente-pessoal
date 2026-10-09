@@ -7,7 +7,11 @@ da integração. Ler OTIMIZACAO_IA_2026_10_08.md. Implementado: consultas simple
 financeiras/diário 2→1 chamadas; contexto limitado completo; planejadores com tom
 resumido e regras preservadas; JSON compacto; telemetria só contagens; Retry-After.
 112 testes backend simulados aprovados, zero chamadas/pontos Poe.
-Publicação em preparação neste checkpoint. Android V1.3 instalado sem mudança.
+Publicado no GitHub: 296b7b571b9766b16075eb70e3860a44cd5280ed.
+Render dep-db432p7lk1mc73ekpmlg LIVE em 08/10/2026 21:13:20 (São Paulo).
+GET /api/v1/health retornou 200/status ok após publicação, sem geração IA.
+Android V1.3 instalado sem mudança; não precisou reinstalar. Conversa real com
+as novas consultas ainda não testada para evitar consumo durante a otimização.
 Poe NÃO integrado; Groq atual. Próximo: adaptador Responses/schema e credencial
 privada Poe, com confirmação específica se necessária no navegador.
 

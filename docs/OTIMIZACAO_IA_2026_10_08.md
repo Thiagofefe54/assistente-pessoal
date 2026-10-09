@@ -28,4 +28,8 @@ consultas ainda precisa de teste real com o provedor escolhido.
 Poe mensal pago pelo usuário, ativo 10.000 pontos/dia. Ainda não integrado:
 faltam credencial privada, adaptador Responses/JSON Schema e teste controlado.
 Groq permanece até substituição testada. Nenhuma cobrança nova iniciada.
-Publicação: consultar checkpoint na continuidade. Android V1.3 sem alteração.
+Publicado: commit 296b7b5, deploy dep-db432p7lk1mc73ekpmlg LIVE, saúde HTTP 200.
+Android V1.3 sem alteração/reinstalação. Nenhuma conversa real de teste foi
+enviada após deploy; integração Poe e medição de uso real continuam pendentes.
+Texto de tom nas ferramentas: 2.816→288 caracteres; não equivale à redução
+total do pedido, que ainda inclui regras, schema e dados.
