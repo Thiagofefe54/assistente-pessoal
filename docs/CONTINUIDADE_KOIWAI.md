@@ -1,5 +1,28 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint V1.8 Planejamento — instalada, 09/10/2026
+
+Ler ENTREGA_PLANEJAMENTO_V1_8.md. Somente Android; sem backend/Render/migração.
+Agenda→tarefas via loadTasks existente por owner/token, cálculo local sem IA.
+Até200eventos/7dias (201º sinaliza truncamento), grupos visuais preservamorigens.
+Roteiro/conflitos/janelas15min, dia/período8–22, estimativa15/30/60min por tarefa.
+Recorrências diárias/semanais/mensais projetadas e rotuladas, sem escritas.
+Perguntas hoje/amanhã/manhã/tarde/noite neste painel, não no Chat.
+Tarefas concluídas/arquivadas excluídas; instantes/fusos/noite/dia-inteiroUTC.
+Feriados não bloqueiam automaticamente. Incompleto não afirma janela livre.
+46unitários Android PASS9novos. Build/lint aprovados. Poco14c3a88a install-r
+aprovado app+testes,1.8/code10. CalendarPlanningLiveDeviceTest1PASS1,055s.
+APKbuild/releases/Koiwai-1.8.apk SHA256
+C1393157E8C790DCAADD54F44C1226498471ED399E841759D1F5A2BD73D86009.
+Gradle parado; lint0erros102avisos. Dashboard V1.8 recarregado no Brave.
+Consulta visual manual solicitada ao usuário, pendente. Servidor segueV1.7
+sem necessidade de deploy. Sem teste visual completo do painel ainda.
+Teste físico opt-in CalendarPlanningLiveDeviceTest, calendar-read-test=true:
+leitura da agenda permitida + tarefas da conta; sem fixtures/títulos privados/IA.
+Não declarar hábitos com horário, GoogleOAuth, bancos, Chat com agenda, teste de
+assistente padrão/gesto/offline nem estabilidade prolongada concluídos.
+Sem reset/novos segredos/permissões/plano/visual definitivo/Windows.
+
 ## Checkpoint V1.7 Expansão — publicada e instalada, 09/10/2026
 
 Ler ENTREGA_EXPANSAO_V1_7.md. Usuário pediu todas as frentes exceto visual/Windows.

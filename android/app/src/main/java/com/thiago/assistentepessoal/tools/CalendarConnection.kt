@@ -19,7 +19,7 @@ import kotlinx.coroutines.*
 import java.time.*
 import java.time.format.DateTimeFormatter
 
-internal data class PhoneCalendarEvent(val id:Long,val title:String,val begin:Long,val end:Long,val allDay:Boolean)
+internal data class PhoneCalendarEvent(val id:Long,val title:String,val begin:Long,val end:Long,val allDay:Boolean,val calendar:String="")
 internal fun phoneCalendarWeek(context:android.content.Context):List<PhoneCalendarEvent>{
     check(ContextCompat.checkSelfPermission(context,Manifest.permission.READ_CALENDAR)==PackageManager.PERMISSION_GRANTED)
     val start=LocalDate.now().atStartOfDay(ZoneId.systemDefault());val finish=start.plusDays(7)
@@ -27,37 +27,45 @@ internal fun phoneCalendarWeek(context:android.content.Context):List<PhoneCalend
     ContentUris.appendId(uri,start.toInstant().toEpochMilli());ContentUris.appendId(uri,finish.toInstant().toEpochMilli())
     val rows=mutableListOf<PhoneCalendarEvent>()
     context.contentResolver.query(uri.build(),arrayOf(CalendarContract.Instances.EVENT_ID,CalendarContract.Instances.TITLE,
-        CalendarContract.Instances.BEGIN,CalendarContract.Instances.END,CalendarContract.Instances.ALL_DAY),
+        CalendarContract.Instances.BEGIN,CalendarContract.Instances.END,CalendarContract.Instances.ALL_DAY,CalendarContract.Instances.CALENDAR_DISPLAY_NAME),
         "visible = ?",arrayOf("1"),"begin ASC")?.use{c->
-        while(c.moveToNext() && rows.size<20)rows+=PhoneCalendarEvent(c.getLong(0),(c.getString(1)?:"Sem título").take(160),c.getLong(2),c.getLong(3),c.getInt(4)==1)
-    }
+        while(c.moveToNext() && rows.size<201)rows+=PhoneCalendarEvent(c.getLong(0),(c.getString(1)?:"Sem título").take(160),c.getLong(2),c.getLong(3),c.getInt(4)==1,(c.getString(5)?:"Agenda").take(80))
+    } ?: error("Agenda indisponível")
     return rows
 }
 @Composable fun CalendarConnectionPanel(){
     val context=LocalContext.current;val scope=rememberCoroutineScope()
     var rows by remember{mutableStateOf<List<PhoneCalendarEvent>?>(null)}
     var info by remember{mutableStateOf<String?>(null)};var busy by remember{mutableStateOf(false)}
+    var showEvents by remember{mutableStateOf(false)}
+    var queriedAt by remember{mutableStateOf<LocalDateTime?>(null)}
     fun load(){if(busy)return;busy=true;info=null;scope.launch{
-        try{rows=withContext(Dispatchers.IO){phoneCalendarWeek(context)}}catch(e:CancellationException){throw e}catch(_:Exception){rows=null;info="Não consegui ler a agenda. Confira a permissão e a sincronização no aplicativo de calendário."}finally{busy=false}
+        try{rows=withContext(Dispatchers.IO){phoneCalendarWeek(context)};queriedAt=LocalDateTime.now()}catch(e:CancellationException){throw e}catch(_:Exception){rows=null;info="Não consegui ler a agenda. Confira a permissão e a sincronização no aplicativo de calendário."}finally{busy=false}
     }}
     val permission=rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()){granted->if(granted)load()else info="Agenda não autorizada. Você pode continuar usando a Koi."}
     KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue){
         Text("Agenda conectada ao celular",fontSize=20.sp)
-        Text("Lê até 20 ocorrências nos próximos 7 dias, incluindo Google Agenda se estiver sincronizada no Android. Só consulta ao tocar. Eventos ficam neste painel; não são enviados à IA nem importados como tarefas.",fontSize=12.sp,color=KoiColors.Muted)
+        Text("Consulta os próximos 7 dias e mostra até 20 grupos. Eventos iguais são agrupados na tela, preservando as agendas de origem. Dados ficam no celular, sem envio à IA nem importação como tarefas.",fontSize=12.sp,color=KoiColors.Muted)
         KoiAction(if(busy)"Consultando…" else "Consultar agenda deste celular",{
             if(ContextCompat.checkSelfPermission(context,Manifest.permission.READ_CALENDAR)==PackageManager.PERMISSION_GRANTED)load()
             else permission.launch(Manifest.permission.READ_CALENDAR)
         },enabled=!busy)
         info?.let{Text(it,color=KoiColors.Red,fontSize=12.sp)}
         rows?.let{events->
+            Text("Agenda consultada em ${queriedAt?.format(DateTimeFormatter.ofPattern("dd/MM HH:mm"))}",fontSize=11.sp,color=KoiColors.Muted)
             if(events.isEmpty())Text("Nenhum evento disponível. Confira se a agenda está sincronizada no Android.")
-            events.forEach{event->
+            CalendarPlanningPanel(events.take(200),events.size>200 || queriedAt?.toLocalDate()!=LocalDate.now())
+            val groups=calendarGroups(events.take(200))
+            TextButton(onClick={showEvents=!showEvents}){Text(if(showEvents)"Recolher eventos ↑" else "Ver eventos e agendas (${groups.size}) ↓")}
+            if(showEvents)groups.take(20).forEach{group->
+                val event=group.first()
                 val whenText=if(event.allDay)Instant.ofEpochMilli(event.begin).atZone(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("dd/MM"))+" · dia inteiro"
                     else Instant.ofEpochMilli(event.begin).atZone(ZoneId.systemDefault()).format(DateTimeFormatter.ofPattern("dd/MM HH:mm"))
                 TextButton(onClick={openIntent(context,Intent(Intent.ACTION_VIEW,ContentUris.withAppendedId(CalendarContract.Events.CONTENT_URI,event.id))
-                    .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,event.begin).putExtra(CalendarContract.EXTRA_EVENT_END_TIME,event.end))}){Text("$whenText · ${event.title}")}
+                    .putExtra(CalendarContract.EXTRA_EVENT_BEGIN_TIME,event.begin).putExtra(CalendarContract.EXTRA_EVENT_END_TIME,event.end))}){Text("$whenText · ${event.title}${if(group.size>1)" · ${group.size} ocorrências iguais" else ""}")}
+                Text(group.map{it.calendar}.distinct().joinToString(" · "),fontSize=11.sp,color=KoiColors.Muted)
             }
-            if(events.size==20)Text("Lista limitada a 20 ocorrências. Abra o calendário para ver mais.",fontSize=12.sp,color=KoiColors.Muted)
+            if(groups.size>20 || events.size>200)Text("Lista resumida. Abra o calendário para ver todas as ocorrências.",fontSize=12.sp,color=KoiColors.Muted)
         }
     }
 }

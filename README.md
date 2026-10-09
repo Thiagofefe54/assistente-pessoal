@@ -1,3 +1,11 @@
+# Novidades da V1.8 — Encaixar meu dia
+
+Agenda e tarefas no mesmo roteiro, possíveis conflitos, janelas sem compromisso
+registrado e projeções de repetições. Consulta local de hoje/amanhã por pergunta
+ou seleção de dia e período; eventos iguais agrupados sem apagar origens.
+Sem consumo de IA. **Instalada no Poco; 46 testes unitários e leitura real de agenda/tarefas aprovados. Conferência visual do painel pendente.**
+[Entrega e limites](docs/ENTREGA_PLANEJAMENTO_V1_8.md).
+
 # Novidades da V1.7 — expansão funcional
 
 Contexto de registros recentes na conversa, busca flexível com fontes, cópias de
