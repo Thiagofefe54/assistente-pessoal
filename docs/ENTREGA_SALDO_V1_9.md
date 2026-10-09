@@ -1,3 +1,24 @@
+# Estado atual — ativação concluída em 09/10/2026
+
+Inter vinculado ao proxy MeuPluggy e à conta Koi do Poco. Servidor publicado com
+configuração privada e consulta real aprovada no aparelho (1 teste, 3,899s).
+Consulta local também retornou uma conta BRL sem resultado parcial. Os valores
+não foram impressos. Usuário autorizou credenciais no .env/Render, termos e
+permissões adicionais do OAuth. Widget products=ACCOUNTS mantém cinco scopes;
+o backend consulta exclusivamente contas BANK/BRL e entrega saldo anonimizado.
+Next/nextJoy excluído. Sem extratos, pagamentos ou envio à IA.
+
+Correção encontrada no teste real: adicionadas bank-status/bank-summary à whitelist
+Android. Build app/teste aprovado; atualização1.9/code11 instalada sem reset.
+Render dep-db4g9kbbc2fs73bmvtpg live15:15:16Z. Gradle e setup local parados.
+APK atual SHA256 B7DAEA3F5F20ED4CD25893FAA039529783F839992A50F7C59FECC19713D189E4.
+Próximo teste manual: Rotina → Ferramentas → Conexões → Consultar saldo.
+Próxima funcionalidade: sugestões com saldo; não implementadas nem enviadas à IA.
+
+O restante abaixo registra a preparação anterior e suas etapas históricas.
+
+---
+
 # V1.9 — Consulta pessoal de saldo, 09/10/2026
 
 Usuário delimitou: somente saldo, para futuras sugestões. Não buscar extratos,
@@ -71,3 +92,24 @@ widget, mas conexão real ainda não testada. nextJoy continua sem compatibilida
 
 Nenhuma garantia de risco zero foi dada. O usuário perguntou sobre confiança e
 aceitou o recorte somente saldo; conclusão do consentimento não deve ser inferida.
+
+Atualização do usuário: confirmou Inter conectado no Meu Pluggy e pediu excluir
+Next/nextJoy. Somente Inter e somente saldo. Dashboard Pluggy acessado pelo
+usuário; proxy/credenciais ainda não configurados na Koi. Banco no provedor
+conectado não significa integração Koi ativa.
+## Retomada da ativação bancária — 09/10/2026
+
+Backend 53ca84c publicado no Render: deploy dep-db4g1sm7bikc73ek7dpg live
+14:58:48Z; health200, rotas bancárias sem login401. Banco continua desativado.
+Usuário confirmou Inter no Meu Pluggy, excluiu Next/nextJoy e autorizou guardar
+credenciais existentes no .env/Render e validar saldo. Client ID/Secret existentes
+guardados apenas no .env ignorado. Poco reconectado, teste físico opt-in
+BankBalanceLiveDeviceTest#recordOwnerForPrivateConfiguration PASS; UUID da conta
+salvo privadamente em PLUGGY_OWNER_ID, arquivo temporário removido do aparelho.
+Nenhum token de login exportado. Usuário autorizou aceite dos termos Pluggy.
+Demo padrão solicitou cinco produtos; ainda não houve autorização final.
+Usuário autorizou também investimentos/cartões/empréstimos após ser avisado;
+Koi continuará consultando apenas BANK/BRL/saldo, sem extratos ou envio à IA.
+Foi preparado widget temporário local 127.0.0.1:8770 com products=['ACCOUNTS'],
+connector200 MeuPluggy, para tentar diminuir o escopo. Arquivo em android/build
+ignorado; token efêmero apenas na memória do servidor. Vínculo real pendente.

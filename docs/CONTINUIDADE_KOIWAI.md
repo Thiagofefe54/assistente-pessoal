@@ -1,25 +1,30 @@
 # Koiwai — leia primeiro ao retomar
+## Checkpoint V1.9 — Inter vinculado, publicado, instalado e leitura validada — 09/10/2026
 
-## Checkpoint V1.9 Saldo — app instalado, conexão desativada, 09/10/2026
-
-Ler ENTREGA_SALDO_V1_9.md. Usuário quer SOMENTE saldo, não extrato/pagamentos.
-Meu Pluggy oferece API pessoal gratuita; ver fontes/condições atuais no relatório.
-Inter e Next vistos no widget; nextJoy não confirmado. Usuário entrou no site e
-chegou ao formulário do Inter, perguntou sobre confiança; resposta sem garantia
-riscozero, fluxo regulado preferido. Consentimento concluído ainda não confirmado.
-Backend bank-status/bank-summary auth existente e owner fixo no servidor, config
-privada até3UUIDitems; sem ID fornecido pelo cliente. Saldo BANK/BRL, centavos,
-retorno sem números/titular/CPF/IDs; data provedor, totais parciais explícitos.
-CacheRAM60s com autorização antes/cacheporconfig, negativecache, no-storeHTTP;
-sem cacheAndroid, IA, gravações/migração, transações, pagamentos ou refresh forçado.
-PLUGGY_ENABLED=false default; nenhum segredo/configuração real alterado.
-177backend PASS8novos +46Android PASS; lint0erros104avisos; build aprovado.
-Poco14c3a88a install-r1.9/code11; APKbuild/releases/Koiwai-1.9.apk SHA256
-8C5458F6FBB5077F96B1FB479DB0093F1997D768FC880843261C2C4192264405.
-Nenhum saldo real consultado. Backend publicação pendente neste checkpoint.
-Falta consentimento pessoal, Dashboard MeuPluggy proxy, autorização específica
-para criar/configurar credenciais servidor e testar consulta real. Não pedir chaves
-no chat nem afirmar bancos conectados. Saldo não enviado ao Chat/IA ainda.
+Ler ENTREGA_SALDO_V1_9.md. Usuário quer somente saldo Inter; Next/nextJoy excluído.
+Credenciais existentes Pluggy Demo App guardadas somente no .env ignorado e Render.
+Consentimento OAuth MeuPluggy concluído; products=['ACCOUNTS'] no widget não reduz
+as cinco permissões OAuth. Usuário autorizou explicitamente o acesso adicional após
+explicação de privacidade. Adapter Koi segue apenas GET/accounts typeBANK e BRL;
+sem extratos/identity/investimentos/cartões/empréstimos/pagamentos nem envio à IA.
+PLUGGY_ENABLED=true e owner/itemUUID privados configurados. Owner do Poco capturado
+por teste opt-in sem exportar token; arquivo no_backup temporário removido.
+Render dep-db4g9kbbc2fs73bmvtpg live15:15:16Z, commit backend53ca84c; atualização das
+variáveis iniciou deploy automaticamente. AutoDeploy de código permanece desligado.
+Consulta local real retornou1conta, partialfalse, nenhum valor impresso. Teste físico
+BankBalanceLiveDeviceTest#balanceReadReturnsOnlySummary PASS3,899s com login normal
+contra Render; confirmou retorno sem CPF/número/id/extrato. Primeiro teste encontrou
+whitelist incompleta no Android; corrigida incluindo bank-status/bank-summary.
+App1.9/code11 atualizado install-r, sem reset. Texto explica somente Inter. Build
+app/teste PASS. APKandroid/build/releases/Koiwai-1.9.apk SHA256
+B7DAEA3F5F20ED4CD25893FAA039529783F839992A50F7C59FECC19713D189E4.
+177backend e46Android aprovados na preparação; nesta retomada teste real novo e build
+aprovados, sem nova bateria completa. Gradle parado após uso. Servidor temporário de
+setup127.0.0.1:8770 parado; nenhum segredo/UUID privado no Git. Dashboard atualizado.
+Limites: leitura manual, dados conforme data do provedor/sincronização diária; cache
+RAM60s com owner antes do cache e no-storeHTTP. Sem cache Android ou consumo de IA.
+Falta confirmação visual manual dos cartões; ainda sem sugestões com saldo no Chat,
+avisos instantâneos de depósitos, próximos bancos ou uso desses dados pela IA.
 
 ## Checkpoint V1.8 Planejamento — instalada, 09/10/2026
 
@@ -634,3 +639,8 @@ Evento de feriado aparece repetido; origem das duplicatas ainda não investigada
 (podem existir várias agendas sincronizadas). Não afirmar deduplicação concluída.
 Voz confirmada pelo relato do usuário, sem aferição independente de áudio.
 Escolha padrão/gesto físico e consulta real offline ainda não confirmados.
+
+Atualização do usuário: confirmou Inter conectado no Meu Pluggy e pediu excluir
+Next/nextJoy. Somente Inter e somente saldo. Dashboard Pluggy acessado pelo
+usuário; proxy/credenciais ainda não configurados na Koi. Banco no provedor
+conectado não significa integração Koi ativa.

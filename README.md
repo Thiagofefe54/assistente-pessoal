@@ -1,8 +1,8 @@
-# Novidades da V1.9 — preparação da consulta de saldo
+# Novidades da V1.9 — consulta pessoal de saldo
 
 Painel bancário no celular e integração pessoal Meu Pluggy no servidor, limitada
-à consulta de saldos BANK/BRL da conta autorizada. **App instalado; conexão real
-continua desativada até consentimento e credenciais privadas.** Não lê extratos,
+à consulta de saldos BANK/BRL da conta autorizada. **Inter vinculado e consulta
+real validada no Poco em 09/10/2026.** Não lê extratos,
 não inicia pagamentos nem envia saldo à IA.
 [Ativação e estado real](docs/ENTREGA_SALDO_V1_9.md).
 

@@ -27,7 +27,7 @@ import org.json.JSONObject
     }}
     KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue){
         Text("Bancos · consulta pessoal",fontSize=20.sp)
-        Text("Meu Pluggy oferece acesso pessoal por API. Inter divulgado pelo provedor; nextJoy ainda precisa de confirmação. Criar conta ou abrir o site não conecta a Koi.",fontSize=12.sp,color=KoiColors.Muted)
+        Text("Consulta pessoal do Inter pelo Meu Pluggy. A Koi busca somente saldo de contas em reais. O vínculo precisa estar configurado no servidor; abrir o site não conecta automaticamente.",fontSize=12.sp,color=KoiColors.Muted)
         TextButton(onClick={openIntent(context,Intent(Intent.ACTION_VIEW,Uri.parse("https://meu.pluggy.ai/")))}){Text("Abrir Meu Pluggy →")}
         TextButton(onClick={openIntent(context,Intent(Intent.ACTION_VIEW,Uri.parse("https://meu.pluggy.ai/en/api-guide")))}){Text("Como ativar o acesso pessoal →")}
         Text("Você autoriza o banco no serviço escolhido. A integração só será ativada depois de configurar as credenciais privadas no servidor para sua conta Koiwai. Não cole senhas ou chaves no chat.",fontSize=12.sp,color=KoiColors.Muted)

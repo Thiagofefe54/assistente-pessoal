@@ -27,7 +27,7 @@ internal suspend fun readAssistant(app: KoiwaiApplication, owner: String, usage:
 }
 
 internal suspend fun assistantRequest(app: KoiwaiApplication, owner: String, path:String, body:JSONObject?=null, allowCached:Boolean=true): JSONObject {
-    require(path in setOf("day","usage","search","plan","demo","review","checkin","task-action","undo"))
+    require(path in setOf("day","usage","search","plan","demo","review","checkin","task-action","undo","bank-status","bank-summary"))
     val endpoint = BackendEndpoint.resolve(BuildConfig.BACKEND_URL, BuildConfig.DEBUG)
     if (!endpoint.authenticated) throw IOException("Este painel precisa do servidor HTTPS.")
     val token = app.auth.token(owner) ?: throw IOException("Entre novamente na sua conta.")
