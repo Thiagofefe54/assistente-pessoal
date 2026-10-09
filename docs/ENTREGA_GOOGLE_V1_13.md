@@ -45,7 +45,9 @@ Gmail/Drive filtram resultados recentes disponíveis, sem busca completa.
 
 ## Publicação e aparelho
 
-Publicação em andamento; preencher commit/deploy após confirmação live.
+PUBLICADO: commit 8bfbfc97c2b204372604a4fc55ab719860089a2c, Render
+dep-db4kudid0e5s73coj2f0 LIVE em 09/10/2026 20:32:44Z (17:32:44 local).
+Smoke HTTPS: health200, status/connect sem sessão401, callback inválido400.
 APK preparado, NÃO instalado: usuário saiu e avisará quando reconectar o Poco.
 Depois de instalar, conferir cartões e uma escrita fictícia escolhida pelo usuário.
 Não afirmar validação real de escrita ou visual no Poco antes dessa etapa.

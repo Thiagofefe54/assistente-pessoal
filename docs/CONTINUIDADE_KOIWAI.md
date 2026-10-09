@@ -17,7 +17,10 @@ Usuário saiu: não instalar agora; ele reconecta o Poco quando terminar.
 Consultas REAIS Calendar/Tasks/Gmail/Drive passaram nas três contas, sem conteúdo
 pessoal nos logs. Duas interpretações Poe fictícias passaram, delta35 pontos;
 sem escrita real Google. Não repetir IA paga sem nova dúvida técnica.
-Publicação em andamento; registrar live. Documentação ENTREGA_GOOGLE_V1_13.md.
+PUBLICADO: commit 8bfbfc97c2b204372604a4fc55ab719860089a2c, Render
+dep-db4kudid0e5s73coj2f0 LIVE em 09/10/2026 20:32:44Z (17:32:44 local).
+Smoke HTTPS: health200, status/connect sem sessão401, callback inválido400.
+Documentação ENTREGA_GOOGLE_V1_13.md.
 Pendente: instalar, conferir cartões e escrita fictícia solicitada no aparelho.
 Google Tasks não tem hora/alarme; alterações se limitam ao recorte documentado.
 
