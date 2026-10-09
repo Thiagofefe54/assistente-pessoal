@@ -98,6 +98,8 @@ def request_json(url, *, method='GET', payload=None, headers=None, form=False):
             raise HTTPException(409, 'A autorização expirou ou foi recusada. Conecte a conta novamente.') from None
         if code == 403:
             raise HTTPException(403, 'O Google não permitiu esta consulta. Confira a permissão e a API habilitada.') from None
+        if code == 412:
+            raise HTTPException(409, 'O item Google mudou. Consulte novamente antes de alterar.') from None
         if code == 429:
             raise HTTPException(429, 'O serviço atingiu um limite temporário. Tente mais tarde.') from None
         raise HTTPException(503, 'Não consegui acessar o serviço de conexões agora.') from None

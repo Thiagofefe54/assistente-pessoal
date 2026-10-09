@@ -1,5 +1,26 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint V1.13 — Google no chat — 09/10/2026
+
+Implementado GoogleTool no intérprete + google_assistant/google_day + cartão
+GoogleChatCard privado. Consultas não enviam dados Google à IA/histórico/cache.
+Tasks cria na lista padrão, altera título/dia, conclui/reabre por título único;
+Agenda principal cria/ajusta, início e fim numéricos explícitos, sem convites.
+Com três contas, escrita pede e-mail no pedido atual; não cria tarefa Google e Koi
+simultaneamente. Leituras mostram contas separadas. Cruzamento do dia compara uma
+agenda com tarefas da Koi, 08h–22h, sem assumir disponibilidade ou mudar horário.
+Recibos privados cifrados por dono/request_id, claim persistente antes de escrever,
+ETag e proteção contra repetição incerta. Tabela koi_google_actions APLICADA, RLS e
+grants VERIFICADOS. Negação/hipótese/relato não inicia consulta ou alteração.
+224 testes backend PASS; 53 Android PASS; APK V1.13/code15 preparado, NÃO instalado.
+Usuário saiu: não instalar agora; ele reconecta o Poco quando terminar.
+Consultas REAIS Calendar/Tasks/Gmail/Drive passaram nas três contas, sem conteúdo
+pessoal nos logs. Duas interpretações Poe fictícias passaram, delta35 pontos;
+sem escrita real Google. Não repetir IA paga sem nova dúvida técnica.
+Publicação em andamento; registrar live. Documentação ENTREGA_GOOGLE_V1_13.md.
+Pendente: instalar, conferir cartões e escrita fictícia solicitada no aparelho.
+Google Tasks não tem hora/alarme; alterações se limitam ao recorte documentado.
+
 ## Checkpoint Google V1.12 — 09/10/2026 (substitui pendências antigas abaixo)
 
 Fluxo OAuth e painel Android implementados. Servidor: sessão Koi validada, dono

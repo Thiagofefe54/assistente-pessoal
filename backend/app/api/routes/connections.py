@@ -3,6 +3,9 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Request, Response, HTTPException, Query
 from fastapi.responses import HTMLResponse, RedirectResponse
 from pydantic import BaseModel, ConfigDict
+from pydantic import Field, field_validator
+from datetime import date
+from zoneinfo import ZoneInfo
 from backend.app.core.auth import current_user
 from backend.app.core import google_connections as google
 
@@ -16,7 +19,20 @@ class GoogleRequest(BaseModel):
     model_config = ConfigDict(extra='forbid')
     timezone: str | None = None  # Shared Android transport adds this field.
     connection_id: UUID | None = None
-    service: Literal['calendar','calendars','tasks','mail','drive'] | None = None
+    service: Literal['calendar','calendars','tasks','task_items','mail','drive'] | None = None
+    start: date | None = None
+    end: date | None = None
+    query: str | None = Field(default=None,max_length=200)
+    plan: bool = False
+
+    @field_validator('timezone')
+    @classmethod
+    def valid_zone(cls,value):
+        try:
+            if value:ZoneInfo(value)
+        except (KeyError,ValueError):
+            raise ValueError('Fuso horário inválido.') from None
+        return value
 
 
 @router.post('/assistant/google-status')
@@ -40,11 +56,21 @@ def disconnect(body: GoogleRequest, response: Response, owner: UUID = Depends(cu
 
 
 @router.post('/assistant/google-read')
-def read(body: GoogleRequest, response: Response, owner: UUID = Depends(current_user)):
+def read(body: GoogleRequest, response: Response, request: Request, owner: UUID = Depends(current_user)):
     response.headers.update(HEADERS)
     if body.connection_id is None or body.service is None:
         raise HTTPException(422, 'Escolha a conta e o serviço Google.')
-    return google.consult(owner, body.connection_id, body.service)
+    from backend.app.core.google_assistant import read
+    result=read(owner,body.connection_id,body.service,
+        body.start.isoformat() if body.start else None,body.end.isoformat() if body.end else None,
+        body.query,body.timezone or 'America/Sao_Paulo')
+    if body.plan and body.service=='calendar':
+        from backend.app.core.google_day import combine_day
+        from datetime import datetime
+        day=body.start or datetime.now(ZoneInfo(body.timezone or 'America/Sao_Paulo')).date()
+        result['plan']=combine_day(owner,request.headers['authorization'],day,
+            body.timezone or 'America/Sao_Paulo',result['items'],result['partial'])
+    return result
 
 
 @router.get('/connections/google/begin')

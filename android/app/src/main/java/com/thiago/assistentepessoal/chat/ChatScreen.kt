@@ -144,10 +144,14 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
                             val query=org.json.JSONObject(raw).optString("query").takeIf{it in setOf("balance","plan")} ?: "balance"
                             BankConnectionPanel(queryMode=query,autoRead=message.id==messages.lastOrNull()?.id && message.occurredAt>=openedAt)
                         }
-                        message.actionReceiptJson?.takeIf{org.json.JSONObject(it).optString("tool") !in setOf("device","bank")}?.let{raw->val receipt=org.json.JSONObject(raw)
+                        message.actionReceiptJson?.takeIf{org.json.JSONObject(it).optString("tool")=="google"}?.let{raw->
+                            if(org.json.JSONObject(raw).optString("type")=="read")GoogleChatCard(raw,autoRead=message.id==messages.lastOrNull()?.id && message.occurredAt>=openedAt)
+                            else Text("Ação confirmada no Google · confira em Conexões",fontSize=12.sp,color=KoiColors.Blue)
+                        }
+                        message.actionReceiptJson?.takeIf{org.json.JSONObject(it).optString("tool") !in setOf("device","bank","google")}?.let{raw->val receipt=org.json.JSONObject(raw)
                             TextButton(onClick={onOpenAction(if(receipt.optString("tool")=="personal")if(receipt.optString("target_kind")=="memory")"Lembranças" else when(receipt.optString("record_kind")){"list"->"Listas";"goal"->"Metas";"workout"->"Treinos";"expense","income"->"Finanças";"bill"->"Contas";"budget"->"Orçamento";"diary"->"Diário";else->"Notas"} else "Tarefas")}){Text("Ver resultado salvo →")}
                         }
-                        if(message.actionReceiptJson!=null && org.json.JSONObject(message.actionReceiptJson).optString("tool") !in setOf("device","bank") && org.json.JSONObject(message.actionReceiptJson).optString("type")!="undo") TextButton(onClick={repository.undoAction(message)},enabled=!busy) {
+                        if(message.actionReceiptJson!=null && org.json.JSONObject(message.actionReceiptJson).optString("tool") !in setOf("device","bank","google") && org.json.JSONObject(message.actionReceiptJson).optString("type")!="undo") TextButton(onClick={repository.undoAction(message)},enabled=!busy) {
                             Text("↶ Desfazer ação",color=KoiColors.Blue)
                         }
                         if(message.role=="assistant" && message.taskDraftJson!=null && tasksRepo!=null) {

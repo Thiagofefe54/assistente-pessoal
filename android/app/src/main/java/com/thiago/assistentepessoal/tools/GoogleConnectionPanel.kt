@@ -79,8 +79,8 @@ import org.json.JSONObject
             Text(row.getString("email"),fontSize=16.sp)
             val services=row.getJSONArray("services")
             listOf("calendar" to "Próximos eventos · agenda principal","calendars" to "Minhas agendas",
-                "tasks" to "Listas do Google Tasks","mail" to "Mensagens recentes","drive" to "Arquivos recentes").forEach{(service,label)->
-                if((0 until services.length()).any{services.getString(it)==service}){
+                "tasks" to "Listas do Google Tasks","task_items" to "Tarefas nas listas","mail" to "Mensagens recentes","drive" to "Arquivos recentes").forEach{(service,label)->
+                if((0 until services.length()).any{services.getString(it)==if(service=="task_items")"tasks" else service}){
                     TextButton(enabled=!busy,onClick={request("google-read",JSONObject().put("connection_id",row.getString("id")).put("service",service))}){Text(label)}
                 }
             }
@@ -101,7 +101,7 @@ import org.json.JSONObject
             if(value.optBoolean("partial"))Text("Exibindo uma parte dos resultados.",fontSize=12.sp,color=KoiColors.Muted)
             Text("Dados consultados agora; não são enviados à IA nem guardados no cache do celular.",fontSize=11.sp,color=KoiColors.Muted)
         }
-        Text("Esta etapa consulta dados. Criar/editar no Google, rascunhos, conteúdo de arquivos e ações pelo chat ainda serão integrados.",fontSize=11.sp,color=KoiColors.Muted)
+        Text("O chat consulta Google e pode criar/ajustar Agenda e Tasks quando você pedir e identificar a conta. Rascunhos, conteúdo de arquivos e envio de e-mail ainda não estão disponíveis.",fontSize=11.sp,color=KoiColors.Muted)
     }
     removing?.let{row->AlertDialog(onDismissRequest={removing=null},title={Text("Desconectar Google?")},
         text={Text("Remover ${row.getString("email")} da Koi. Seus dados no Google serão preservados.")},

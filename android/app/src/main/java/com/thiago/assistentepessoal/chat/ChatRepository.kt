@@ -53,7 +53,7 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
         }
     } }
     fun undoAction(message:ChatMessage) {
-        if(_busy.value || message.actionReceiptJson==null || org.json.JSONObject(message.actionReceiptJson).optString("tool") in setOf("device","bank")) return
+        if(_busy.value || message.actionReceiptJson==null || org.json.JSONObject(message.actionReceiptJson).optString("tool") in setOf("device","bank","google")) return
         _busy.value=true;_error.value=null
         scope.launch {
             try {

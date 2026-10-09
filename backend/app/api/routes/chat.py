@@ -107,7 +107,7 @@ def chat(payload: ChatRequest, request: Request, user_id: UUID = Depends(current
     # Owner comes from validated Auth, never from the body. RLS also protects reads.
     authorization=request.headers['authorization']
     explicit_web=re.match(r'^\s*(?:(?:koiwai|coiwai|koi|coi)[,!?:]?\s*)?(?:pesquise|pesquisa|busque|busca|procure|procura)\s+na\s+(?:internet|web)\s+\S',payload.message,re.I)
-    public_search=re.match(r'^\s*(?:(?:koiwai|coiwai|koi|coi)[,!?:]?\s*)?(?:pesquise|pesquisa)\s+\S',payload.message,re.I) and not applies(payload.message) and not re.search(r'\b(tarefa|tarefas|lembrete|lembretes)\b',payload.message,re.I)
+    public_search=re.match(r'^\s*(?:(?:koiwai|coiwai|koi|coi)[,!?:]?\s*)?(?:pesquise|pesquisa)\s+\S',payload.message,re.I) and not applies(payload.message) and not re.search(r'\b(tarefa|tarefas|lembrete|lembretes|google|gmail|drive)\b',payload.message,re.I)
     if not payload.image_jpeg_base64 and (explicit_web or public_search):
         answer=generate([{'role':'system','content':KOI_INSTRUCTIONS+'''
 Neste pedido você tem browser_search e deve pesquisar a pergunta atual na internet.
@@ -137,10 +137,16 @@ Não identifique pessoas nem invente características pessoais sensíveis.
         from backend.app.core.personal import existing as existing_personal
         previous=existing_personal(user_id,authorization,payload.request_id,digest(payload.message,payload.timezone))
         if previous: return ChatResponse(**previous)
+        if re.search(r'\b(google|gmail|drive)\b',payload.message,re.I):
+            from backend.app.core import google_connections
+            from backend.app.core.google_assistant import previous as previous_google
+            if google_connections.ready():
+                previous=previous_google(user_id,payload.request_id,payload.message,payload.timezone)
+                if previous:return ChatResponse(**previous)
         try:
             reminder=explicit_reminder(payload.message,
                 (payload.requested_at or datetime.now(ZoneInfo(payload.timezone))).isoformat(),payload.timezone)
-            if reminder:
+            if reminder and not re.search(r'\b(google|gmail|drive)\b',payload.message,re.I):
                 semantic=Interpretation(domain='task',operation='create',speech_act='request',
                     evidence=payload.message,device=None)
             else:
@@ -148,6 +154,12 @@ Não identifique pessoas nem invente características pessoais sensíveis.
                     timezone=payload.timezone,now=(payload.requested_at or datetime.now(ZoneInfo(payload.timezone))).isoformat())
         except (ValueError,KeyError,TypeError):
             raise HTTPException(502,'Não consegui entender esse pedido. Pode dizer de outro jeito?') from None
+        if semantic.domain=='google':
+            from backend.app.core.google_assistant import handle
+            try:
+                return ChatResponse(**handle(semantic,user_id,payload.request_id,payload.message,payload.timezone))
+            except (ValueError,KeyError,TypeError):
+                raise HTTPException(502,'Confira o título, a conta e os horários do pedido Google.') from None
         read_result=direct_read(semantic,user_id,authorization,payload.timezone,
             (payload.requested_at or datetime.now(ZoneInfo(payload.timezone))).isoformat())
         if read_result is not None:

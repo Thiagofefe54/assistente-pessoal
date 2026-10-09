@@ -39,7 +39,7 @@ class PoeTests(unittest.TestCase):
         self.groq.assert_not_called()
 
     def test_schema_and_output_bound_sent_and_validated_locally(self):
-        value={'domain':'conversation','operation':'none','speech_act':'conversation','evidence':'fictício','device':None,'read_query':None,'read_filter':None}
+        value={'domain':'conversation','operation':'none','speech_act':'conversation','evidence':'fictício','device':None,'read_query':None,'read_filter':None,'google':None}
         self.network.return_value.open.return_value=self.result(json.dumps(value))
         ai.generate([{'role':'user','content':'fictício'}],FORMAT,max_tokens=512)
         data=json.loads(self.network.return_value.open.call_args.args[0].data)
@@ -48,7 +48,7 @@ class PoeTests(unittest.TestCase):
         self.assertNotIn('response_format',data)
 
     def test_system_rules_and_schema_share_one_message_and_json_fence_is_validated(self):
-        value={'domain':'conversation','operation':'none','speech_act':'conversation','evidence':'oi','device':None,'read_query':None,'read_filter':None}
+        value={'domain':'conversation','operation':'none','speech_act':'conversation','evidence':'oi','device':None,'read_query':None,'read_filter':None,'google':None}
         self.network.return_value.open.return_value=self.result('```json\n'+json.dumps(value)+'\n```')
         answer=ai.generate([{'role':'system','content':'Regra A'},
                             {'role':'system','content':'Regra B'},
