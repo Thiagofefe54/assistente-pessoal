@@ -143,6 +143,12 @@ Não identifique pessoas nem invente características pessoais sensíveis.
             if google_connections.ready():
                 previous=previous_google(user_id,payload.request_id,payload.message,payload.timezone)
                 if previous:return ChatResponse(**previous)
+        from backend.app.core.bank_chat import bank_reply
+        bank_result=bank_reply(payload.message,history)
+        if bank_result is not None:
+            if bank_result['action_receipt'] is not None:
+                bank_result['action_receipt']['request_id']=str(payload.request_id)
+            return ChatResponse(**bank_result)
         try:
             reminder=explicit_reminder(payload.message,
                 (payload.requested_at or datetime.now(ZoneInfo(payload.timezone))).isoformat(),payload.timezone)

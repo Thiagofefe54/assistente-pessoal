@@ -41,7 +41,8 @@ import java.time.format.DateTimeFormatter
     KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue){
         Text(if(queryMode=="balance")"Saldo do Inter" else "Saldo e próximas contas",fontSize=20.sp)
         Text("Inter · saldo e contas cadastradas · sem gastar pontos de IA",fontSize=12.sp,color=KoiColors.Muted)
-        KoiAction(if(busy)"Conferindo…" else if(queryMode=="balance")"Atualizar saldo" else "Conferir saldo e contas",{read(if(queryMode=="balance")"bank-summary" else "bank-plan")},enabled=owner!=null && !busy)
+        Text("Consultar lê a última atualização da Pluggy; não sincroniza o Inter na hora. No acesso pessoal, a conexão atualiza diariamente.",fontSize=12.sp,color=KoiColors.Muted)
+        KoiAction(if(busy)"Conferindo…" else "Consultar dados do provedor",{read(if(queryMode=="balance")"bank-summary" else "bank-plan")},enabled=owner!=null && !busy)
         TextButton(onClick={details=!details}){Text(if(details)"Fechar detalhes e conexão ↑" else "Detalhes e conexão ↓")}
         if(details){
         TextButton(onClick={openIntent(context,Intent(Intent.ACTION_VIEW,Uri.parse("https://meu.pluggy.ai/")))}){Text("Abrir Meu Pluggy →")}
@@ -57,10 +58,11 @@ import java.time.format.DateTimeFormatter
             value.optJSONArray("accounts")?.let{rows->
                 if(rows.length()==0)Text("Nenhuma conta BRL disponível nesta consulta.")
                 for(i in 0 until rows.length()){val r=rows.getJSONObject(i)
-                    Text("${r.getString("label")} · ${money(r.getLong("balance_cents"))}")
+                    Text("${r.getString("label")} · último saldo informado: ${money(r.getLong("balance_cents"))}")
                     Text("Atualização do provedor: ${bankTime(r.getString("provider_updated_at"))}",fontSize=11.sp,color=KoiColors.Muted)
                 }
-                if(rows.length()>0)Text("Total consultado: ${money(value.getLong("total_cents"))}")
+                if(rows.length()>0)Text("Total na atualização do provedor: ${money(value.getLong("total_cents"))}")
+                Text("Não é saldo em tempo real. Se o Inter mostra outro valor, confira por lá antes de planejar gastos.",fontSize=12.sp,color=KoiColors.Red)
                 if(value.optBoolean("partial"))Text("Consulta parcial; não representa todas as contas ou moedas.",fontSize=12.sp,color=KoiColors.Red)
                 Text("Consultado em ${bankTime(value.getString("checked_at"))}",fontSize=11.sp,color=KoiColors.Muted)
             }

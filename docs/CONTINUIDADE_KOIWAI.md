@@ -1,5 +1,18 @@
 # Koiwai — leia primeiro ao retomar
 
+## Correção V1.14.1 — saldo como fotografia, 09/10/2026
+
+Usuário mostrou saldo diferente do Inter: consulta18:42, data do provedor11:55.
+Não usar valores pessoais do print em testes ou documentos. Causa confirmada no
+código: consulta lê snapshot Pluggy, não sincroniza banco. Documentação oficial
+https://docs.pluggy.ai/en/docs/connections/item informa original Meu Pluggy diário,
+proxy acompanha original, sem atualização manual via API. Nenhum PATCH adicionado.
+Pedido simples de saldo agora abre cartão balance, sem plano de gastos/IA.
+Correção explícita de divergência reconhecida sem escrita ou repetição do cartão.
+Intérprete orientado a tratar correção como conversa. Android esclarece snapshot
+e atualiza rótulos/botão; V1.14.1/code17 inclui V1.14. Backend257 testes PASS.
+APK/build e publicação em verificação; NÃO instalado. Usuário remoto sem USB.
+
 ## Checkpoint V1.14 — Dia conectado — 09/10/2026
 
 Implementados: google-day privado agrega até três agendas principais; linha do tempo,

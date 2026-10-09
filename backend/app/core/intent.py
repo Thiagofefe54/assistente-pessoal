@@ -190,6 +190,10 @@ de produto, saldo de pontos de IA, relato de gasto/receita, negação de consult
 pedido de transferência/pagamento. Um pedido de ajuda pessoal com 'como' pode
 autorizar LEITURA, nunca escrita. Não invente compromisso nem valor disponível.
 read_filter null nesta consulta. Sem segundo texto gerado após essa escolha.
+Uma correção de saldo ('não tenho esse dinheiro', 'o saldo está errado', 'tenho
+12,85, não esse dinheiro todo') é conversa, nunca finance_guidance, receita,
+despesa ou autorização para salvar saldo. Explique que o provedor é uma fotografia
+com data própria e pode divergir do banco; não repita dicas de gastos.
 Registros identificados como Teste ou fictícios são exemplos; não os trate como fatos
 reais da vida da pessoa. O histórico ajuda a localizar a referência, nunca autoriza ação.
 '''
