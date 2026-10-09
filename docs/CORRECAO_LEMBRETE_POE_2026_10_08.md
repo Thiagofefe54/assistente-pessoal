@@ -26,5 +26,6 @@ Correção:
 negações/hipóteses/citações/compostos, fuso/virada do ano e JSON cercado validado.
 Zero chamadas pagas feitas durante esta correção. Nenhum dado do usuário apagado.
 Publicado commit 77cf61f, Render dep-db4473rbc2fs73ai86pg LIVE, saúde 200/provider
-poe. Verificação física solicitada ao usuário, ainda pendente. Não reenviar
-automaticamente o pedido do usuário. Teste no celular após publicação pendente.
+poe. Usuário testou o reenvio e confirmou "Sim, criou a tarefa". Evidência física
+por confirmação do usuário; sem auditoria do registro no banco. Não reenviar
+automaticamente o pedido do usuário. Nenhuma geração paga executada pela correção.

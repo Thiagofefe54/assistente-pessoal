@@ -11,7 +11,8 @@ regras+schema em system único, JSON fence completo validado, diagnóstico segur
 124 testes simulados passaram. Commit 77cf61f publicado; Render
 dep-db4473rbc2fs73ai86pg LIVE em 08/10/2026 22:30:42 (São Paulo).
 Saúde HTTP 200/provider poe após publicação. Pedi ao usuário tocar uma vez em
-Tentar novamente no lembrete exato, agora sem IA; confirmação física pendente.
+Tentar novamente no lembrete exato, agora sem IA; usuário confirmou:
+"Sim, criou a tarefa". Fluxo físico confirmado pelo usuário, sem inspeção do banco.
 Não reenviar pedido automaticamente nem prometer estorno do Poe.
 
 ## Checkpoint anterior: integração Poe — 08/10/2026
