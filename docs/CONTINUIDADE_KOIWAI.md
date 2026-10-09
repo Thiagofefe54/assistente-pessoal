@@ -1,5 +1,21 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint — continuidade de conversa — 09/10/2026
+
+Usuário confirmou também a comparação saldo/contas no Chat da V1.11.
+Melhoria do servidor: perguntas referenciais sem assunto explícito recuperam termos
+da última fala do usuário, dentro do histórico limitado. Nunca usam fala da Koi como
+fato/assunto pessoal, nem saltam uma saudação para um assunto antigo. Assunto explícito
+atual prevalece. Termos de banco/saldo não alimentam essa recuperação. Mesma consulta
+autenticada a até 40 registros diary/note/goal/workout, até 3 fontes; trecho original
+próximo ao assunto, datas/tipos validados. Sem nova chamada de IA, migração ou APK.
+Prompt distingue fato/sugestão, evita inventar lacunas, pede esclarecimento só quando
+necessário e indica título/data de lembrança consultada naturalmente.
+181 testes backend PASS. Implementado; publicação será registrada após deploy.
+Não é compreensão universal: referências sem tópico claro ainda podem pedir detalhe;
+busca continua por palavras/sinônimos limitados e apenas 40 registros recentes.
+Dados financeiros privados continuam fora do Poe. Visual/Windows continuam adiados.
+
 ## Checkpoint V1.11 — banco no Chat instalado e confirmado — 09/10/2026
 
 Ler ENTREGA_BANCO_CHAT_V1_11.md. Perguntas de saldo Inter/comparação reconhecidas
@@ -13,13 +29,13 @@ fluxos normais. Famílias de frases, não interpretação universal nem saldo no
 travou; agente interrompeu o teste, substituído por teste físico isolado repository
 PASS0,112s sem backend IA: tokenProvider com erro se usado nunca chamado, apenas
 3campos no receipt e texto/contexto sem saldo. Usuário confirmou cartão real ao
-perguntar quanto tem no banco. Comparação no Chat ainda não confirmada manualmente.
+perguntar quanto tem no banco. Comparação no Chat confirmada manualmente pelo usuário.
 APKandroid/build/releases/Koiwai-1.11.apk SHA256
 D7446CFFABFD485C14AB6FBAD7CC923DDFF50593A9A44C53C5F757035082AA4E.
 Gradle parado, app aberto. Sem backend/deploy/SQL/credenciais/permissões novas.
 Histórico sincroniza pergunta/resposta genérica; receipt só local, outro aparelho
 pode restaurar texto sem cartão. Ouvir/Compartilhar não incluem resultado privado.
-Pendente: comparação pelo Chat, ampliar compreensão com privacidade, sugestões mais
+Pendente: ampliar compreensão com privacidade, sugestões mais
 amplas, monitoramento sem Android. Não mandar saldo à IA/abrir extratos sem tratar
 novo escopo. Inter somente; Next excluído; visual definitivo/Windows depois.
 

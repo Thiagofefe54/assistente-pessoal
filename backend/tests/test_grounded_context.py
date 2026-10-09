@@ -3,11 +3,43 @@ from uuid import UUID
 from unittest.mock import patch
 from urllib.parse import parse_qs,urlsplit
 from fastapi import HTTPException
-from backend.app.core.grounded_context import context_for_reply
+from backend.app.core.grounded_context import context_for_reply, retrieval_terms
 from backend.app.core.recall import matches_terms
 from backend.app.core.ai import reply
 
 class GroundedTests(unittest.TestCase):
+    def test_followup_uses_nearest_user_topic_not_assistant_suggestion(self):
+        history=[{'role':'user','content':'Estou na academia'},
+                 {'role':'assistant','content':'Você deveria estudar astronomia.'}]
+        self.assertEqual((['academia'],'recent_user_reference'),retrieval_terms('E sobre isso?',history))
+        self.assertEqual((['academia'],'recent_user_reference'),retrieval_terms('Como melhorar isso?',history))
+        self.assertEqual((['escola'],'current'),retrieval_terms('E essa escola?',history))
+
+    def test_no_old_topic_after_greeting_or_bank_and_no_lookup_for_greeting(self):
+        for last in ('Oi Koi','Qual meu saldo do Inter?'):
+            history=[{'role':'user','content':'Estou na academia'},{'role':'user','content':last}]
+            self.assertEqual(([],'current'),retrieval_terms('E sobre isso?',history))
+        self.assertEqual(([],'current'),retrieval_terms('Qual meu saldo?',[]))
+        self.assertEqual(([],'current'),retrieval_terms('Obrigado Koi',[]))
+        self.assertEqual(([],'current'),retrieval_terms('E sobre isso?',[{'role':'assistant','content':'Academia'}]))
+
+    def test_reference_fetches_sources_once_with_original_relevant_excerpt(self):
+        content='Introdução. '*60+'Academia: treino fictício às 18h.'
+        row={'id':'a','kind':'note','title':'Diário Teste','content':content,'happened_on':None}
+        history=[{'role':'user','content':'Estou na academia'}]
+        with patch('backend.app.core.grounded_context.cloud',return_value=[row]) as cloud:
+            value=context_for_reply(UUID(int=1),'owner','E sobre isso?',history,'UTC')
+        cloud.assert_called_once()
+        self.assertEqual('recent_user_reference',value['topic_origin'])
+        self.assertIn('Academia: treino fictício às 18h.',value['sources'][0]['excerpt'])
+        self.assertLessEqual(len(value['sources'][0]['excerpt']),362)
+
+    def test_wrong_kind_or_invalid_date_cannot_enter_context(self):
+        row={'id':'a','kind':'note','title':'academia','content':'Teste','happened_on':None}
+        for bad in (dict(row,kind='income'),dict(row,happened_on=12),dict(row,happened_on='2026-99-99')):
+            with patch('backend.app.core.grounded_context.cloud',return_value=[bad]):
+                with self.assertRaises(HTTPException):context_for_reply(UUID(int=1),'owner','academia',[],'UTC')
+
     def test_greeting_does_not_fetch_context(self):
         with patch('backend.app.core.grounded_context.cloud') as cloud:
             self.assertIsNone(context_for_reply(UUID(int=1),'owner','Oi Koi',[],'America/Sao_Paulo'))

@@ -1,3 +1,10 @@
+# Continuidade de conversa — servidor
+
+A Koi acompanha perguntas como “e sobre isso?” usando o assunto da última fala da
+pessoa, busca trechos relevantes de registros e distingue fatos de sugestões.
+Sem chamadas extras à IA; consulta limitada e referências não autorizam ações.
+[Como testar e limites](docs/ENTREGA_CONTINUIDADE_CONVERSA.md).
+
 # Novidades da V1.11 — Inter no chat
 
 Pergunte “quanto tenho no meu banco?” ou “meu saldo cobre as próximas contas?”.
