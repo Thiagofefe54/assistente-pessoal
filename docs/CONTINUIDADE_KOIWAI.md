@@ -1,4 +1,25 @@
 # Koiwai — leia primeiro ao retomar
+
+## Checkpoint V1.10 — saldo e contas instalado — 09/10/2026
+
+Ler ENTREGA_SALDO_CONTAS_V1_10.md. Tela Poco V1.9 conferida visualmente e correta.
+Agora painel compara bank-summary + day via leitura autenticada, allowCached=false;
+saldo não enviado à IA e não persistido no cacheAndroid. Nenhum backend/deploy/SQL
+novo. Inter somente; OAuth anterior mais amplo autorizado, adapter somente saldo.
+Comparação local de vencimentos cadastrados hoje..hoje+7 inclusive; lista8, conta
+real de total/registros e flags parciais impedem alegação de cobertura. Saldo antigo
+>24h/futuro>5min e mudança de dia sinalizados. Diferença não chamada dinheiro livre.
+Pendências do mês separadas, sem dupla subtração; alerta budgets_exceeded existente.
+Datas locais e detalhes de ativação recolhíveis, visual geral preservado.
+50unitários Android PASS4novos; buildapp/teste PASS; install-r1.10/code12 ambos.
+Teste físico balanceAndRegisteredBillsCanBeComparedWithoutWrites PASS4,948s com
+saldo e contas autenticados contra Render, sem valores privados no log nem escrita.
+APKandroid/build/releases/Koiwai-1.10.apk SHA256
+BB1E92021D648DD5BDFBFDE6FCAA2D0B1D6F8F366C2EFA094C86384101DACB8E.
+Gradle parado; app aberto. Novo cartão aguarda conferência visual manual. Dashboard
+atualizado. Ainda sem banco no Chat, monitoramento de depósitos ou dados bancários
+para IA. Próximo: consulta natural de saldo/contas no Chat, com limites explícitos.
+
 ## Checkpoint V1.9 — Inter vinculado, publicado, instalado e leitura validada — 09/10/2026
 
 Ler ENTREGA_SALDO_V1_9.md. Usuário quer somente saldo Inter; Next/nextJoy excluído.

@@ -1,3 +1,10 @@
+# Novidades da V1.10 — saldo e próximas contas
+
+O painel do Inter agora compara saldo com vencimentos cadastrados, calcula a
+diferença e mostra alertas de dados incompletos ou antigos. Sem consumir IA,
+importar extratos ou fazer pagamentos. **Instalada e leitura/cálculo testados no Poco.**
+[Entrega e limites](docs/ENTREGA_SALDO_CONTAS_V1_10.md).
+
 # Novidades da V1.9 — consulta pessoal de saldo
 
 Painel bancário no celular e integração pessoal Meu Pluggy no servidor, limitada

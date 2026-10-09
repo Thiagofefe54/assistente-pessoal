@@ -7,6 +7,9 @@ import org.junit.Assert.*
 import org.junit.Assume.assumeTrue
 import java.io.File
 import java.util.UUID
+import java.time.Instant
+import java.time.LocalDate
+import com.thiago.assistentepessoal.tools.compareBalanceWithBills
 
 /** Opt-in read-only banking check. Never exports a session or prints balances. */
 class BankBalanceLiveDeviceTest {
@@ -31,6 +34,20 @@ class BankBalanceLiveDeviceTest {
             val row=rows.getJSONObject(i)
             assertTrue(row.has("balance_cents"));assertFalse(row.has("number"));assertFalse(row.has("id"))
         }
+        assertEquals(owner,app.auth.account.value?.id)
+    }
+    @Test fun balanceAndRegisteredBillsCanBeComparedWithoutWrites()=runBlocking {
+        val app=app();val owner=requireNotNull(app.auth.account.value?.id)
+        val bank=assistantRequest(app,owner,"bank-summary",allowCached=false)
+        val day=assistantRequest(app,owner,"day",allowCached=false)
+        assertFalse(day.optBoolean("_offline"))
+        LocalDate.parse(day.getString("date"))
+        val rows=bank.getJSONArray("accounts");assertTrue(rows.length()>0)
+        val oldest=(0 until rows.length()).map{Instant.parse(rows.getJSONObject(it).getString("provider_updated_at"))}.minOrNull()!!
+        val bills=day.getJSONArray("bills_next_seven_days")
+        val comparison=compareBalanceWithBills(bank.getLong("total_cents"),(0 until bills.length()).map{bills.getJSONObject(it).getLong("amount_cents")},
+            day.getInt("bill_count"),bank.optBoolean("partial")||day.optBoolean("records_partial"),oldest,Instant.now())
+        assertTrue(comparison.billsCents>=0)
         assertEquals(owner,app.auth.account.value?.id)
     }
 }
