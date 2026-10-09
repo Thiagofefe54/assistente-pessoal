@@ -13,6 +13,17 @@ no locatário Microsoft Services. Nenhum registro Microsoft, segredo, assinatura
 recurso pago criado. Resolver acesso a um diretório próprio antes de registrar app;
 não repetir login indefinidamente nem contratar Azure por inferência.
 
+Diagnóstico confirmado na documentação Microsoft (AADSTS50020, causa 1): contas
+pessoais entram por padrão no locatário Microsoft Services, sem diretório vinculado
+para executar ações administrativas. A solução oficial é criar conta Azure com um
+novo tenant. O cadastro gratuito menciona verificação de cartão e possível autorização
+temporária de US$1; isso não foi autorizado nem executado. Não prometer cadastro sem
+cartão ou usar credenciais/apps de terceiros para contornar o requisito.
+
+Escopo reafirmado pelo usuário: deseja o conjunto amplo de funcionalidades e conexões;
+seu contexto de organização não restringe a Koi a finanças/trabalho. Entregar dependências
+na ordem técnica necessária, sem tratar a lista inteira como já implementada.
+
 Retorno Google configurado no cliente:
 https://koiwai-backend.onrender.com/api/v1/connections/google/callback
 Esse endpoint ainda NÃO existe. Antes de iniciar autorizações, implementar o fluxo
@@ -64,5 +75,7 @@ Referências oficiais:
 - [Google OAuth de servidor](https://developers.google.com/identity/protocols/oauth2/web-server)
 - [Microsoft Graph: permissões](https://learn.microsoft.com/en-us/graph/permissions-reference)
 - [Microsoft: requisitos de registro de aplicativo](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app)
+- [Microsoft: conta pessoal sem diretório — AADSTS50020](https://learn.microsoft.com/en-us/troubleshoot/entra/entra-id/app-integration/error-code-aadsts50020-user-account-identity-provider-does-not-exist)
+- [Azure: cadastro gratuito e verificação](https://azure.microsoft.com/en-us/pricing/purchase-options/azure-account)
 
 Este documento registra o plano e as dependências; não descreve integrações prontas.

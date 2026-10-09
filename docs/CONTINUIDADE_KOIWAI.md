@@ -41,6 +41,14 @@ ao erro de conta ausente no locatário Microsoft Services. Não é senha incorre
 Nenhum app Microsoft, segredo, assinatura ou plano criado. Precisa de diretório
 próprio acessível para registro conforme documentação oficial; não iniciar contratação
 ou repetir login indefinidamente. Proof privado microsoft-diretorio-pendente.png.
+Diagnóstico oficial AADSTS50020 causa1 confirma conta pessoal no Microsoft Services
+sem diretório vinculado. Caminho oficial é cadastro Azure com novo tenant. Cadastro
+gratuito aberto no Brave (aba1253037202) e entregue ao usuário para revisar/concluir
+pessoalmente; pergunta pendente se quer cadastrar ou manter Microsoft pendente.
+Não submetidos telefone, cartão, termos, plano ou nova conta. Microsoft informa
+possível autorização temporária US$1 no cartão. Proof microsoft-cadastro-azure.png.
+Usuário reafirmou escopo amplo: todas as conexões/funcionalidades possíveis e depois
+melhorar inteligência; contexto de uso não limita escopo apenas a finanças/trabalho.
 Ler PLANO_CONEXOES_MULTICONTAS.md para dependências e ordem. Não confundir plugin
 do Codex com autorização da Koi. Consentimentos/criação de credenciais via navegador
 exigem confirmação específica no momento; login/senhas/códigos com o usuário.
