@@ -20,7 +20,9 @@ PUBLICADO Render commit28efa33, dep-db4kh8rncjis73fsllrg live20:04:40Z.
 Smoke HTTPS: health200, Google status/connect sem sessão401, callback inválido400.
 Calendar, Tasks, Gmail e Drive habilitados e verificados após autorização dos termos.
 Nenhuma conta Google pessoal foi autorizada pelo aplicativo ou consultada ainda.
-Pendente resposta manual: painel Google aparece e botão Adicionar está disponível?
+Usuário CONFIRMOU painel Google e botão Adicionar disponível no Poco.
+Pergunta pendente: concluir pessoalmente primeira autorização e confirmar conta
+na lista. Se erro, conferir callback/consentimento; nunca pedir senha ou código.
 Android: Rotina → Ferramentas → Conexões → Google com a Koi; conectar/reautorizar,
 atualizar, consultar e desconectar individualmente. Consultas sem IA/cache:
 20 eventos da agenda principal, 20 agendas, 20 LISTAS Tasks, cinco cabeçalhos Gmail

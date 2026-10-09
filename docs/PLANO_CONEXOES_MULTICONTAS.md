@@ -32,8 +32,8 @@ na ordem técnica necessária, sem tratar a lista inteira como já implementada.
 Retorno Google configurado no cliente:
 https://koiwai-backend.onrender.com/api/v1/connections/google/callback
 Esse endpoint está implementado com state/PKCE/cookie e persistência cifrada.
-Servidor publicado, quatro APIs habilitadas e APK instalado. Conferência manual
-do painel pendente. A autorização de cada conta é concluída pessoalmente pelo usuário.
+Servidor publicado, quatro APIs habilitadas e APK instalado. Usuário confirmou
+painel e botão de conexão. A autorização de cada conta é concluída pessoalmente pelo usuário.
 
 ## Ordem de entrega
 
