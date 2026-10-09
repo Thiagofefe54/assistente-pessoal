@@ -5,6 +5,7 @@ from datetime import date, datetime, timedelta
 from urllib.parse import quote, urlencode
 from uuid import UUID
 from zoneinfo import ZoneInfo
+from email.utils import parsedate_to_datetime
 from fastapi import HTTPException
 from backend.app.core import google_connections as g
 from backend.app.core.schedule import plain
@@ -68,6 +69,18 @@ def version(value):
 def read(owner, connection, service, start=None, end=None, query=None, timezone='America/Sao_Paulo'):
     if service not in ('calendar','task_items'):
         result=g.consult(owner,connection,service)
+        if (start or end) and service in ('mail','drive'):
+            first=date.fromisoformat(start) if start else None
+            last=date.fromisoformat(end) if end else first
+            filtered=[]
+            for item in result['items']:
+                try:
+                    at=(parsedate_to_datetime(item.get('date','')) if service=='mail' else
+                        datetime.fromisoformat(item.get('modifiedTime',''))).astimezone(ZoneInfo(timezone)).date()
+                    if (first is None or at>=first) and (last is None or at<=last):filtered.append(item)
+                except (TypeError,ValueError):pass
+            result['items']=filtered
+            result['partial']=True  # Date filtering is within the bounded recent slice.
         if query:
             needle=plain(query)
             result['items']=[i for i in result['items'] if needle in plain(str(i.get('name',i.get('subject',''))))]
@@ -76,7 +89,7 @@ def read(owner, connection, service, start=None, end=None, query=None, timezone=
     row=g.account(owner,connection)
     today=datetime.now(ZoneInfo(timezone)).date()
     first=date.fromisoformat(start) if start else today
-    last=date.fromisoformat(end) if end else first+timedelta(days=7)
+    last=date.fromisoformat(end) if end else first if start else first+timedelta(days=6)
     if last<first or (last-first).days>31:raise HTTPException(422,'Consulte até 31 dias por vez.')
     partial=False; result=[]
     if service=='calendar':

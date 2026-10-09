@@ -12,7 +12,7 @@ agenda com tarefas da Koi, 08h–22h, sem assumir disponibilidade ou mudar horá
 Recibos privados cifrados por dono/request_id, claim persistente antes de escrever,
 ETag e proteção contra repetição incerta. Tabela koi_google_actions APLICADA, RLS e
 grants VERIFICADOS. Negação/hipótese/relato não inicia consulta ou alteração.
-224 testes backend PASS; 53 Android PASS; APK V1.13/code15 preparado, NÃO instalado.
+226 testes backend PASS; 53 Android PASS; APK V1.13/code15 preparado, NÃO instalado.
 Usuário saiu: não instalar agora; ele reconecta o Poco quando terminar.
 Consultas REAIS Calendar/Tasks/Gmail/Drive passaram nas três contas, sem conteúdo
 pessoal nos logs. Duas interpretações Poe fictícias passaram, delta35 pontos;

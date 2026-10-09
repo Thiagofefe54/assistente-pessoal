@@ -23,9 +23,12 @@
   Repetir o mesmo pedido recupera recibo antes de cobrar outra interpretação.
   PATCH exige ETag; consulta parcial/duplicidade não escolhe item arbitrariamente.
 
+Datas solicitadas filtram o recorte: início sem fim significa somente aquele dia.
+Gmail/Drive filtram resultados recentes disponíveis, sem busca completa.
+
 ## Verificado
 
-- 224 testes backend aprovados; 53 testes unitários Android aprovados; build debug
+- 226 testes backend aprovados; 53 testes unitários Android aprovados; build debug
   V1.13/code15 concluído. APK: android/build/releases/Koiwai-1.13.apk.
 - SHA256: 901191FB965FACBB43444A527713903B30E4A1DC6E295736B6E198EDB570B7A3.
 - Consultas reais Calendar/Tasks/Gmail/Drive nas três contas: todas bem-sucedidas.

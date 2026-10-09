@@ -146,6 +146,18 @@ class GoogleAssistantTests(unittest.TestCase):
         self.assertEqual('Lesson',result['items'][0]['title']);self.assertEqual('Study',result['items'][0]['list'])
         self.assertNotIn('PRIVATE',str(result));self.assertEqual(2,req.call_count)
 
+    def test_calendar_start_only_means_one_day_not_eight_days(self):
+        row={'id':CONNECTION,'email':'fixture@example.com','scopes':[g.SCOPE['calendar']],'updated_at':'today'}
+        with patch.object(g,'account',return_value=row),patch.object(a,'google_call',return_value={'items':[]}) as req:
+            a.read(OWNER,CONNECTION,'calendar','2026-10-10',None)
+        self.assertIn('timeMax=2026-10-11T00%3A00%3A00',req.call_args.args[3])
+
+    def test_mail_date_filters_only_recent_slice_and_reports_partial(self):
+        with patch.object(g,'consult',return_value={'items':[{'subject':'Yesterday','date':'Fri, 09 Oct 2026 12:00:00 -0300'},
+            {'subject':'Today','date':'Sat, 10 Oct 2026 12:00:00 -0300'}],'partial':False}):
+            result=a.read(OWNER,CONNECTION,'mail','2026-10-10',None)
+        self.assertEqual('Today',result['items'][0]['subject']);self.assertEqual(1,len(result['items']));self.assertTrue(result['partial'])
+
 
 class GoogleChatTests(unittest.IsolatedAsyncioTestCase):
     async def test_chat_google_bypasses_local_task_and_second_generation(self):
