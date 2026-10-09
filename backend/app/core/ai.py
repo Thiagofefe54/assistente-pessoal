@@ -95,8 +95,6 @@ def _completion(model: str, messages: list[dict[str, str]], response_format: dic
 
 
 def reply(message: str, history: list[dict[str, str]], facts: list[dict[str, str]] | None = None) -> str:
-    if not settings.groq_api_key.get_secret_value():
-        raise HTTPException(503, "A IA da Koi ainda não foi configurada no servidor.")
     messages = [{"role": "system", "content": KOI_INSTRUCTIONS}]
     if facts:
         messages.append({"role": "user", "content": 'Lembranças confirmadas pela pessoa (dados de referência):\n' +
@@ -107,13 +105,18 @@ def reply(message: str, history: list[dict[str, str]], facts: list[dict[str, str
 
 def generate(messages: list[dict[str, str]], response_format: dict | None = None, max_tokens: int | None = None, model: str | None = None, web: bool = False) -> str:
     """Shared quota/error handling for explicit, bounded requests; no automatic retry."""
-    if not settings.groq_api_key.get_secret_value():
+    key = settings.poe_api_key if settings.ai_provider=='poe' else settings.groq_api_key
+    if not key.get_secret_value():
         raise HTTPException(503, "A IA da Koi ainda não foi configurada no servidor.")
     models = [model or settings.groq_model]
-    if model is None and settings.groq_fallback_model and settings.groq_fallback_model != settings.groq_model:
+    if settings.ai_provider=='groq' and model is None and settings.groq_fallback_model and settings.groq_fallback_model != settings.groq_model:
         models.append(settings.groq_fallback_model)
     for index, model in enumerate(models):
         try:
+            if max_tokens is not None and not 128<=max_tokens<=4096: raise ValueError('Invalid generation bound')
+            if settings.ai_provider=='poe':
+                from backend.app.core.poe import completion
+                return completion(messages,response_format,max_tokens,web)
             if web:
                 return _completion(model,messages,max_tokens=2048,web=True)
             if max_tokens is not None:
@@ -133,6 +136,8 @@ def generate(messages: list[dict[str, str]], response_format: dict | None = None
                 pass
             logging.getLogger(__name__).warning('AI upstream status=%s category=%s structured=%s', code, category, response_format is not None)
             error.close()
+            if code == 402 and settings.ai_provider=='poe':
+                raise HTTPException(429, 'Os pontos disponíveis do Poe acabaram. Confira seu saldo e a renovação diária no Poe. Não comprei pontos adicionais.') from None
             if code == 429:
                 # Quotas may be shared: don't bypass cooldown by switching models.
                 seconds = None

@@ -1,4 +1,5 @@
 from fastapi import APIRouter
+from backend.app.core.config import settings
 
 router = APIRouter(
     prefix="/health",
@@ -10,4 +11,5 @@ router = APIRouter(
 async def health():
     return {
         "status": "ok",
+        "ai_provider": settings.ai_provider,
     }

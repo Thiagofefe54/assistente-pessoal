@@ -14,7 +14,7 @@ from backend.app.api.routes.chat import ChatRequest
 
 class AiTests(unittest.TestCase):
     def setUp(self):
-        self.config = patch.multiple(settings, groq_api_key=SecretStr("private-fake-key"),
+        self.config = patch.multiple(settings, ai_provider='groq', groq_api_key=SecretStr("private-fake-key"),
             groq_model="openai/gpt-oss-120b", groq_fallback_model="openai/gpt-oss-20b")
         self.config.start()
         self.addCleanup(self.config.stop)

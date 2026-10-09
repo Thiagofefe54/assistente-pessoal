@@ -18,6 +18,16 @@ services:
         sync: false
       - key: GROQ_API_KEY
         sync: false
+      - key: AI_PROVIDER
+        value: poe
+      - key: POE_API_KEY
+        sync: false
+      - key: POE_MODEL
+        value: GPT-OSS-120B
+      - key: POE_VISION_MODEL
+        value: GPT-4.1-mini
+      - key: POE_WEB_MODEL
+        value: GPT-4.1-mini
       - key: GROQ_MODEL
         value: openai/gpt-oss-120b
       - key: GROQ_FALLBACK_MODEL

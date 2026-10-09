@@ -1,6 +1,20 @@
 # Koiwai — leia primeiro ao retomar
 
-## Checkpoint: economia antes do Poe pago — 08/10/2026
+## Checkpoint: integração Poe — 08/10/2026
+
+Ler IA_POE.md. Usuário autorizou chave Koiwai no .env privado/segredos Render e
+testes até 200 pontos. Chave criada/guardada, nenhuma compra nova. Consumo real
+total medido: 50 pontos, saldo 9.950. Conversa, intenção de contas, plano validado
+de concluir tarefa fictícia e negação passaram; nenhuma escrita pessoal real.
+120 testes simulados aprovados. Texto GPT-OSS-120B via Chat Completions + schema
+nas instruções/validação local JSON Schema/Pydantic. Responses nesse modelo deu
+400 sem custo; não afirmar strict garantido pelo Poe. GPT-4.1-mini respondeu
+schema via Responses; imagem/pesquisa só testadas com mocks, reais pendentes.
+AI_PROVIDER=poe impede qualquer chamada Groq ou fallback automático.
+Deploy/configuração em preparação. Celular desconectado pelo usuário; avisar
+quando for necessário teste físico. Android sem alteração nesta integração.
+
+## Checkpoint anterior: economia antes do Poe pago — 08/10/2026
 
 Usuário pagou Poe mensal R$24,90, ativo 10.000 pontos/dia. Pediu otimizar antes
 da integração. Ler OTIMIZACAO_IA_2026_10_08.md. Implementado: consultas simples

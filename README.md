@@ -3,7 +3,7 @@
 Contas recorrentes, registro de pagamento com despesa e desfazer, orçamento mensal,
 diário por dia/categoria, cálculo de sono informado e balanço semanal. Acompanhamento
 opcional no Android respeita o descanso e limita avisos a um por dia. Dados por conta,
-sem conexão bancária automática e sem serviço pago contratado.
+sem conexão bancária automática. Render e Supabase gratuitos; usuário contratou Poe.
 [Entrega e limites reais](docs/ENTREGA_VIDA_V1_3_2026_10_08.md).
 
 > **V1.2 contextual instalada no Poco (08/10/2026):** interpretação por IA, memória corrigida, relatos opcionais, cartões de ações Android e microfone dentro da Koi. [Entrega, verificação e limites](docs/ENTREGA_CONTEXTUAL_V1_2_2026_10_08.md).
@@ -46,7 +46,7 @@ A Koiwai nasceu de uma vontade: ter uma assistente pessoal que acompanhe a vida 
 
 O objetivo é conversar com a Koi, organizar o dia e, aos poucos, permitir que ela ajude a executar tarefas com permissões claras. O Android é o primeiro lar; o Windows faz parte da evolução planejada.
 
-**A Koiwai já conversa com IA na nuvem.** O backend está publicado no Render Free, e uma conversa autenticada com contexto fictício passou no Poco. O app usa Groq pela rota HTTPS protegida; a demonstração local mantém saudação e eco.
+**A Koiwai já conversa com IA na nuvem.** O backend usa Render Free e rota HTTPS protegida. A migração para Poe usa GPT-OSS-120B no texto, validação de respostas no servidor e consultas simples com uma chamada. Plano mensal do usuário: 10.000 pontos/dia. Imagem/pesquisa na nova integração ainda exigem testes reais. [Integração, consumo e limites](docs/IA_POE.md). A demonstração local mantém saudação e eco.
 
 ## Uma identidade que você reconhece
 
@@ -202,8 +202,9 @@ Copy-Item .env.example .env
 
 A demonstração funciona com `ENVIRONMENT=development` e não precisa de credenciais válidas. Para testar a rota protegida, configure o projeto Supabase em `.env` e use HTTPS. A documentação interativa local fica em `http://localhost:8000/docs`.
 
-Para respostas de IA, configure `GROQ_API_KEY` somente no `.env` do servidor.
-A integração Groq, o contexto recente e o backend HTTPS foram validados no Poco.
+Para Poe, configure `AI_PROVIDER=poe` e `POE_API_KEY` somente no `.env` privado
+ou nos segredos do servidor. Veja [IA_POE.md](docs/IA_POE.md). Esse modo não usa Groq.
+Groq permanece disponível no código com `AI_PROVIDER=groq`, para reversão explícita.
 O incremento de lembranças confirmadas foi instalado e testado no Poco. O simulador HTTP continua com respostas demonstrativas.
 Detalhes em [IA_GROQ.md](docs/IA_GROQ.md) e [MEMORIA_CONFIRMADA.md](docs/MEMORIA_CONFIRMADA.md).
 
