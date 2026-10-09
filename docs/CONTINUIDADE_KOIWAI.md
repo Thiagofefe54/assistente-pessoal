@@ -582,3 +582,10 @@ ser combinado nessa etapa; não resetar contas/infraestrutura/credenciais por in
 
 Painel local V1.7 recarregado no Brave e cartão interativo de voz conferido.
 Checklist manual de voz/agenda enviada; ainda sem resposta neste checkpoint.
+
+Confirmação do usuário após pedido de teste de voz/agenda: “funcionou sim” (09/10/2026).
+Screenshot no Poco confirma agenda consultada com eventos carregados, sem erro visível.
+Evento de feriado aparece repetido; origem das duplicatas ainda não investigada
+(podem existir várias agendas sincronizadas). Não afirmar deduplicação concluída.
+Voz confirmada pelo relato do usuário, sem aferição independente de áudio.
+Escolha padrão/gesto físico e consulta real offline ainda não confirmados.
