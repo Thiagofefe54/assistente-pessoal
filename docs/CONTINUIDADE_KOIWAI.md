@@ -11,7 +11,10 @@ autenticada a até 40 registros diary/note/goal/workout, até 3 fontes; trecho o
 próximo ao assunto, datas/tipos validados. Sem nova chamada de IA, migração ou APK.
 Prompt distingue fato/sugestão, evita inventar lacunas, pede esclarecimento só quando
 necessário e indica título/data de lembrança consultada naturalmente.
-181 testes backend PASS. Implementado; publicação será registrada após deploy.
+181 testes backend PASS. Publicado commit8f27b49 no Render:
+dep-db4h99s9v7es73akog0g live09/10/2026 16:22:51Z. Health correto /api/v1/health
+conferido; /health sem prefixo retorna404. Sem teste real novo de conversa/Poe:
+tom e referências no uso real aguardam usuário; testes não gastaram pontos.
 Não é compreensão universal: referências sem tópico claro ainda podem pedir detalhe;
 busca continua por palavras/sinônimos limitados e apenas 40 registros recentes.
 Dados financeiros privados continuam fora do Poe. Visual/Windows continuam adiados.
