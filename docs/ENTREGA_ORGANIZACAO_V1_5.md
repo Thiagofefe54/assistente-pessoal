@@ -56,6 +56,14 @@ Avisores: proteção de senha vazada continua desativada (aviso preexistente);
 
 ## Evidências e estado
 
+Servidor publicado: commit `771a18914b604459baae3140374af40954b4b5d6`,
+Render `dep-db45c4rbc2fs73am4n9g` LIVE em 08/10/2026 23:49:45 (São Paulo).
+Saúde HTTPS 200/provider poe. Novos endpoints search/plan/demo recusaram pedidos
+sem sessão com HTTP401. GitHub atualizado; publicação automática permanece desligada.
+Processo Gradle encerrado ao finalizar para liberar memória do PC.
+Dashboard: navegação, detalhes e novo exemplo de busca verificados no Brave;
+checklist permanece 0/5 porque o teste físico ainda não ocorreu.
+
 - 149 testes do servidor aprovados, incluindo 12 novos; zero geração paga.
 - Compilação final Android 1.5/code7 aprovada: assembleDebug, assembleDebugAndroidTest,
   30 testes unitários (zero falhas/erros), lintDebug (zero erros, 81 avisos).

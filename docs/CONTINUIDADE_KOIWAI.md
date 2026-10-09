@@ -1,6 +1,6 @@
 # Koiwai — leia primeiro ao retomar
 
-## Checkpoint V1.5 Organização — em validação, 08/10/2026
+## Checkpoint V1.5 Organização — pronta para instalar, 08/10/2026
 
 Ler ENTREGA_ORGANIZACAO_V1_5.md antes de continuar. Busca com fontes e período,
 plano do dia somente leitura, categorias financeiras/limites/avisos e laboratório
@@ -10,11 +10,17 @@ categoria/edição/desfazer/legado/RLS passou e foi revertido. Android 1.5/code7
 aprovados (0 erros, 81 avisos). APK Koiwai-1.5.apk SHA256
 D4F9A92D9102D95353ED67D5AD9B9C03957456C1B3003CC75D87788308E15573.
 Ensaio SQL dos 12 exemplos e repetição passou, revertido integralmente. Usuário desconectou celular: NÃO instalar agora nem
-criar exemplos na conta via acesso administrativo. Ainda falta publicar servidor e instalação/teste físico quando ele reconectar. Exemplos são
+criar exemplos na conta via acesso administrativo. Servidor publicado: commit 771a18914b604459baae3140374af40954b4b5d6, Render
+dep-db45c4rbc2fs73am4n9g LIVE 08/10/2026 23:49:45 São Paulo, saúde 200/provider
+poe; endpoints search/plan/demo sem sessão retornam401. Falta instalação/teste
+físico quando reconectar. Exemplos são
 permitidos pelo usuário e podem persistir, claramente fictícios. RPCs/recibos
 estáveis evitam duplicação; manifesto privado no celular para limpeza final.
-Após compilar, encerrar daemon Gradle: usuário mostrou RAM99%/disco100%.
-Não mudar proteções do celular, permissões ou plano. Dashboard V1.5 em validação.
+Daemon Gradle encerrado após compilar: usuário mostrou RAM99%/disco100%.
+Não mudar proteções do celular, permissões ou plano. Dashboard V1.5 atualizado e verificado no Brave; checklist0/5 aguardando Poco.
+Exemplos na conta ainda NÃO criados. Testes de categoria Android e API/seed
+preparados em OrganizationApiLiveTest; rodar com koiSeedDemo=true só ao reconectar.
+Próximo: adb install -r APK final; não reconstruir sem mudanças (PC pouca RAM).
 
 ## Checkpoint atual: Meu dia V1.4 — 08/10/2026
 
