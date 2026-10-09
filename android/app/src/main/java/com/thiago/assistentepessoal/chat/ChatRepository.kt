@@ -53,7 +53,7 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
         }
     } }
     fun undoAction(message:ChatMessage) {
-        if(_busy.value || message.actionReceiptJson==null || org.json.JSONObject(message.actionReceiptJson).optString("tool")=="device") return
+        if(_busy.value || message.actionReceiptJson==null || org.json.JSONObject(message.actionReceiptJson).optString("tool") in setOf("device","bank")) return
         _busy.value=true;_error.value=null
         scope.launch {
             try {
@@ -83,7 +83,10 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
                 }
                 val context = recentChatContext(dao.recentContext(message.id, message.occurredAt), message)
                 val reply = withContext(Dispatchers.IO) {
-                    (if(message.imageJpegBase64==null)com.thiago.assistentepessoal.tools.calculationReply(message.content) else null)?.let{ChatResult(it)}
+                    (if(message.imageJpegBase64==null)com.thiago.assistentepessoal.tools.bankChatQuery(message.content) else null)?.let{query->
+                        ChatResult("Claro, mestre 💜 Vou conferir ${if(query=="plan")"o saldo do Inter e suas contas cadastradas" else "o saldo do Inter"} no cartão abaixo. Os valores ficam nessa consulta privada, sem entrar no histórico enviado à IA.",
+                            actionReceiptJson=org.json.JSONObject().put("tool","bank").put("type","read").put("query",query).toString())
+                    } ?: (if(message.imageJpegBase64==null)com.thiago.assistentepessoal.tools.calculationReply(message.content) else null)?.let{ChatResult(it)}
                         ?: backend.sendResult(message.content, context,message.id,message.timezone,message.occurredAt,message.imageJpegBase64,captureReports())
                 }
                 dao.complete(message, reply.reply, reply.taskDraftJson,reply.actionReceiptJson)

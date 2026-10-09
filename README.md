@@ -1,3 +1,11 @@
+# Novidades da V1.11 — Inter no chat
+
+Pergunte “quanto tenho no meu banco?” ou “meu saldo cobre as próximas contas?”.
+A Koi abre uma consulta privada dentro da conversa, sem gastar pontos de IA.
+O saldo aparece no cartão e não entra no histórico enviado ao modelo.
+**Instalada no Poco; usuário confirmou o cartão com dados reais.**
+[Funcionamento, privacidade e limites](docs/ENTREGA_BANCO_CHAT_V1_11.md).
+
 # Novidades da V1.10 — saldo e próximas contas
 
 O painel do Inter agora compara saldo com vencimentos cadastrados, calcula a

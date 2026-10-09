@@ -1,5 +1,29 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint V1.11 — banco no Chat instalado e confirmado — 09/10/2026
+
+Ler ENTREGA_BANCO_CHAT_V1_11.md. Perguntas de saldo Inter/comparação reconhecidas
+localmente pelo Android antes de qualquer chamada de IA. Resposta genérica e
+receiptbankread sem valores, cartão BankConnectionPanel no Chat busca bank-summary
+ou bank-summary+day (plan), autorização/sessão existentes, sem cache/saldo à IA.
+AutoRead só mensagem nova mais recente com Chat aberto; histórico antigo botão
+Atualizar. Sem undo para consultas. Perguntas de Poe/registro/explicativas preservam
+fluxos normais. Famílias de frases, não interpretação universal nem saldo no Poe.
+53unitários PASS; build/instalação1.11/code13 app+testes aprovados. Tentativa Compose
+travou; agente interrompeu o teste, substituído por teste físico isolado repository
+PASS0,112s sem backend IA: tokenProvider com erro se usado nunca chamado, apenas
+3campos no receipt e texto/contexto sem saldo. Usuário confirmou cartão real ao
+perguntar quanto tem no banco. Comparação no Chat ainda não confirmada manualmente.
+APKandroid/build/releases/Koiwai-1.11.apk SHA256
+D7446CFFABFD485C14AB6FBAD7CC923DDFF50593A9A44C53C5F757035082AA4E.
+Gradle parado, app aberto. Sem backend/deploy/SQL/credenciais/permissões novas.
+Histórico sincroniza pergunta/resposta genérica; receipt só local, outro aparelho
+pode restaurar texto sem cartão. Ouvir/Compartilhar não incluem resultado privado.
+Pendente: comparação pelo Chat, ampliar compreensão com privacidade, sugestões mais
+amplas, monitoramento sem Android. Não mandar saldo à IA/abrir extratos sem tratar
+novo escopo. Inter somente; Next excluído; visual definitivo/Windows depois.
+
+
 ## Checkpoint V1.10 — saldo e contas instalado — 09/10/2026
 
 Ler ENTREGA_SALDO_CONTAS_V1_10.md. Tela Poco V1.9 conferida visualmente e correta.

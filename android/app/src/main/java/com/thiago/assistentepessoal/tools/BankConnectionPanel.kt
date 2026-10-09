@@ -17,7 +17,7 @@ import java.time.LocalDate
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
-@Composable fun BankConnectionPanel(){
+@Composable fun BankConnectionPanel(queryMode:String?=null,autoRead:Boolean=false){
     val context=LocalContext.current;val app=context.applicationContext as KoiwaiApplication
     val account by app.auth.account.collectAsState();val owner=account?.id
     val scope=rememberCoroutineScope()
@@ -37,10 +37,11 @@ import java.time.format.DateTimeFormatter
         catch(e:Exception){if(app.auth.account.value?.id==owner)info=if(path=="bank-plan" && result!=null)"O saldo foi consultado, mas não consegui atualizar as contas cadastradas. Tente novamente." else e.message?:"Não consegui consultar a conexão."}
         finally{if(app.auth.account.value?.id==owner)busy=false}
     }}
+    LaunchedEffect(owner,autoRead){if(owner!=null && autoRead)read(if(queryMode=="balance")"bank-summary" else "bank-plan")}
     KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue){
-        Text("Bancos · consulta pessoal",fontSize=20.sp)
+        Text(if(queryMode=="balance")"Saldo do Inter" else "Saldo e próximas contas",fontSize=20.sp)
         Text("Inter · saldo e contas cadastradas · sem gastar pontos de IA",fontSize=12.sp,color=KoiColors.Muted)
-        KoiAction(if(busy)"Conferindo…" else "Conferir saldo e contas",{read("bank-plan")},enabled=owner!=null && !busy)
+        KoiAction(if(busy)"Conferindo…" else if(queryMode=="balance")"Atualizar saldo" else "Conferir saldo e contas",{read(if(queryMode=="balance")"bank-summary" else "bank-plan")},enabled=owner!=null && !busy)
         TextButton(onClick={details=!details}){Text(if(details)"Fechar detalhes e conexão ↑" else "Detalhes e conexão ↓")}
         if(details){
         TextButton(onClick={openIntent(context,Intent(Intent.ACTION_VIEW,Uri.parse("https://meu.pluggy.ai/")))}){Text("Abrir Meu Pluggy →")}
