@@ -3,7 +3,20 @@
 Estado em 09/10/2026: preparação. Nenhuma dessas quatro contas foi autorizada para
 a Koi. Os atalhos existentes abrem os serviços; a agenda lê calendários sincronizados
 no Android. O projeto Google dedicado e o cadastro OAuth foram criados; Externo,
-modo Testing, nenhuma conta de teste adicionada. Não há cliente ou tokens ainda.
+modo Testing, três contas de teste salvas. Cliente WEB criado com a opção de agente
+de IA; Client ID, Client Secret e redirect guardados no .env privado e no Render
+(Save only, sem nova publicação). Não há tokens de usuário nem contas conectadas.
+
+Microsoft: entrada pessoal concluída pelo usuário. O portal Azure abriu a Home,
+mas o acesso ao diretório solicitou nova entrada e voltou ao erro de conta ausente
+no locatário Microsoft Services. Nenhum registro Microsoft, segredo, assinatura ou
+recurso pago criado. Resolver acesso a um diretório próprio antes de registrar app;
+não repetir login indefinidamente nem contratar Azure por inferência.
+
+Retorno Google configurado no cliente:
+https://koiwai-backend.onrender.com/api/v1/connections/google/callback
+Esse endpoint ainda NÃO existe. Antes de iniciar autorizações, implementar o fluxo
+protegido e a persistência abaixo, habilitar/verificar as APIs necessárias e testar.
 
 ## Ordem de entrega
 
@@ -50,5 +63,6 @@ interpretação escolhe a ferramenta e consulta dados atuais antes de sugerir al
 Referências oficiais:
 - [Google OAuth de servidor](https://developers.google.com/identity/protocols/oauth2/web-server)
 - [Microsoft Graph: permissões](https://learn.microsoft.com/en-us/graph/permissions-reference)
+- [Microsoft: requisitos de registro de aplicativo](https://learn.microsoft.com/en-us/entra/identity-platform/quickstart-register-app)
 
 Este documento registra o plano e as dependências; não descreve integrações prontas.
