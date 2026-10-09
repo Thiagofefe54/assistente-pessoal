@@ -30,6 +30,7 @@ fun PersonalScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
     val records by repo.records.collectAsState();val busy by repo.busy.collectAsState();val info by repo.info.collectAsState();val undo by repo.undo.collectAsState()
     var archived by rememberSaveable{mutableStateOf(false)}
     var query by rememberSaveable{mutableStateOf("")}
+    var financeFilter by rememberSaveable{mutableStateOf("all")}
     var monthOnly by rememberSaveable{mutableStateOf(true)}
     var editor by remember{mutableStateOf(false)};var editing by remember{mutableStateOf<PersonalRecord?>(null)}
     var creationId by rememberSaveable{mutableStateOf(UUID.randomUUID().toString())}
@@ -37,7 +38,7 @@ fun PersonalScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
     val month=LocalDate.now().toString().take(7)
     val visible=records.orEmpty().filter{it.kind in kinds && it.archived==archived &&
         (query.isBlank() || it.title.contains(query,true) || it.content.contains(query,true)) &&
-        (category!="Finanças" || !monthOnly || it.date?.startsWith(month)==true)}
+        (category!="Finanças" || ((!monthOnly || it.date?.startsWith(month)==true) && (financeFilter=="all" || financeCategory(it)==financeFilter)))}
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(14.dp)){
         item{
             TextButton(onClick=onBack){Text("← Rotina")};Eyebrow("SEU ESPAÇO",accent);Text(category,fontSize=32.sp)
@@ -47,6 +48,7 @@ fun PersonalScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
             OutlinedTextField(query,{query=it},label={Text("Buscar")},singleLine=true,modifier=Modifier.fillMaxWidth())
             Row{FilterChip(selected=!archived,onClick={archived=false},label={Text("Ativos")});Spacer(Modifier.width(8.dp));FilterChip(selected=archived,onClick={archived=true},label={Text("Arquivados")})}
             if(category=="Finanças")Row{FilterChip(selected=monthOnly,onClick={monthOnly=true},label={Text("Este mês")});Spacer(Modifier.width(8.dp));FilterChip(selected=!monthOnly,onClick={monthOnly=false},label={Text("Todos")})}
+            if(category=="Finanças")FinanceCategoryPicker(financeFilter,{financeFilter=it},true)
             TextButton(onClick={repo.refresh()},enabled=!busy){Text("Atualizar")}
             if(busy)LinearProgressIndicator(Modifier.fillMaxWidth(),color=accent)
             info?.let{Text(it,color=KoiColors.Blue)}
@@ -73,6 +75,7 @@ fun PersonalScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
                 }
             }else if(record.content.isNotBlank())Text(record.content,color=KoiColors.Muted)
             if(record.kind=="goal"){LinearProgressIndicator(progress={record.progress/100f},modifier=Modifier.fillMaxWidth(),color=accent);Text("${record.progress}% concluída")}
+            if(record.kind in listOf("expense","income"))Text(financeLabel(financeCategory(record)),color=KoiColors.Muted,fontSize=12.sp)
             record.cents?.let{Text(money(it),fontSize=22.sp,color=if(record.kind=="expense")KoiColors.Red else KoiColors.Blue)}
             record.date?.let{Text(it,color=KoiColors.Muted,fontSize=12.sp)}
             Row{TextButton(onClick={editing=record;editor=true},enabled=!busy){Text("Editar")};TextButton(onClick={repo.archive(record)},enabled=!busy){Text(if(record.archived)"Recuperar" else "Arquivar")}
@@ -84,6 +87,7 @@ fun PersonalScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
         var kind by rememberSaveable{mutableStateOf(editing?.kind ?: kinds.first())}
         var title by rememberSaveable{mutableStateOf(editing?.title ?: "")};var content by rememberSaveable{mutableStateOf(editing?.content ?: "")}
         var amount by rememberSaveable{mutableStateOf(editing?.cents?.let{java.math.BigDecimal.valueOf(it,2).toPlainString()} ?: "")}
+        var finance by rememberSaveable{mutableStateOf(editing?.let{financeCategory(it)} ?: "other")}
         var progress by rememberSaveable{mutableStateOf((editing?.progress ?: 0).toString())}
         var date by rememberSaveable{mutableStateOf(editing?.date ?: if(category in listOf("Finanças","Treinos"))LocalDate.now().toString() else "")}
         val valid=title.isNotBlank() && title.length<=160 && content.length<=8000 &&
@@ -95,10 +99,11 @@ fun PersonalScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
                 OutlinedTextField(title,{title=it},label={Text("Título")},modifier=Modifier.fillMaxWidth())
                 OutlinedTextField(content,{content=it},label={Text(if(kind=="list")"Um item por linha" else "Detalhes")},minLines=3,modifier=Modifier.fillMaxWidth())
                 if(kind in listOf("expense","income"))OutlinedTextField(amount,{amount=it},label={Text("Valor em reais, ex.: 12,50")},singleLine=true)
+                if(kind in listOf("expense","income"))FinanceCategoryPicker(finance,{finance=it})
                 if(kind=="goal")OutlinedTextField(progress,{progress=it},label={Text("Progresso de 0 a 100%")},singleLine=true)
                 OutlinedTextField(date,{date=it},label={Text("Data opcional: AAAA-MM-DD")},singleLine=true)
                 info?.let{Text(it,color=KoiColors.Blue)}
             }
-        },confirmButton={TextButton(enabled=valid && !busy,onClick={repo.save(kind,title,content,if(kind in listOf("expense","income"))parseCents(amount) else null,progress.toInt(),date.ifBlank{null},editing,creationId){editor=false}}){Text(if(busy)"Salvando…" else "Salvar")}},dismissButton={TextButton(onClick={editor=false},enabled=!busy){Text("Cancelar")}})
+        },confirmButton={TextButton(enabled=valid && !busy,onClick={repo.save(kind,title,content,if(kind in listOf("expense","income"))parseCents(amount) else null,progress.toInt(),date.ifBlank{null},editing,creationId,org.json.JSONObject(editing?.details ?: "{}").apply{if(kind in listOf("expense","income"))put("finance_category",finance)}){editor=false}}){Text(if(busy)"Salvando…" else "Salvar")}},dismissButton={TextButton(onClick={editor=false},enabled=!busy){Text("Cancelar")}})
     }
 }

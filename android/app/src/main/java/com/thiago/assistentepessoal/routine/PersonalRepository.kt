@@ -69,7 +69,7 @@ class PersonalRepository(private val auth:CloudAuth,private val owner:String,pri
         }finally{_busy.value=false}}
     }
     fun refresh()=action{fetch()}
-    fun save(kind:String,title:String,content:String,cents:Long?,progress:Int,date:String?,existing:PersonalRecord?=null,id:String=UUID.randomUUID().toString(),details:JSONObject=JSONObject(),onSaved:()->Unit={}) {
+    fun save(kind:String,title:String,content:String,cents:Long?,progress:Int,date:String?,existing:PersonalRecord?=null,id:String=UUID.randomUUID().toString(),details:JSONObject=JSONObject(existing?.details ?: "{}"),onSaved:()->Unit={}) {
         if(kind !in personalKinds || title.trim().isEmpty() || title.length>160 || content.length>8000 || progress !in 0..100)return
         if((kind in listOf("expense","income","bill","budget"))!=(cents!=null))return
         if(kind in listOf("bill","budget","diary") && date==null)return

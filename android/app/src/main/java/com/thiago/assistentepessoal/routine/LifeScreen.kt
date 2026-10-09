@@ -62,12 +62,12 @@ fun LifeScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
             val entries=own.filter{filter=="all" || (filter=="week" && it.date!=null && it.date>=monday.toString() && it.date<=today.toString()) || (filter=="sleep" && JSONObject(it.details).optString("category")=="sleep")}.sortedByDescending{it.date}
             entries.groupBy{it.date ?: "Sem data"}.forEach{(day,rows)->
                 item(key="day:$day"){Eyebrow(day,accent)}
-                items(rows,key={it.id}){r->LifeRecordCard(r,busy,accent,spent,month,{editing=r;editor=true},{repo.archive(r)})}
+                items(rows,key={it.id}){r->LifeRecordCard(r,busy,accent,monthlySpent(all,today,financeCategory(r)),month,{editing=r;editor=true},{repo.archive(r)})}
             }
             if(entries.isEmpty())item{Text("Nada neste filtro ainda. Conte seu dia no chat com a captura ativada ou registre aqui.",color=KoiColors.Muted)}
         }else{
             item{Text(if(kind=="bill")"Contas cadastradas · editar ou arquivar" else "Limites por mês",fontSize=19.sp)}
-            items(own.sortedByDescending{it.date},key={it.id}){r->LifeRecordCard(r,busy,accent,spent,month,{editing=r;editor=true},{repo.archive(r)})}
+            items(own.sortedByDescending{it.date},key={it.id}){r->LifeRecordCard(r,busy,accent,monthlySpent(all,today,financeCategory(r)),month,{editing=r;editor=true},{repo.archive(r)})}
             if(own.isEmpty())item{Text("Nenhum registro neste filtro.",color=KoiColors.Muted)}
         }
     }
@@ -76,6 +76,7 @@ fun LifeScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
         var title by rememberSaveable{mutableStateOf(editing?.title ?: "")};var content by rememberSaveable{mutableStateOf(editing?.content ?: "")}
         var amount by rememberSaveable{mutableStateOf(editing?.cents?.let{java.math.BigDecimal.valueOf(it,2).toPlainString()} ?: "")}
         var day by rememberSaveable{mutableStateOf(editing?.date ?: (if(kind=="budget")month else today).toString())}
+        var finance by rememberSaveable{mutableStateOf(editing?.let{financeCategory(it)} ?: "all")}
         var repeat by rememberSaveable{mutableStateOf(initial.optString("repeat","none"))}
         var event by rememberSaveable{mutableStateOf(initial.optString("category","other"))}
         var start by rememberSaveable{mutableStateOf(initial.optString("started_at",""))};var end by rememberSaveable{mutableStateOf(initial.optString("ended_at",""))}
@@ -85,6 +86,7 @@ fun LifeScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
             OutlinedTextField(title,{title=it},label={Text("Título")});OutlinedTextField(content,{content=it},label={Text("Detalhes")},minLines=2)
             if(kind!="diary")OutlinedTextField(amount,{amount=it},label={Text("Valor em reais")},singleLine=true)
             OutlinedTextField(day,{day=it},label={Text(if(kind=="bill")"Primeiro vencimento: AAAA-MM-DD" else if(kind=="budget")"Mês: use AAAA-MM-01" else "Data: AAAA-MM-DD")},singleLine=true)
+            if(kind=="budget")FinanceCategoryPicker(finance,{finance=it},true)
             if(kind=="bill")billRepeats.forEach{(id,label)->FilterChip(selected=repeat==id,onClick={repeat=id},label={Text(label)})}
             if(kind=="diary"){
                 diaryCategories.forEach{(id,label)->FilterChip(selected=event==id,onClick={event=id},label={Text(label)})}
@@ -93,7 +95,7 @@ fun LifeScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
             }
             info?.let{Text(it,color=KoiColors.Blue)}
         }},confirmButton={TextButton(enabled=valid && !busy,onClick={
-            val details=JSONObject();if(kind=="bill")details.put("repeat",repeat)
+            val details=JSONObject();if(kind=="budget")details.put("finance_category",finance);if(kind=="bill")details.put("repeat",repeat)
             if(kind=="diary"){details.put("category",event);if(start.isNotBlank())details.put("started_at",start);if(end.isNotBlank())details.put("ended_at",end)}
             repo.save(kind,title,content,if(kind=="diary")null else parseCents(amount),0,if(kind=="budget")LocalDate.parse(day).withDayOfMonth(1).toString() else day,editing,creationId,details){editor=false}
         }){Text(if(busy)"Salvando…" else "Salvar")}},dismissButton={TextButton(onClick={editor=false},enabled=!busy){Text("Cancelar")}})
@@ -127,7 +129,7 @@ private fun LifeRecordCard(r:PersonalRecord,busy:Boolean,accent:androidx.compose
         val details=JSONObject(r.details)
         when(r.kind){
             "bill"->{Text(money(r.cents ?: 0));Text(billRepeats[details.optString("repeat","none")] ?: "Uma vez",color=KoiColors.Muted)}
-            "budget"->{val limit=r.cents ?: 0;Text("Limite: ${money(limit)}");if(r.date==month.toString() && !r.archived){Text(if(spent>limit)"Limite ultrapassado em ${money(spent-limit)}" else "Restam ${money(limit-spent)} até o limite",color=if(spent>limit)KoiColors.Red else accent);LinearProgressIndicator(progress={if(limit==0L)if(spent>0)1f else 0f else (spent.toDouble()/limit).toFloat().coerceIn(0f,1f)},modifier=Modifier.fillMaxWidth())}}
+            "budget"->{Text(financeLabel(financeCategory(r)),color=accent);val limit=r.cents ?: 0;Text("Limite: ${money(limit)}");if(r.date==month.toString() && !r.archived){Text(if(spent>limit)"Limite ultrapassado em ${money(spent-limit)}" else "Restam ${money(limit-spent)} até o limite",color=if(spent>limit)KoiColors.Red else accent);LinearProgressIndicator(progress={if(limit==0L)if(spent>0)1f else 0f else (spent.toDouble()/limit).toFloat().coerceIn(0f,1f)},modifier=Modifier.fillMaxWidth())}}
             "diary"->{Eyebrow(diaryCategories[details.optString("category","other")] ?: "Outros",accent);if(details.has("started_at"))Text(details.getString("started_at"),fontSize=12.sp);if(details.has("ended_at"))Text(details.getString("ended_at"),fontSize=12.sp);if(details.optString("category")=="sleep")sleepDuration(details.optString("started_at"),details.optString("ended_at"))?.let{Text("Sono registrado: ${it/60}h ${it%60}min")}}
         }
         Row{TextButton(onClick=onEdit,enabled=!busy){Text("Editar")};TextButton(onClick=onArchive,enabled=!busy){Text(if(r.archived)"Recuperar" else "Arquivar")}}

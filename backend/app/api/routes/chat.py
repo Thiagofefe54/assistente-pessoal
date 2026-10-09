@@ -144,7 +144,8 @@ Não identifique pessoas nem invente características pessoais sensíveis.
                 semantic=Interpretation(domain='task',operation='create',speech_act='request',
                     evidence=payload.message,device=None)
             else:
-                semantic=interpret(payload.message,history,capture=payload.capture_reports)
+                semantic=interpret(payload.message,history,capture=payload.capture_reports,
+                    timezone=payload.timezone,now=(payload.requested_at or datetime.now(ZoneInfo(payload.timezone))).isoformat())
         except (ValueError,KeyError,TypeError):
             raise HTTPException(502,'Não consegui entender esse pedido. Pode dizer de outro jeito?') from None
         read_result=direct_read(semantic,user_id,authorization,payload.timezone,

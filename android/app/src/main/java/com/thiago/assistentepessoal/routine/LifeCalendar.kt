@@ -22,4 +22,7 @@ fun sleepDuration(start:String?,end:String?):Long?=runCatching{
     val minutes=Duration.between(OffsetDateTime.parse(start),OffsetDateTime.parse(end)).toMinutes()
     require(minutes in 0..2880);minutes
 }.getOrNull()
-fun monthlySpent(records:List<PersonalRecord>,today:LocalDate)=records.filter{it.kind=="expense" && !it.archived && it.date!=null && it.date>=today.withDayOfMonth(1).toString() && it.date<=today.toString()}.sumOf{it.cents ?: 0}
+val financeCategories=linkedMapOf("food" to "Alimentação","transport" to "Transporte","home" to "Casa","health" to "Saúde","study" to "Estudos","leisure" to "Lazer","work" to "Trabalho","other" to "Outros")
+fun financeCategory(record:PersonalRecord)=JSONObject(record.details).optString("finance_category",if(record.kind=="budget")"all" else "other")
+fun financeLabel(category:String)=if(category=="all")"Total do mês" else financeCategories[category] ?: "Outros"
+fun monthlySpent(records:List<PersonalRecord>,today:LocalDate,category:String="all")=records.filter{it.kind=="expense" && !it.archived && it.date!=null && it.date>=today.withDayOfMonth(1).toString() && it.date<=today.toString() && (category=="all" || financeCategory(it)==category)}.sumOf{it.cents ?: 0}

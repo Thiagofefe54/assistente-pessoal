@@ -42,8 +42,7 @@ class LifeReminders(private val context:Context){
         val release=if(app.reminders.prefs.getBoolean("quiet",true))quietRelease(now,app.reminders.prefs.getInt("quiet-start",1320),app.reminders.prefs.getInt("quiet-end",480))else now
         if(release>now){work.enqueueUniqueWork("koi-life-release",ExistingWorkPolicy.REPLACE,OneTimeWorkRequestBuilder<LifeReminderWorker>().setInputData(workDataOf("owner" to owner)).setInitialDelay(Duration.between(now,release).toMillis(),TimeUnit.MILLISECONDS).setConstraints(Constraints.Builder().setRequiredNetworkType(NetworkType.CONNECTED).build()).addTag("koi-life").build());return}
         val bills=billOccurrences(records,payments,today.minusDays(2),today.plusDays(4)).filter{!it.paid}
-        val spent=monthlySpent(records,today)
-        val budgets=records.filter{it.kind=="budget" && !it.archived && it.date==today.withDayOfMonth(1).toString() && spent>0 && spent*10>=(it.cents ?: 0)*8}
+        val budgets=records.filter{val spent=monthlySpent(records,today,financeCategory(it));it.kind=="budget" && !it.archived && it.date==today.withDayOfMonth(1).toString() && spent>0 && spent*10>=(it.cents ?: 0)*8}
         val week= today.minusDays((today.dayOfWeek.value-1).toLong())
         val count=records.count{it.kind=="diary" && !it.archived && it.date!=null && it.date>=week.toString() && it.date<=today.toString()}
         val weekly=today.dayOfWeek==DayOfWeek.SUNDAY && count>0

@@ -102,7 +102,7 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:St
                             "chat" -> ChatScreen({back()},{openAccount("chat")},{day=it;selected="memory"},{selected="routine";category="Ferramentas"},{area->
                                 if(area=="Lembranças") selected="facts" else {selected="routine";category=area}
                             })
-                            "memory" -> MemoryScreen(day,{day=it},{day=null},{selected="facts"},{selected="reports"})
+                            "memory" -> MemoryScreen(day,{day=it},{day=null},{selected="facts"},{selected="reports"},{area->selected="routine";category=area})
                             "reports" -> key(reportRequest) {ReportsScreen({selected="memory"},{day=it;selected="memory"},
                                 reportRequest?.split('|')?.get(0) ?: "week",reportRequest?.split('|')?.get(1) ?: java.time.LocalDate.now().toString())}
                             "facts" -> MemoriesScreen({selected="memory"},{openAccount("facts")})
@@ -172,13 +172,14 @@ private fun HomeScreen(onChat: () -> Unit, onRoutine: () -> Unit, onAccount: () 
         }
         KoiAction("✦  Conversar comigo",onChat,Modifier.fillMaxWidth())
         DayOverviewPanel(onRoutine)
+        DayPlanPanel(onRoutine)
         WeatherPanel(compact=true)
         Spacer(Modifier.height(4.dp))
     }
 }
 
 @Composable
-private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit, onFacts: ()->Unit,onReports:()->Unit) {
+private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit, onFacts: ()->Unit,onReports:()->Unit,onArea:(String)->Unit) {
     val app=LocalContext.current.applicationContext as KoiwaiApplication
     val repo by app.repositories.collectAsState()
     val history by repo.messages.collectAsState()
@@ -199,6 +200,7 @@ private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit, 
             Text("Suas conversas, organizadas por dia.",color=KoiColors.Muted,fontSize=13.sp)
         }
         if(day==null) {
+            item { RecallPanel(onDay,onFacts,onArea) }
             item {KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue,onClick=onReports) {
                 Eyebrow("DIAS QUE VIRAM HISTÓRIA",KoiColors.Blue)
                 Text("Relatórios da Koi →",fontSize=20.sp)
@@ -368,6 +370,9 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
         }
         item {
             PoeUsagePanel()
+        }
+        item {
+            DemoDataPanel()
         }
         item {
             Eyebrow("APARÊNCIA • V${BuildConfig.VERSION_NAME}")

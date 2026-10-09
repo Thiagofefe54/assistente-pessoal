@@ -1,5 +1,21 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint V1.5 Organização — em validação, 08/10/2026
+
+Ler ENTREGA_ORGANIZACAO_V1_5.md antes de continuar. Busca com fontes e período,
+plano do dia somente leitura, categorias financeiras/limites/avisos e laboratório
+manual com 12 exemplos Teste implementados. 149 testes backend passaram sem IA
+paga. Migração organization_finance_categories aplicada; teste real isolado de
+categoria/edição/desfazer/legado/RLS passou e foi revertido. Android 1.5/code7 compilado: 30 testes unitários, assembleDebug/AndroidTest e lint
+aprovados (0 erros, 81 avisos). APK Koiwai-1.5.apk SHA256
+D4F9A92D9102D95353ED67D5AD9B9C03957456C1B3003CC75D87788308E15573.
+Ensaio SQL dos 12 exemplos e repetição passou, revertido integralmente. Usuário desconectou celular: NÃO instalar agora nem
+criar exemplos na conta via acesso administrativo. Ainda falta publicar servidor e instalação/teste físico quando ele reconectar. Exemplos são
+permitidos pelo usuário e podem persistir, claramente fictícios. RPCs/recibos
+estáveis evitam duplicação; manifesto privado no celular para limpeza final.
+Após compilar, encerrar daemon Gradle: usuário mostrou RAM99%/disco100%.
+Não mudar proteções do celular, permissões ou plano. Dashboard V1.5 em validação.
+
 ## Checkpoint atual: Meu dia V1.4 — 08/10/2026
 
 Ler ENTREGA_MEUDIA_V1_4_2026_10_08.md. Pacote implementado: cartões de resumo

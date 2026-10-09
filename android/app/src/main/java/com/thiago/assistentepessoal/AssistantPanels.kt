@@ -23,24 +23,28 @@ import java.time.format.DateTimeFormatter
 
 /** Authenticated account-scoped reads. No key, generation, persistence or redirects. */
 internal suspend fun readAssistant(app: KoiwaiApplication, owner: String, usage: Boolean): JSONObject {
+    return assistantRequest(app,owner,if(usage)"usage" else "day")
+}
+
+internal suspend fun assistantRequest(app: KoiwaiApplication, owner: String, path:String, body:JSONObject?=null): JSONObject {
+    require(path in setOf("day","usage","search","plan","demo"))
     val endpoint = BackendEndpoint.resolve(BuildConfig.BACKEND_URL, BuildConfig.DEBUG)
     if (!endpoint.authenticated) throw IOException("Este painel precisa do servidor HTTPS.")
     val token = app.auth.token(owner) ?: throw IOException("Entre novamente na sua conta.")
     return withContext(Dispatchers.IO) {
         if (app.auth.account.value?.id != owner) throw IOException("A conta mudou. Abra o painel novamente.")
-        val path = if (usage) "usage" else "day"
         val connection = URL(endpoint.url, "/api/v1/assistant/$path").openConnection() as HttpURLConnection
         try {
             connection.instanceFollowRedirects = false
             connection.connectTimeout = 10000
             connection.readTimeout = 90000
             connection.setRequestProperty("Authorization", "Bearer $token")
-            connection.requestMethod = if (usage) "GET" else "POST"
-            if (!usage) {
+            connection.requestMethod = if (path=="usage") "GET" else "POST"
+            if (path!="usage") {
                 connection.doOutput = true
                 connection.setRequestProperty("Content-Type", "application/json; charset=utf-8")
                 connection.outputStream.bufferedWriter(Charsets.UTF_8).use {
-                    it.write(JSONObject().put("timezone", ZoneId.systemDefault().id).toString())
+                    it.write((body ?: JSONObject()).put("timezone", ZoneId.systemDefault().id).toString())
                 }
             }
             if (connection.responseCode != 200) throw IOException(when(connection.responseCode) {

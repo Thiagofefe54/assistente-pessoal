@@ -1,6 +1,7 @@
 """Calendar calculations over recorded facts, never bank balances or inferred events."""
 from calendar import monthrange
 from datetime import date, datetime, timedelta
+from backend.app.core.finance import category, spent
 
 
 def occurrence(anchor, repeat, index):
@@ -32,7 +33,9 @@ def overview(records, payments, today):
     totals={kind:sum(r.get('amount_cents') or 0 for r in active if r['kind']==kind and r.get('happened_on') and start.isoformat()<=r['happened_on']<=today.isoformat()) for kind in ('expense','income')}
     paid={(p['bill_id'],p['occurrence_on']) for p in payments}
     bills=[{'id':r['id'],'title':r['title'],'due':day,'amount_cents':r['amount_cents'],'paid':(r['id'],day) in paid} for r in active if r['kind']=='bill' for day in bill_dates(r,start,end)]
-    budgets=[{'id':r['id'],'title':r['title'],'limit_cents':r['amount_cents'],'spent_cents':totals['expense'],'exceeded':totals['expense']>r['amount_cents']} for r in active if r['kind']=='budget' and r.get('happened_on','')==start.isoformat()]
+    budgets=[{'id':r['id'],'title':r['title'],'category':category(r),'limit_cents':r['amount_cents'],
+              'spent_cents':spent(active,today,category(r)),'exceeded':spent(active,today,category(r))>r['amount_cents']}
+             for r in active if r['kind']=='budget' and r.get('happened_on','')==start.isoformat()]
     monday=today-timedelta(days=today.weekday())
     diary=[{'id':r['id'],'title':r['title'],'day':r['happened_on'],'details':r.get('details',{}),'content':r['content'][:500]} for r in active if r['kind']=='diary' and r.get('happened_on') and monday.isoformat()<=r['happened_on']<=today.isoformat()]
     diary.sort(key=lambda r:(r['day'],r['details'].get('started_at','')))
@@ -49,6 +52,11 @@ def validate_details(kind, details, day=None):
         end=datetime.fromisoformat(details['ended_at']) if details.get('ended_at') else None
         if start and (start.utcoffset() is None or (day and start.date().isoformat()!=day)): raise ValueError('Invalid event date')
         if end and (end.utcoffset() is None or not start or end<start or (end-start).total_seconds()>172800): raise ValueError('Invalid interval')
+    elif kind in ('expense','income','budget'):
+        from backend.app.core.finance import CATEGORIES
+        allowed=set(CATEGORIES) | ({'all'} if kind=='budget' else set())
+        if set(details)-{'finance_category'} or ('finance_category' in details and details['finance_category'] not in allowed):
+            raise ValueError('Invalid finance category')
     elif details: raise ValueError('Unexpected details')
 
 

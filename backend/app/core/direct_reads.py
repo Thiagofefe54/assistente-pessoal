@@ -14,10 +14,37 @@ def money(cents):
 
 def direct_read(semantic, owner, authorization, timezone, now):
     query = semantic.read_query
-    expected = 'diary' if query and query.startswith('diary_') else 'memory' if query == 'memory_all' else 'conversation' if query == 'day_overview' else 'record'
+    expected = 'diary' if query and query.startswith('diary_') else 'memory' if query in ('memory_all','memory_search') else 'conversation' if query == 'day_overview' else 'task' if query=='task_plan' else 'record'
     if not query or semantic.domain != expected or semantic.operation != 'read' or semantic.speech_act not in ('question', 'request'):
         return None
     today = datetime.fromisoformat(now).astimezone(ZoneInfo(timezone)).date()
+    if query in ('memory_search','diary_search'):
+        from datetime import date
+        from backend.app.core.recall import recall
+        filters=semantic.read_filter
+        if filters is None: return None
+        data=recall(owner,authorization,filters.query,today,
+                    date.fromisoformat(filters.start) if filters.start else None,
+                    date.fromisoformat(filters.end) if filters.end else None,query=='diary_search')
+        answer=f"Encontrei estas fontes para você 💜\nPeríodo: {data['start']} a {data['end']}"
+        for r in data['results']:
+            answer+=f"\n\n• {r['area']} · {r['day'] or 'sem data do acontecimento'}\n{r['excerpt']}\nFonte: {r['id']}"
+        if not data['results']: answer+='\nNão encontrei correspondências nos dados consultados. Você pode tentar outra palavra ou período.'
+        if data['partial']: answer+='\nA consulta é parcial; alguns registros podem não aparecer.'
+        answer+='\n'+data['scope']
+        return {'reply':answer,'task_draft':None,'action_receipt':None}
+    if query=='task_plan':
+        from backend.app.core.day_plan import day_plan
+        data=day_plan(owner,authorization,today)
+        answer='Vamos deixar seu dia mais leve? 💜\nHorários já marcados:'
+        for r in data['scheduled']: answer+=f"\n• {r['time']} — {r['title']}"
+        if not data['scheduled']: answer+=' nenhum para hoje.'
+        answer+='\nPrioridades sugeridas:'
+        for r in data['priorities']: answer+=f"\n• {r['title']}{' — pendência de '+r['date'] if r['overdue'] else ''}"
+        if not data['priorities']: answer+=' nenhuma pendência sem horário encontrada.'
+        if data['partial']: answer+='\nLista resumida; confira as demais tarefas na Rotina.'
+        answer+='\n'+data['note']
+        return {'reply':answer,'task_draft':None,'action_receipt':None}
     if query == 'memory_all':
         from backend.app.core.memory import confirmed_facts
         facts = confirmed_facts(owner, authorization)
@@ -33,6 +60,14 @@ def direct_read(semantic, owner, authorization, timezone, now):
         answer += '\nValores informados na Koiwai; não são saldo bancário.'
         return {'reply': answer, 'task_draft': None, 'action_receipt': None}
     records = load_records(owner, authorization)
+    if query=='finance_categories':
+        from backend.app.core.finance import category_totals
+        data=category_totals(records,today)
+        answer='Gastos registrados neste mês, por categoria 💜'
+        for r in data: answer+=f"\n• {r['label']}: {money(r['expense_cents'])}"
+        answer+='\nRegistros antigos sem categoria ficam em Outros. Valores não são saldo bancário.'
+        if len(records)>=2000: answer+='\nConsulta limitada aos 2.000 registros mais recentes.'
+        return {'reply':answer,'task_draft':None,'action_receipt':None}
     if query in ('finance_compare_month', 'finance_compare_week'):
         from backend.app.core.assistant_panel import comparison
         data = comparison(records, today, 'week' if query.endswith('week') else 'month')

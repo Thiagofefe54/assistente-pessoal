@@ -1,3 +1,11 @@
+# Novidades da V1.5
+
+Busca de lembranças por palavras e período, com trechos originais; plano do dia que
+preserva horários e sugere prioridades; receitas/despesas e orçamentos por categoria.
+Configurações inclui um laboratório com 12 exemplos Teste, sem duplicação ao repetir.
+Os botões consultam dados sem gerar IA; consultas no chat podem usar interpretação.
+[Entrega e limites](docs/ENTREGA_ORGANIZACAO_V1_5.md).
+
 # Novidades da V1.4
 
 Meu dia reúne missões com horário, contas próximas, dinheiro registrado e diário.

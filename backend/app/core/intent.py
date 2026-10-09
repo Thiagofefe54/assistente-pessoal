@@ -6,6 +6,25 @@ from pydantic import BaseModel, ConfigDict, Field
 from backend.app.core.ai import generate
 from backend.app.core.schedule import plain
 from backend.app.core.context_budget import recent_history, compact_json
+from datetime import date, datetime, timedelta
+from zoneinfo import ZoneInfo
+from pydantic import model_validator
+
+
+class ReadFilter(BaseModel):
+    model_config = ConfigDict(extra='forbid',strict=True)
+    query: str = Field(max_length=120)
+    start: str | None = None
+    end: str | None = None
+    @model_validator(mode='after')
+    def dates(self):
+        for value in (self.start,self.end):
+            if value is not None:
+                if not re.fullmatch(r'\d{4}-\d{2}-\d{2}',value): raise ValueError('Invalid date')
+                date.fromisoformat(value)
+        if self.start and self.end and (self.start>self.end or (date.fromisoformat(self.end)-date.fromisoformat(self.start)).days>365):
+            raise ValueError('Invalid period')
+        return self
 
 
 class DeviceRequest(BaseModel):
@@ -21,7 +40,8 @@ class Interpretation(BaseModel):
     speech_act: Literal['request', 'report', 'question', 'conversation']
     evidence: str = Field(max_length=8000)
     device: DeviceRequest | None
-    read_query: Literal['unpaid_bills_this_month', 'expenses_this_month', 'income_this_month', 'budget_this_month', 'diary_this_week', 'diary_last_week', 'diary_this_month', 'memory_all', 'finance_compare_month', 'finance_compare_week', 'day_overview'] | None = None
+    read_query: Literal['unpaid_bills_this_month', 'expenses_this_month', 'income_this_month', 'budget_this_month', 'diary_this_week', 'diary_last_week', 'diary_this_month', 'memory_all', 'finance_compare_month', 'finance_compare_week', 'day_overview','memory_search','diary_search','task_plan','finance_categories'] | None = None
+    read_filter: ReadFilter | None = None
 
     @property
     def tool_operation(self):
@@ -60,10 +80,12 @@ def actionable_fragment(message):
 SCHEMA = Interpretation.model_json_schema()
 # Provider strict schemas require all nullable fields to be present.
 SCHEMA['required'] = list(SCHEMA['properties'])
+for nested in SCHEMA.get('$defs',{}).values():
+    if 'properties' in nested: nested['required']=list(nested['properties'])
 FORMAT = {'type': 'json_schema', 'json_schema': {'name': 'koi_intent', 'strict': True, 'schema': SCHEMA}}
 
 
-def interpret(message, history, capture=False):
+def interpret(message, history, capture=False, timezone='America/Sao_Paulo', now=None):
     instructions = '''Escolha a ferramenta para o pedido atual de uma assistente pessoal.
 Responda apenas JSON no schema. Compreenda o sentido, não exija palavras-chave.
 Koi/Coi/Koiwai/Coiwai são nomes da assistente, inclusive erros de ditado.
@@ -109,7 +131,21 @@ day_overview para resumo do meu dia, tarefas de hoje, contas próximas e diário
 (domain conversation, operation read). Use null em alterações, filtros específicos,
 outros períodos, hipóteses, relatos ou dúvidas sobre como fazer.
 read_query exige operation read e speech_act question/request. Não combine consultas.
+memory_search (domain memory) procura assuntos nas lembranças, notas, diário e
+mensagens originais; diary_search (domain diary) limita aos acontecimentos do Diário.
+Use read_filter com query curta (até 8 palavras-chave, não a pergunta completa),
+start/end AAAA-MM-DD resolvidos pelo relógio fornecido. Ontem é só ontem; semana
+passada é segunda a domingo anterior. Sem período, start/end null: últimos 90 dias.
+Lembranças confirmadas não têm data do acontecimento. Se assunto estiver em contexto
+recente, use esse assunto para resolver 'aquilo que contei'. Não invente palavras.
+task_plan (domain task) sugere prioridades do dia sem alterar tarefas; finance_categories
+(domain record) lista gastos do mês por categoria. read_filter null nos demais casos.
+Registros identificados como Teste ou fictícios são exemplos; não os trate como fatos
+reais da vida da pessoa. O histórico ajuda a localizar a referência, nunca autoriza ação.
 '''
+    clock=(datetime.fromisoformat(now) if now else datetime.now(ZoneInfo(timezone))).astimezone(ZoneInfo(timezone))
+    monday=clock.date()-timedelta(days=clock.weekday())
+    instructions+=f'\nRelógio confiável da aplicação: {clock.isoformat()}, fuso {timezone}; segunda desta semana {monday.isoformat()}.\n'
     instructions += ('\nCAPTURA DE RELATOS ATIVADA: relato pessoal claro de acontecimento passado/presente '
                      'usa diary/create/report; preferência duradoura usa memory/create/report; '
                      'gasto ou recebimento já ocorrido usa record/create/report. '

@@ -54,6 +54,11 @@ def task_context(owner: UUID, authorization: str, timezone: str, message: str, r
         today = now.date()
     except (ValueError, ZoneInfoNotFoundError):
         raise HTTPException(422, 'Escolha um fuso horário válido.') from None
+    rows = load_task_rows(owner, authorization)
+    return context_from_rows(rows, timezone, message, now, today)
+
+
+def load_task_rows(owner, authorization):
     rows = []
     for offset in range(0, 500, 100):
         page = cloud('koi_tasks?' + urlencode({'user_id': 'eq.' + str(owner),
@@ -67,6 +72,10 @@ def task_context(owner: UUID, authorization: str, timezone: str, message: str, r
         rows.extend(page)
         if len(page) < 100:
             break
+    return rows
+
+
+def context_from_rows(rows, timezone, message, now, today):
     # Keep inference bounded. The model sees explicit completeness/counts, never
     # assumes an omitted task is absent. Focus the snapshot on the requested day.
     lowered=message.lower()
