@@ -60,5 +60,7 @@ C1393157E8C790DCAADD54F44C1226498471ED399E841759D1F5A2BD73D86009.
 Gradle encerrado para liberar RAM. Nenhuma geração paga/reset.
 
 Lint final:0erros102avisos. Painel V1.8 recarregado no Brave com novos cartões
-e checklist. Consulta visual manual solicitada ao usuário; resposta pendente.
+e checklist. Usuário confirmou consulta visual: “Sim, apareceu corretamente” para roteiro
+e janelas após consultar agenda e cruzar tarefas. Não confirma todos os casos
+de pergunta/duração/conflito nem estabilidade prolongada.
 Servidor permanece V1.7; pacote não requer deploy backend.

@@ -3,7 +3,7 @@
 Agenda e tarefas no mesmo roteiro, possíveis conflitos, janelas sem compromisso
 registrado e projeções de repetições. Consulta local de hoje/amanhã por pergunta
 ou seleção de dia e período; eventos iguais agrupados sem apagar origens.
-Sem consumo de IA. **Instalada no Poco; 46 testes unitários e leitura real de agenda/tarefas aprovados. Conferência visual do painel pendente.**
+Sem consumo de IA. **Instalada no Poco; 46 testes unitários e leitura real de agenda/tarefas aprovados. Usuário confirmou roteiro e janelas corretos no painel.**
 [Entrega e limites](docs/ENTREGA_PLANEJAMENTO_V1_8.md).
 
 # Novidades da V1.7 — expansão funcional

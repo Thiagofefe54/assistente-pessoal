@@ -15,8 +15,9 @@ aprovado app+testes,1.8/code10. CalendarPlanningLiveDeviceTest1PASS1,055s.
 APKbuild/releases/Koiwai-1.8.apk SHA256
 C1393157E8C790DCAADD54F44C1226498471ED399E841759D1F5A2BD73D86009.
 Gradle parado; lint0erros102avisos. Dashboard V1.8 recarregado no Brave.
-Consulta visual manual solicitada ao usuário, pendente. Servidor segueV1.7
-sem necessidade de deploy. Sem teste visual completo do painel ainda.
+Usuário confirmou roteiro e janelas corretos após consultar agenda/cruzar tarefas.
+Casos visuais de perguntas/duração/conflitos e estabilidade prolongada não completos.
+Servidor segueV1.7 sem necessidade de deploy.
 Teste físico opt-in CalendarPlanningLiveDeviceTest, calendar-read-test=true:
 leitura da agenda permitida + tarefas da conta; sem fixtures/títulos privados/IA.
 Não declarar hábitos com horário, GoogleOAuth, bancos, Chat com agenda, teste de
