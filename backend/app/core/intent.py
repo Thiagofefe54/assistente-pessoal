@@ -21,7 +21,7 @@ class Interpretation(BaseModel):
     speech_act: Literal['request', 'report', 'question', 'conversation']
     evidence: str = Field(max_length=8000)
     device: DeviceRequest | None
-    read_query: Literal['unpaid_bills_this_month', 'expenses_this_month', 'income_this_month', 'budget_this_month', 'diary_this_week'] | None = None
+    read_query: Literal['unpaid_bills_this_month', 'expenses_this_month', 'income_this_month', 'budget_this_month', 'diary_this_week', 'diary_last_week', 'diary_this_month', 'memory_all', 'finance_compare_month', 'finance_compare_week', 'day_overview'] | None = None
 
     @property
     def tool_operation(self):
@@ -100,11 +100,15 @@ read_query permite consulta direta sem uma segunda IA. Use somente para pergunta
 simples de leitura, sem alterações nem filtros extras: unpaid_bills_this_month
 para contas pendentes do mês atual (consulta genérica de contas assume esse mês);
 expenses_this_month/income_this_month para total gasto/recebido neste mês;
-budget_this_month para limites mensais e consumo; diary_this_week para listar
-acontecimentos da semana atual. Use null em pedidos compostos, outros períodos,
-comparações, categorias, conta específica, hipóteses, relatos ou dúvidas sobre como
-fazer. read_query exige operation read, speech_act question/request, domain record
-(diary_this_week exige diary). Todos os outros casos usam null.
+budget_this_month para limites mensais e consumo; diary_this_week, diary_last_week,
+diary_this_month para listar acontecimentos desses períodos (domain diary).
+memory_all para listar lembranças confirmadas sem filtro (domain memory).
+finance_compare_month/finance_compare_week comparam gastos e receitas registrados
+do período atual até hoje com o mesmo trecho do período anterior (domain record).
+day_overview para resumo do meu dia, tarefas de hoje, contas próximas e diário
+(domain conversation, operation read). Use null em alterações, filtros específicos,
+outros períodos, hipóteses, relatos ou dúvidas sobre como fazer.
+read_query exige operation read e speech_act question/request. Não combine consultas.
 '''
     instructions += ('\nCAPTURA DE RELATOS ATIVADA: relato pessoal claro de acontecimento passado/presente '
                      'usa diary/create/report; preferência duradoura usa memory/create/report; '

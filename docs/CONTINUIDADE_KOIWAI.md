@@ -1,5 +1,19 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint atual: Meu dia V1.4 — 08/10/2026
+
+Ler ENTREGA_MEUDIA_V1_4_2026_10_08.md. Pacote implementado: cartões de resumo
+do dia/finanças/diário na Home; saldo do Poe em Config.; leituras naturais ampliadas
+para lembranças, diário anterior e comparação de períodos. Cartões sem geração IA;
+chat usa interpretação antes de ler, salvo lembrete explícito já resolvido sem IA.
+137 testes backend, testes unitários Android, assembleDebug e lintDebug passaram.
+Publicação, instalação e conferência física em andamento; atualizar este checkpoint
+com evidência final. Sem reset ou mudanças de banco/segredos/plano.
+Usuário confirmou que os cinco testes anteriores de conversa, criação, consulta,
+conclusão e finanças passaram. Essas são evidências do usuário, não teste automático.
+Poe é o provedor ativo, plano já contratado R$24,90; Render/Supabase continuam grátis.
+Cabeçalhos antigos abaixo preservam história e NÃO descrevem o estado atual.
+
 ## Checkpoint: falha no lembrete Poe — 08/10/2026
 
 Ler CORRECAO_LEMBRETE_POE_2026_10_08.md. Celular conectado; tela mostrou pedido

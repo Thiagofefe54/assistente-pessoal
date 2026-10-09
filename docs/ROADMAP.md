@@ -2,13 +2,14 @@
 
 ## Direção atual — revisão de 08/10/2026
 
-Leia [revisão funcional](REVISAO_FUNCIONAL_2026_10_08.md) e o checkpoint atual
-de continuidade antes do planejamento histórico abaixo. V1.0 instalada; V1.1
-preparada sem celular. Próximos pacotes: diário/rotina estruturados, finanças e
-contas, acompanhamento opt-in, voz/assistente, então redesign e Windows.
+Leia o checkpoint de continuidade e a [entrega V1.4](ENTREGA_MEUDIA_V1_4_2026_10_08.md)
+antes do planejamento histórico abaixo. V1.3 instalada; V1.4 implementada com
+Meu dia, saldo Poe e leituras ampliadas. Diário, contas, orçamento e acompanhamento
+opt-in já existem. Próximos pacotes: busca mais ampla, categorias/importação,
+Google autorizado, voz/assistente, então redesign e Windows.
 O layout atual foi considerado desorganizado pelo usuário; revisão visual adiada.
-Nenhum plano pago contratado. Render paid só após decisão específica; manter R$0
-durante desenvolvimento é possível. Não tomar hipóteses de orçamento como assinatura.
+Poe pago contratado pelo usuário: R$24,90/mês, 10.000 pontos/dia compartilhados.
+Render e Supabase gratuitos. Nenhuma compra adicional autorizada nesta entrega.
 
 Documento de evolução, atualizado em 08/10/2026. Sem datas de entrega prometidas.
 Numeração atual definida pelo usuário: **V1.0** para o pacote móvel amplo,

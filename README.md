@@ -1,4 +1,11 @@
-# Novidades da V1.3
+# Novidades da V1.4
+
+Meu dia reúne missões com horário, contas próximas, dinheiro registrado e diário.
+Configurações mostram o saldo do Poe; consultas naturais recuperam lembranças,
+diário anterior e comparam períodos. Cartões sem geração de IA; chat interpreta
+antes da consulta. [Entrega, testes e limites](docs/ENTREGA_MEUDIA_V1_4_2026_10_08.md).
+
+## Entrega anterior: V1.3
 
 Contas recorrentes, registro de pagamento com despesa e desfazer, orçamento mensal,
 diário por dia/categoria, cálculo de sono informado e balanço semanal. Acompanhamento

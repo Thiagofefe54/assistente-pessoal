@@ -171,6 +171,7 @@ private fun HomeScreen(onChat: () -> Unit, onRoutine: () -> Unit, onAccount: () 
                 else "${tasks.count {it.completedAt==null && it.archivedAt==null}} pendentes • ${tasks.count {it.overdue()}} vencidas",color=KoiColors.Muted,fontSize=13.sp)
         }
         KoiAction("✦  Conversar comigo",onChat,Modifier.fillMaxWidth())
+        DayOverviewPanel(onRoutine)
         WeatherPanel(compact=true)
         Spacer(Modifier.height(4.dp))
     }
@@ -397,6 +398,7 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
         item {com.thiago.assistentepessoal.routine.ReminderSettings()}
         item {com.thiago.assistentepessoal.routine.LifeReminderSettings()}
         item {ReportSettings()}
+        item {PoeUsagePanel()}
         item {
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple) {
                 Eyebrow("VOZ DA KOI",KoiColors.Purple)
