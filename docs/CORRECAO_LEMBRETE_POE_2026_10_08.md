@@ -25,5 +25,6 @@ Correção:
 09/10/2026 às 19:00, zero chamadas IA e uma gravação autorizada simulada;
 negações/hipóteses/citações/compostos, fuso/virada do ano e JSON cercado validado.
 Zero chamadas pagas feitas durante esta correção. Nenhum dado do usuário apagado.
-Publicação e verificação física: consultar continuidade. Não reenviar
+Publicado commit 77cf61f, Render dep-db4473rbc2fs73ai86pg LIVE, saúde 200/provider
+poe. Verificação física solicitada ao usuário, ainda pendente. Não reenviar
 automaticamente o pedido do usuário. Teste no celular após publicação pendente.

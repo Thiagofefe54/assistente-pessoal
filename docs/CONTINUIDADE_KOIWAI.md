@@ -8,7 +8,10 @@ Poe cobrou quatro chamadas naquele minuto (49 pontos), sem dados para atribuir
 campo de schema que falhou. Correção sem chamadas pagas: lembrete explícito
 hoje/amanhã/horário resolve localmente, zero IA, preservando RPC/recibo/owner;
 regras+schema em system único, JSON fence completo validado, diagnóstico seguro.
-124 testes simulados passaram. Publicação em preparação; teste físico pendente.
+124 testes simulados passaram. Commit 77cf61f publicado; Render
+dep-db4473rbc2fs73ai86pg LIVE em 08/10/2026 22:30:42 (São Paulo).
+Saúde HTTP 200/provider poe após publicação. Pedi ao usuário tocar uma vez em
+Tentar novamente no lembrete exato, agora sem IA; confirmação física pendente.
 Não reenviar pedido automaticamente nem prometer estorno do Poe.
 
 ## Checkpoint anterior: integração Poe — 08/10/2026
