@@ -44,7 +44,7 @@ private fun OrganizationPanel(title:String,subtitle:String,path:String,request:(
         error?.let{Text(it,color=KoiColors.Red,fontSize=12.sp)}
         data?.let{value->
             TextButton(onClick={expanded=!expanded}){Text(if(expanded)"Recolher ↑" else "Ver resultado ↓")}
-            AnimatedVisibility(expanded){Column(verticalArrangement=Arrangement.spacedBy(8.dp)){content(value)}}
+            AnimatedVisibility(expanded){Column(verticalArrangement=Arrangement.spacedBy(8.dp)){AssistantCacheNotice(value);content(value)}}
         }
     }
 }

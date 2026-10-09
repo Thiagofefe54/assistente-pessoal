@@ -117,7 +117,7 @@ class LifeReminderWorker(context:Context,params:WorkerParameters):CoroutineWorke
         val app=applicationContext as KoiwaiApplication;val owner=inputData.getString("owner") ?: return Result.failure()
         if(!app.lifeReminders.shouldCheck(owner))return Result.success()
         return try{
-            val data=assistantRequest(app,owner,"review")
+            val data=assistantRequest(app,owner,"review",allowCached=false)
             app.lifeReminders.deliver(owner,data);Result.success()
         }catch(e:CancellationException){throw e}catch(_:Exception){
             if(app.auth.account.value?.id==owner)app.lifeReminders.status("Não consegui atualizar o acompanhamento. Vou conferir novamente com conexão.")

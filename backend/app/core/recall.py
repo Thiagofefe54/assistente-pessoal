@@ -6,6 +6,7 @@ from fastapi import HTTPException
 from backend.app.core.journal import cloud
 from backend.app.core.personal import load_records
 from backend.app.core.schedule import plain
+from difflib import SequenceMatcher
 
 
 def recall(owner, authorization, query, today, start=None, end=None, diary_only=False):
@@ -16,8 +17,7 @@ def recall(owner, authorization, query, today, start=None, end=None, diary_only=
     terms = re.findall(r'\w+', plain(query))
     if len(terms)>8: raise HTTPException(422,'Busque com até oito palavras por vez.')
     def matches(text):
-        text = plain(text)
-        return all(term in text for term in terms)
+        return matches_terms(text,terms)
     found=[]
     records=load_records(owner,authorization)
     for r in records:
@@ -57,7 +57,7 @@ def recall(owner, authorization, query, today, start=None, end=None, diary_only=
     return {'query':query,'start':start.isoformat(),'end':end.isoformat(),'results':found[:12],
             'matches_in_scanned_data':len(found),'scanned_records':len(records),'scanned_messages':len(chats),
             'partial':len(found)>12 or len(records)>=2000 or len(chats)>=300,
-            'scope':'Busca por palavras, com até 12 fontes. Conversas: 300 mensagens recentes do período; registros: até 2.000. Lembranças confirmadas não têm data do acontecimento.'}
+            'scope':'Busca por palavras, variações próximas e sinônimos limitados, com até 12 fontes. Conversas: 300 mensagens recentes do período; registros: até 2.000. Lembranças confirmadas não têm data do acontecimento.'}
 
 
 def excerpt(text, terms):
@@ -67,3 +67,25 @@ def excerpt(text, terms):
     if len(plain(text))!=len(text): offset=0
     start=max(0,offset-60)
     return ('…' if start else '')+text[start:start+360]+('…' if len(text)>start+360 else '')
+
+
+# Retrieval only: these aliases never authorize a write or create a remembered fact.
+TOPICS = (
+    ('academia','treino','treinar','musculacao'),
+    ('estudo','estudar','estudos','escola','aula'),
+    ('trabalho','trabalhar','trabalhei','emprego'),
+    ('sono','dormi','dormir','acordei'),
+    ('dinheiro','financas','financeiro'),
+)
+
+def matches_terms(text,terms):
+    normalized=plain(text);words=re.findall(r'\w+',normalized)
+    def match(term):
+        if term in normalized:return True
+        aliases=next((group for group in TOPICS if term in group),())
+        if any(alias in normalized for alias in aliases):return True
+        # Never fuzzy-match amounts, dates, short words or identifiers.
+        return len(term)>=5 and term.isalpha() and any(
+            word.isalpha() and len(word)>=5 and abs(len(term)-len(word))<=1
+            and SequenceMatcher(None,term,word).ratio()>=.88 for word in words)
+    return all(match(term) for term in terms)

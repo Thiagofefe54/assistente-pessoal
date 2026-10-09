@@ -48,7 +48,7 @@ fun KoiwaiTheme(content: @Composable () -> Unit) {
 }
 
 @Composable
-fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:String?=null) {
+fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:String?=null,assistRequest:Int=0) {
     var selected by rememberSaveable { mutableStateOf("home") }
     var accountReturn by rememberSaveable { mutableStateOf("settings") }
     var day by rememberSaveable { mutableStateOf<String?>(null) }
@@ -58,6 +58,7 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:St
     val account by app.auth.account.collectAsState()
     val motion = LocalKoiMotion.current
     LaunchedEffect(account?.id) { day=null }
+    LaunchedEffect(assistRequest){if(assistRequest>0){selected="chat";day=null;category=null}}
     LaunchedEffect(taskRequest) { if(taskRequest>0) {selected="routine";category="Tarefas";day=null} }
     LaunchedEffect(lifeRequest){lifeRequest?.split('|')?.firstOrNull()?.takeIf{it in listOf("Contas","Orçamento","Diário","Meu ritmo")}?.let{selected="routine";category=it;day=null}}
     LaunchedEffect(reportRequest) {reportRequest?.split('|')?.let { parts ->
@@ -282,8 +283,8 @@ private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit, 
 
 private data class RoutineArea(val name:String,val icon:String,val subtitle:String,val accent:Color)
 private val areas=listOf(
-    RoutineArea("Meu ritmo","memory","Hábitos, momentos e carinho.",KoiColors.Purple),
     RoutineArea("Tarefas","tasks","Um passo de cada vez.",KoiColors.Red),
+    RoutineArea("Meu ritmo","memory","Hábitos, momentos e carinho.",KoiColors.Purple),
     RoutineArea("Agenda","agenda","Tempo para o que importa.",KoiColors.Blue),
     RoutineArea("Notas","notes","Dê espaço às suas ideias.",KoiColors.Purple),
     RoutineArea("Treinos","training","Sua evolução em movimento.",KoiColors.Purple),
@@ -373,6 +374,8 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
                 }
             }
         }
+        item {com.thiago.assistentepessoal.tools.AssistantRolePanel()}
+        item {com.thiago.assistentepessoal.tools.VoiceCustomizationPanel(voice)}
         item {
             PoeUsagePanel()
         }

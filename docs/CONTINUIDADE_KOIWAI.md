@@ -1,5 +1,27 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint V1.7 Expansão — preparada, 09/10/2026
+
+Ler ENTREGA_EXPANSAO_V1_7.md. Usuário pediu todas as frentes exceto visual/Windows.
+Implementado contexto lexical de até3trechos/40registros ativos recentes na conversa,
+busca com sinônimos limitados/pequenas variações, snapshots privados no-backup
+Meu dia/Meu ritmo/Plano/Busca com aviso de data/limite7dias/20consultas por conta.
+Nenhuma escrita/saldo/aviso usa cache; 401/404/409/422 não são mascarados.
+Voz: escolha instalada+tom/velocidade, reconhecimento localAndroid12+se disponível.
+ACTION_ASSIST→Chat e botão oficial de escolha padrão; não é hotword/escuta contínua.
+Agenda local sincronizada: READ_CALENDAR manual, até20eventos/7dias, sem enviar àIA.
+Relatórios auto: limite de pedidos por celular/conta/dia padrão3/opções1/3/5;
+pedidos falhos contam, manualseparado, pode gastar pontos. Não é quota globalPoe.
+169backend +37unitáriosAndroid passaram; buildslint0erros102avisos; daemonparado.
+APK1.7/code9 build/releases/Koiwai-1.7.apk SHA256
+6D0843D81E474BD51BD5718263E12B1ED9E53AF7D8605C5060B2E1D83C418C25.
+Nenhuma chamada paga/reset/migração/novo segredo/plano. Ainda não publicado/instalado.
+Usuário desconectou celular, depois confirmou reconectado para instalar quandopronto.
+Tests físicos preparados ExpansionDeviceTest: cacheisolamento/read-only,assistmanifest.
+Gmail/Tasks/DriveOAuth e Inter/nextJoy não conectados. Interdocs públicasPJ;
+sem APIgratuitaPF confirmada. Nunca declarar bancos/Googlecompleto funcionando.
+Faltam testes físicos de voz/agenda/padrão/snapshots e estabilidade prolongada.
+
 ## Checkpoint V1.6 Meu ritmo — publicado e instalado, 09/10/2026
 
 Ler ENTREGA_COMPANHEIRA_V1_6.md. Check-ins início/fim, revisão do dia, hábitos

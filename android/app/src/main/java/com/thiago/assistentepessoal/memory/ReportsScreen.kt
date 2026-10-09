@@ -104,8 +104,11 @@ import java.time.LocalDate
     var notify by remember {mutableStateOf(app.reports.prefs.getBoolean("notify",true))}
     KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple) {
         Text("Sua história, reunida pela Koi",style=MaterialTheme.typography.titleMedium)
+        var limit by remember{mutableIntStateOf(app.reports.prefs.getInt("auto-limit",3))}
+        Text("Limite de pedidos automáticos por dia: $limit (pode consumir pontos de IA). Preparo manual é separado.")
+        Row {listOf(1,3,5).forEach{n->TextButton(onClick={limit=n;app.reports.prefs.edit().putInt("auto-limit",n).apply()}){Text("$n/dia")}}}
         Row {Text("Preparar relatórios automaticamente",Modifier.weight(1f));Switch(enabled=account!=null,checked=enabled,onCheckedChange={enabled=it;app.reports.setAutomatic(it)})}
-        Text("Ao ativar, a Koi envia capítulos sincronizados à IA para preparar dia, semana, mês, semestre e ano encerrados. Trabalha aos poucos, com internet e quando o Android permitir. Sem custo contratado.",color=KoiColors.Muted)
+        Text("Ao ativar, a Koi envia capítulos sincronizados à IA para preparar dia, semana, mês, semestre e ano encerrados. Trabalha aos poucos, com internet e quando o Android permitir. Não contrata outro serviço; usa os pontos da IA já configurada.",color=KoiColors.Muted)
         Row {Text("Avisar quando estiverem prontos",Modifier.weight(1f));Switch(checked=notify,onCheckedChange={notify=it;app.reports.prefs.edit().putBoolean("notify",it).apply()})}
         if(notify && !app.reminders.allowed()) Text("Permita notificações no cartão de lembretes para receber os avisos.",color=KoiColors.Blue)
         Text("Respeita o descanso configurado. O celular desligado ou sem rede adia o preparo; não depende do seu PC. Para ler, abra Memória → Relatórios.",color=KoiColors.Muted)

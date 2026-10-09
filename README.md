@@ -1,3 +1,11 @@
+# Novidades da V1.7 — expansão funcional
+
+Contexto de registros recentes na conversa, busca flexível com fontes, cópias de
+consultas para falhas de conexão, limite diário de preparo automático, ajustes das
+vozes instaladas, integração ao gesto de assistente e consulta da agenda sincronizada
+no Android. **Preparada, instalação e validação física pendentes.** Gmail/Tasks/Drive
+OAuth e bancos ainda não conectados. [Entrega e dependências](docs/ENTREGA_EXPANSAO_V1_7.md).
+
 # Novidades da V1.6 — Meu ritmo com a Koi
 
 Check-ins com início e fim, revisão do dia, constância dos hábitos e sugestões

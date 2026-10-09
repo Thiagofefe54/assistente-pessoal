@@ -20,6 +20,14 @@ class PeriodReports(private val context:Context) {
     val prefs=context.getSharedPreferences("koiwai-reports",Context.MODE_PRIVATE)
     private val work=WorkManager.getInstance(context)
     companion object {const val TAG="koi-reports";const val AUTO_TAG="koi-reports-auto";const val CHANNEL="koi-reports-ready"}
+    @Synchronized fun claimAutomaticRequest(owner:String):Boolean {
+        if(prefs.getString("owner",null)!=owner || !automatic())return false
+        val day=LocalDate.now().toString()
+        val key="auto-budget:$owner:$day"
+        val used=prefs.getInt(key,0);val limit=prefs.getInt("auto-limit",3).coerceIn(1,10)
+        if(used>=limit)return false
+        return prefs.edit().putInt(key,used+1).commit()
+    }
     fun automatic()=prefs.getBoolean("automatic",false)
     fun key(owner:String,kind:String,anchor:String)="report:$owner:$kind:${reportStart(kind,anchor)}"
     fun status(owner:String,kind:String,anchor:String)=prefs.getString(key(owner,kind,anchor),null)
@@ -129,6 +137,10 @@ class ReportPrepareWorker(context:Context,params:WorkerParameters):CoroutineWork
             repeat(3) {
                 currentCoroutineContext().ensureActive()
                 if(app.auth.account.value?.id!=owner || (automatic && !app.reports.automatic())) return Result.success()
+                if(automatic && !app.reports.claimAutomaticRequest(owner)){
+                    app.reports.state(owner,kind,anchor,"Limite diário de pedidos automáticos atingido. Capítulos salvos permanecem; confira o limite em Configurações.")
+                    return Result.success()
+                }
                 val value=if(kind=="day") api.request("/api/v1/journal/summary","POST",JSONObject().put("local_date",anchor)).put("ready",true)
                     else api.request("/api/v1/reports/prepare","POST",JSONObject().put("kind",kind).put("anchor",anchor).put("timezone",ZoneId.systemDefault().id))
                 currentCoroutineContext().ensureActive()

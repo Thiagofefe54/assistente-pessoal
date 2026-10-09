@@ -57,6 +57,7 @@ fun DeviceAccessPanel(){
 @Composable
 fun ConnectionsPanel(){
     val context=LocalContext.current
+    CalendarConnectionPanel()
     KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue){
         Eyebrow("CONEXÕES",KoiColors.Blue)
         Text("Seu mundo com a Koi",fontSize=22.sp)
@@ -64,6 +65,6 @@ fun ConnectionsPanel(){
         listOf("Google Agenda" to "https://calendar.google.com/", "Google Tasks" to "https://tasks.google.com/", "Gmail" to "https://mail.google.com/", "Google Drive" to "https://drive.google.com/", "ChatGPT" to "https://chatgpt.com/").forEach{(name,url)->
             TextButton(onClick={openIntent(context,Intent(Intent.ACTION_VIEW,Uri.parse(url)))}){Text("Abrir $name")}
         }
-        Text("Conexão Google com autorização, modelo OpenAI e Open Finance: próximos módulos. O Plus não inclui créditos de API. Integração bancária começará por consulta; pagamentos não estão disponíveis.",fontSize=12.sp,color=KoiColors.Muted)
+        Text("Agenda sincronizada já pode ser consultada acima; Tasks, Gmail e Drive precisam de OAuth próprio do projeto. Open Finance ainda não está conectado. O Plus não inclui créditos de API. Integração bancária começará por consulta; pagamentos não estão disponíveis.",fontSize=12.sp,color=KoiColors.Muted)
     }
 }

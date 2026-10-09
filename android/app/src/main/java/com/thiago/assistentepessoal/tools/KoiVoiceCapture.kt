@@ -24,7 +24,11 @@ fun KoiVoiceCapture(onText:(String)->Unit,onClose:()->Unit){
     var status by remember{mutableStateOf("Pode falar, estou ouvindo 💜")}
     var listening by remember{mutableStateOf(false)}
     var attempt by remember{mutableIntStateOf(0)}
-    val recognizer=remember{if(SpeechRecognizer.isRecognitionAvailable(context))SpeechRecognizer.createSpeechRecognizer(context) else null}
+    val local=remember{android.os.Build.VERSION.SDK_INT>=31 && SpeechRecognizer.isOnDeviceRecognitionAvailable(context)}
+    val recognizer=remember{runCatching{
+        if(android.os.Build.VERSION.SDK_INT>=31 && local)SpeechRecognizer.createOnDeviceSpeechRecognizer(context)
+        else if(SpeechRecognizer.isRecognitionAvailable(context))SpeechRecognizer.createSpeechRecognizer(context) else null
+    }.getOrNull()}
     DisposableEffect(recognizer,lifecycleOwner){
         val observer=androidx.lifecycle.LifecycleEventObserver{_,event ->
             if(event==androidx.lifecycle.Lifecycle.Event.ON_STOP){recognizer?.cancel();currentClose()}
@@ -54,7 +58,7 @@ fun KoiVoiceCapture(onText:(String)->Unit,onClose:()->Unit){
         if(recognizer==null){status="Não encontrei um serviço de voz no celular.";return@LaunchedEffect}
         try{listening=true;recognizer.startListening(Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH)
             .putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM)
-            .putExtra(RecognizerIntent.EXTRA_LANGUAGE,"pt-BR").putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS,true))}
+            .putExtra(RecognizerIntent.EXTRA_PREFER_OFFLINE,true).putExtra(RecognizerIntent.EXTRA_LANGUAGE,"pt-BR").putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS,true))}
         catch(e:SecurityException){listening=false;status="Permita o microfone para falar com a Koi."}
         catch(e:RuntimeException){listening=false;status="Não consegui iniciar a voz agora. Tente novamente."}
     }
@@ -62,6 +66,7 @@ fun KoiVoiceCapture(onText:(String)->Unit,onClose:()->Unit){
         Text(status,color=KoiColors.Blue)
         if(listening)LinearProgressIndicator(Modifier.fillMaxWidth())
         if(preview.isNotBlank())Text(preview)
+        Text(if(local)"Transcrição local disponível neste Android." else "Serviço de voz do Android; pode usar rede. Preferência offline é solicitada.",style=MaterialTheme.typography.bodySmall)
         Text("Sua fala vai para o campo de mensagem. Revise antes de enviar. A transcrição usa o serviço de voz do Android.",style=MaterialTheme.typography.bodySmall)
     }},confirmButton={TextButton(onClick={if(listening)recognizer?.stopListening() else {preview="";status="Pode falar 💜";attempt++}},enabled=recognizer!=null){Text(if(listening)"Terminar fala" else "Tentar novamente")}},dismissButton={TextButton(onClick=onClose){Text("Fechar")}})
 }

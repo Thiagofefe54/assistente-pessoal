@@ -10,6 +10,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.compose.setContent
 
 class MainActivity : ComponentActivity() {
+    private val assistRequest = mutableIntStateOf(0)
     private val taskRequest = mutableIntStateOf(0)
     private val reportRequest=mutableStateOf<String?>(null)
     private var reportCounter=0
@@ -29,15 +30,17 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         if(intent.getBooleanExtra("openTasks",false)) taskRequest.intValue++
+        if(intent.action==Intent.ACTION_ASSIST)assistRequest.intValue++
         reportIntent(intent)
         lifeIntent(intent)
         enableEdgeToEdge(statusBarStyle=SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), navigationBarStyle=SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
-        setContent { KoiwaiTheme { MotionEnvironment { KoiwaiNavigation(taskRequest.intValue,reportRequest.value,lifeRequest.value) } } }
+        setContent { KoiwaiTheme { MotionEnvironment { KoiwaiNavigation(taskRequest.intValue,reportRequest.value,lifeRequest.value,assistRequest.intValue) } } }
     }
     override fun onNewIntent(intent:Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
         if(intent.getBooleanExtra("openTasks",false)) taskRequest.intValue++
+        if(intent.action==Intent.ACTION_ASSIST)assistRequest.intValue++
         reportIntent(intent)
         lifeIntent(intent)
     }

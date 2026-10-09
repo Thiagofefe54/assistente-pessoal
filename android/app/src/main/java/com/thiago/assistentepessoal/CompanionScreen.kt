@@ -69,7 +69,7 @@ fun CompanionScreen(onBack:()->Unit,onArea:(String)->Unit){
         }
     }
     LaunchedEffect(owner){load()}
-    val canAct=!busy && pending==null
+    val canAct=!busy && pending==null && review?.optBoolean("_offline")!=true
     LazyColumn(Modifier.fillMaxSize().imePadding(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(14.dp)){
         item{
             TextButton(onClick=onBack){Text("← Voltar")}
@@ -78,6 +78,7 @@ fun CompanionScreen(onBack:()->Unit,onArea:(String)->Unit){
             Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
                 listOf("day" to "Meu dia","habits" to "Hábitos","checkins" to "Check-ins").forEach{(id,label)->FilterChip(selected=tab==id,onClick={tab=id},label={Text(label)})}
             }
+            review?.let{AssistantCacheNotice(it)}
             TextButton(onClick={load()},enabled=!busy){Text("Atualizar acompanhamento")}
             if(busy)LinearProgressIndicator(Modifier.fillMaxWidth())
             info?.let{Text(it,color=KoiColors.Blue,fontSize=13.sp)}

@@ -21,17 +21,20 @@ import java.time.ZoneId
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
-/** Authenticated account-scoped reads. No key, generation, persistence or redirects. */
+/** Authenticated account-scoped reads. No key, generation or redirects; read snapshots stay in private no-backup storage. */
 internal suspend fun readAssistant(app: KoiwaiApplication, owner: String, usage: Boolean): JSONObject {
     return assistantRequest(app,owner,if(usage)"usage" else "day")
 }
 
-internal suspend fun assistantRequest(app: KoiwaiApplication, owner: String, path:String, body:JSONObject?=null): JSONObject {
+internal suspend fun assistantRequest(app: KoiwaiApplication, owner: String, path:String, body:JSONObject?=null, allowCached:Boolean=true): JSONObject {
     require(path in setOf("day","usage","search","plan","demo","review","checkin","task-action","undo"))
     val endpoint = BackendEndpoint.resolve(BuildConfig.BACKEND_URL, BuildConfig.DEBUG)
     if (!endpoint.authenticated) throw IOException("Este painel precisa do servidor HTTPS.")
     val token = app.auth.token(owner) ?: throw IOException("Entre novamente na sua conta.")
+    val payload=(body ?: JSONObject()).apply{if(!has("timezone"))put("timezone",ZoneId.systemDefault().id)}
     return withContext(Dispatchers.IO) {
+        val cache=AssistantReadCache(app,owner)
+        try {
         if (app.auth.account.value?.id != owner) throw IOException("A conta mudou. Abra o painel novamente.")
         val connection = URL(endpoint.url, "/api/v1/assistant/$path").openConnection() as HttpURLConnection
         try {
@@ -44,10 +47,10 @@ internal suspend fun assistantRequest(app: KoiwaiApplication, owner: String, pat
                 connection.doOutput = true
                 connection.setRequestProperty("Content-Type", "application/json; charset=utf-8")
                 connection.outputStream.bufferedWriter(Charsets.UTF_8).use {
-                    it.write((body ?: JSONObject()).apply{if(!has("timezone"))put("timezone", ZoneId.systemDefault().id)}.toString())
+                    it.write(payload.toString())
                 }
             }
-            if (connection.responseCode != 200) throw IOException(when(connection.responseCode) {
+            if (connection.responseCode != 200) throw PanelFailure(connection.responseCode,when(connection.responseCode) {
                 401 -> "Entre novamente na sua conta."
                 404 -> "O servidor ainda está recebendo esta atualização. Tente depois."
                 409 -> "Esse registro mudou. Confira a lista atual antes de fazer uma nova ação."
@@ -56,10 +59,19 @@ internal suspend fun assistantRequest(app: KoiwaiApplication, owner: String, pat
             })
             val result = JSONObject(connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readBoundedText(100000) })
             if (app.auth.account.value?.id != owner) throw IOException("A conta mudou. Abra o painel novamente.")
+            if(path in cachedAssistantPaths)cache.save(path,payload,result)
+            else if(path in setOf("checkin","task-action","undo","demo"))cache.clear()
             result
         } finally { connection.disconnect() }
+        } catch(e:IOException) {
+            val transient=e !is PanelFailure || e.status>=500 || e.status==429
+            if(allowCached && transient && app.auth.account.value?.id==owner)
+                cache.read(path,payload)?.let{return@withContext it}
+            throw e
+        }
     }
 }
+private class PanelFailure(val status:Int,message:String):IOException(message)
 
 private fun shortDate(date: String): String = runCatching {
     java.time.LocalDate.parse(date).format(DateTimeFormatter.ofPattern("dd/MM"))
@@ -92,6 +104,7 @@ fun DayOverviewPanel(onRoutine: () -> Unit) {
             }, Modifier.fillMaxWidth(), !loading)
             error?.let { Text(it, color = KoiColors.Red, fontSize = 12.sp) }
             data?.let { value ->
+                AssistantCacheNotice(value)
                 Text("${shortDate(value.getString("date"))} • ${value.getInt("tasks_pending_today")} missões para hoje", fontWeight = FontWeight.SemiBold)
                 val tasks = value.getJSONArray("tasks")
                 for (index in 0 until tasks.length()) {
