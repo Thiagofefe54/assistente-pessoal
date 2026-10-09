@@ -19,8 +19,9 @@ limitados, identificando a conta de origem. Não usa pontos Poe.
 - Publicado: commit28efa33, Render dep-db4kh8rncjis73fsllrg, live20:04:40Z.
   HTTPS health200; Google status/connect anônimos401; callback inválido400.
 - APIs Calendar/Tasks/Gmail/Drive ativadas e verificadas, após aprovação dos termos.
-- Autorizações pessoais e consultas reais pendentes. Não há tokens pessoais
-  Google gravados nem uso de dados reais Google nestes testes.
+- Usuário concluiu autorizações: SQL confirmou três vínculos de um dono com tokens
+  cifrados presentes. Consultas reais de cada serviço ainda precisam de validação.
+  Testes automatizados usaram dados fictícios.
 
 ## Usar no app atualizado
 
