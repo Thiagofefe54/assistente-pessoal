@@ -61,7 +61,7 @@ A personagem é ilustrada: animação da personagem e voz própria são possibil
 | Área | Entrega atual |
 | :--- | :--- |
 | **Home** | Personagem, saudação personalizável, data/hora reais, estado da conta, contagem de tarefas e atalhos. |
-| **Chat** | Conversa com Groq via HTTPS; contexto recente, lembranças e tarefas atuais. V1.0 acrescenta registros pessoais, ditado, leitura em voz, imagens escolhidas e pesquisa explícita na internet com fontes. Novo APK do Pack 2 executa pedidos claros de criar, concluir, editar, reabrir, arquivar e desfazer, sem revisão repetida. |
+| **Chat** | Conversa com Poe via HTTPS; contexto recente, lembranças e tarefas atuais. V1.0 acrescenta registros pessoais, ditado, leitura em voz, imagens escolhidas e pesquisa explícita na internet com fontes. Novo APK do Pack 2 executa pedidos claros de criar, concluir, editar, reabrir, arquivar e desfazer, sem revisão repetida. |
 | **Memória** | Diário por dia e busca; lembranças confirmadas; sugestões revisáveis e resumos diários. Pack 2 acrescenta semana, mês, semestre e ano com fontes e preparação opcional pelo Android. |
 | **Rotina** | Tarefas reais na conta: criar, editar, concluir, reabrir e apagar; data, horário, repetição e últimas conquistas. V1.0 acrescenta agenda e hábitos como vistas das tarefas, notas, listas, metas, registros de treino e finanças BRL; consulta e edição na conta, arquivos recuperáveis e desfazer. |
 | **Configurações** | Personalização da saudação, redução de movimento, leitura opcional das novas respostas e acesso à conta. |
@@ -167,7 +167,7 @@ flowchart TD
     A <-->|HTTPS · conta e histórico| S[Supabase · Auth + Postgres + RLS]
     A -->|HTTPS · token da conta| B[FastAPI · chat autenticado]
     B -->|Verificação do usuário| S
-    B -->|IA ativa · chave privada| I[Groq · GPT-OSS · cotas de uso]
+    B -->|IA ativa · chave privada| I[Poe · GPT-OSS · pontos do plano]
     W[Windows · planejado] -. mesma conta .-> S
     W -. chat futuro .-> B
 ```

@@ -4,14 +4,22 @@
 
 Ler IA_POE.md. Usuário autorizou chave Koiwai no .env privado/segredos Render e
 testes até 200 pontos. Chave criada/guardada, nenhuma compra nova. Consumo real
-total medido: 50 pontos, saldo 9.950. Conversa, intenção de contas, plano validado
+total inicial medido: 50 pontos. Revisão final teve uma chamada adicional (6 pontos)
+porque teste antigo mockava só Groq. Mock corrigido para generate de qualquer
+provedor; 120 testes repetidos sem chamadas reais. Total final 56, saldo 9.944.
+Conversa, intenção de contas, plano validado
 de concluir tarefa fictícia e negação passaram; nenhuma escrita pessoal real.
 120 testes simulados aprovados. Texto GPT-OSS-120B via Chat Completions + schema
 nas instruções/validação local JSON Schema/Pydantic. Responses nesse modelo deu
 400 sem custo; não afirmar strict garantido pelo Poe. GPT-4.1-mini respondeu
 schema via Responses; imagem/pesquisa só testadas com mocks, reais pendentes.
 AI_PROVIDER=poe impede qualquer chamada Groq ou fallback automático.
-Deploy/configuração em preparação. Celular desconectado pelo usuário; avisar
+Commit 09713ef publicado; Render dep-db439i67bikc73e4oul0 LIVE às 21:27:40 de
+08/10/2026. Saúde HTTP 200, ai_provider=poe. API de configuração disparou deploy;
+trigger manual também criou dep-db439jeiej4c73cplop0 do mesmo commit (sem custo
+de IA). Segundo deploy confirmado LIVE às 21:28:32, saúde 200/provider poe.
+Correção de mock e documentação publicadas depois, sem nova alteração de runtime.
+Celular desconectado pelo usuário; avisar
 quando for necessário teste físico. Android sem alteração nesta integração.
 
 ## Checkpoint anterior: economia antes do Poe pago — 08/10/2026

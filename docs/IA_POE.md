@@ -29,7 +29,10 @@ GPT-4.1-mini respondeu ao teste real de schema, sem escrita de dados.
 conversa recebida, conclusão de tarefa fictícia interpretada/validada, negação protegida.
 Não criaram nem modificaram registros reais. O terminal não imprimiu a conversa
 por incompatibilidade de codificação com emoji; a geração completou e não foi repetida.
-Saldo inicial 10.000; final 9.950: 50 pontos no total, dentro da autorização de 200.
+Saldo inicial 10.000; final 9.944: 56 pontos no total, dentro da autorização de 200.
+Uma checagem antiga mockava só o adaptador Groq e fez uma chamada adicional de
+6 pontos após ativar Poe localmente. Corrigida para mockar generate; 120 testes
+repetidos sem chamadas reais. Correção do teste publicada junto ao checkpoint final.
 Não promete número fixo de mensagens/dia. Pontos também são usados no site Poe.
 
 ## Operação
@@ -39,7 +42,8 @@ automático, troca de modelo após erro ou compras automáticas. HTTP 402 vira a
 de saldo insuficiente; 429 respeita Retry-After válido. Android pode substituir
 o aviso por mensagem genérica de limite. Sem chave Poe, falha sem acionar Groq.
 
-Publicação: registrar resultado em CONTINUIDADE_KOIWAI.md. Alteração só no servidor,
+Publicado commit 09713ef; Render dep-db439i67bikc73e4oul0 LIVE; saúde HTTP 200 e
+ai_provider=poe. Alteração só no servidor,
 Android V1.3 não precisa reinstalação. Teste físico após publicação pendente:
 usuário desconectou celular e pediu aviso quando necessário.
 

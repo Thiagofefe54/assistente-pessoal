@@ -40,10 +40,9 @@ class MemoryTests(unittest.TestCase):
             self.assertNotIn('private-token',caught.exception.detail)
 
     def test_confirmed_facts_are_reference_data_below_system_instructions(self):
-        with patch('backend.app.core.ai._completion',return_value='Azul') as completion, \
-             patch.object(settings,'groq_api_key',__import__('pydantic').SecretStr('fake')):
+        with patch('backend.app.core.ai.generate',return_value='Azul') as completion:
             ai.reply('Qual cor?',[{'role':'user','content':'oi'}],[{'content':'Gosto de azul','category':'preference'}])
-            messages=completion.call_args.args[1]
+            messages=completion.call_args.args[0]
             self.assertEqual(['system','user','user','user'],[row['role'] for row in messages])
             self.assertIn('Gosto de azul',messages[1]['content'])
             self.assertIn('dados de referência',messages[1]['content'])
