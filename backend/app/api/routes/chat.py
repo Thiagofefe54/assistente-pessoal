@@ -19,6 +19,7 @@ from backend.app.core.actions import existing_action, direct_conversation, diges
 from backend.app.core.personal import applies, follows_record, personal_conversation, undo_personal
 from backend.app.core.ai import generate, KOI_INSTRUCTIONS, reply
 from backend.app.core.intent import interpret
+from backend.app.core.direct_reads import direct_read
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
 
@@ -139,6 +140,10 @@ Não identifique pessoas nem invente características pessoais sensíveis.
             semantic=interpret(payload.message,history,capture=payload.capture_reports)
         except (ValueError,KeyError,TypeError):
             raise HTTPException(502,'Não consegui entender esse pedido. Pode dizer de outro jeito?') from None
+        read_result=direct_read(semantic,user_id,authorization,payload.timezone,
+            (payload.requested_at or datetime.now(ZoneInfo(payload.timezone))).isoformat())
+        if read_result is not None:
+            return ChatResponse(**read_result)
         if semantic.domain=='device':
             tool=semantic.device
             if tool.action=='timer' and (not tool.value.isdigit() or not 1<=int(tool.value)<=86400):

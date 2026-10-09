@@ -71,6 +71,13 @@ class AiTests(unittest.TestCase):
             self.assertNotIn("private-fake-key", caught.exception.detail)
             self.assertEqual(1, self.opener.return_value.open.call_count)
 
+    def test_decimal_retry_after_is_rounded_up_and_invalid_values_are_ignored(self):
+        for value, expected in [('1.2','2'),('nan',None),('inf',None),('-1',None),('nonsense',None)]:
+            self.opener.return_value.open.side_effect = self.error(429, {'Retry-After':value})
+            with self.assertRaises(HTTPException) as caught:
+                ai.reply('oi',[])
+            self.assertEqual({'Retry-After':expected} if expected else None,caught.exception.headers)
+
     def test_incomplete_answers_are_not_saved_as_success(self):
         for content, finish in (("", "stop"), (None, "stop"), ("Parcial", "length")):
             self.opener.return_value.open.return_value = self.response(content, finish)

@@ -1,5 +1,27 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint: economia antes do Poe pago — 08/10/2026
+
+Usuário pagou Poe mensal R$24,90, ativo 10.000 pontos/dia. Pediu otimizar antes
+da integração. Ler OTIMIZACAO_IA_2026_10_08.md. Implementado: consultas simples
+financeiras/diário 2→1 chamadas; contexto limitado completo; planejadores com tom
+resumido e regras preservadas; JSON compacto; telemetria só contagens; Retry-After.
+112 testes backend simulados aprovados, zero chamadas/pontos Poe.
+Publicação em preparação neste checkpoint. Android V1.3 instalado sem mudança.
+Poe NÃO integrado; Groq atual. Próximo: adaptador Responses/schema e credencial
+privada Poe, com confirmação específica se necessária no navegador.
+
+## Diagnóstico anterior — limite Groq, 08/10/2026 à noite
+
+Leia DIAGNOSTICO_COTA_GROQ_2026_10_08.md. Usuário confirmou V1.3/code5 no Poco;
+conta Internet recebeu confirmação, mas consulta seguinte falhou com 429.
+Painel Groq: 7.663 tokens em cerca de 18 s antes da recusa; limite organização
+8.000/min, 200.000/dia, modelo gpt-oss-120b. Evidências apontam para limite por
+minuto; diário não confirmado. Fluxo contextual faz interpretação + geração de
+consulta. Diagnóstico apenas: nenhuma correção funcional/publicação/instalação
+ou chamada de teste Groq neste trabalho. Próximo: reduzir chamadas/contexto,
+consultas com dados verificados e mensagem de espera respeitando Retry-After.
+
 ## Entrega atual — V1.3 vida organizada, 08/10/2026
 
 Leia ENTREGA_VIDA_V1_3_2026_10_08.md. Contas recorrentes, pagamento/despesa atômicos,

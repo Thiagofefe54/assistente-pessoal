@@ -2,6 +2,7 @@
 import json
 import logging
 import re
+import math
 from urllib.parse import urlparse
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, build_opener
@@ -10,6 +11,7 @@ from fastapi import HTTPException
 
 from backend.app.core.auth import NoRedirect
 from backend.app.core.config import settings
+from backend.app.core.context_budget import compact_json
 
 KOI_INSTRUCTIONS = """Você é Koiwai, também chamada Koi ou Coi, uma assistente pessoal feminina.
 Converse em português brasileiro como uma assistente próxima, fofinha, alegre e
@@ -59,7 +61,7 @@ def _completion(model: str, messages: list[dict[str, str]], response_format: dic
     if model in ("openai/gpt-oss-120b", "openai/gpt-oss-20b"):
         payload["reasoning_effort"] = "low"
     request = Request("https://api.groq.com/openai/v1/chat/completions",
-                      data=json.dumps(payload, ensure_ascii=False).encode("utf-8"),
+                      data=compact_json(payload).encode("utf-8"),
                       headers={"Authorization": "Bearer " + settings.groq_api_key.get_secret_value(),
                                "Content-Type": "application/json", "Accept": "application/json",
                                "User-Agent": "Koiwai/0.1"}, method="POST")
@@ -69,6 +71,12 @@ def _completion(model: str, messages: list[dict[str, str]], response_format: dic
     content = choice["message"]["content"]
     if not isinstance(content, str) or not content.strip() or choice.get("finish_reason") != "stop":
         raise ValueError("Incomplete model response")
+    usage = result.get('usage', {})
+    if isinstance(usage, dict):
+        counts = [usage.get(k) for k in ('prompt_tokens', 'completion_tokens', 'total_tokens')]
+        if all(type(n) is int and 0 <= n <= 10000000 for n in counts):
+            logging.getLogger(__name__).info('AI usage input=%d output=%d total=%d structured=%s',
+                *counts, response_format is not None)
     if web:
         executed=choice['message'].get('executed_tools',[])
         if not executed:
@@ -127,8 +135,16 @@ def generate(messages: list[dict[str, str]], response_format: dict | None = None
             error.close()
             if code == 429:
                 # Quotas may be shared: don't bypass cooldown by switching models.
-                headers = {"Retry-After": retry_after} if retry_after and retry_after.isdigit() else None
-                raise HTTPException(429, "A IA atingiu o limite de uso. Aguarde e tente novamente.",
+                seconds = None
+                try:
+                    wait = float(retry_after)
+                    if math.isfinite(wait) and 0 < wait <= 86400:
+                        seconds = math.ceil(wait)
+                except (ValueError, TypeError):
+                    pass
+                headers = {"Retry-After": str(seconds)} if seconds is not None else None
+                detail = f'A IA atingiu o limite de uso. Aguarde {seconds} segundos e tente novamente.' if seconds is not None else 'A IA atingiu o limite de uso. Aguarde e tente novamente.'
+                raise HTTPException(429, detail,
                                     headers=headers) from None
             if code == 400 and category == 'json_validate_failed':
                 raise HTTPException(502, "A IA não enviou uma resposta válida. Tente novamente.") from None
