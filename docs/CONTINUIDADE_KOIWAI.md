@@ -1,6 +1,13 @@
 # Koiwai — leia primeiro ao retomar
 
-## Em andamento — consultas úteis e quatro contas — 09/10/2026
+## Em andamento — consultas úteis e três contas Google — 09/10/2026
+
+DECISÃO ATUAL: usuário desistiu da conta Outlook/Microsoft e do cadastro Azure.
+Remover Microsoft do escopo ativo; não retomar formulário, criar conta/tenant ou
+pedir cartão. Registros abaixo sobre Microsoft são históricos, não tarefas atuais.
+Próxima entrega: fluxo OAuth Google no servidor e Android, três conexões distintas,
+armazenamento cifrado persistente e APIs autorizadas de Calendar/Tasks/Gmail/Drive.
+Cliente/test users/segredos preparados não equivalem a conexões funcionais.
 
 Usuário mostrou resposta genérica a pedido de orientação sobre seu dinheiro; pediu
 conectar três contas Google e uma Outlook. Prioridade real: autonomia, trabalho,
