@@ -62,26 +62,27 @@ Saúde HTTPS 200/provider poe. Novos endpoints search/plan/demo recusaram pedido
 sem sessão com HTTP401. GitHub atualizado; publicação automática permanece desligada.
 Processo Gradle encerrado ao finalizar para liberar memória do PC.
 Dashboard: navegação, detalhes e novo exemplo de busca verificados no Brave;
-checklist permanece 0/5 porque o teste físico ainda não ocorreu.
+checklist permanece 0/5 para a conferência manual das telas pelo usuário.
 
 - 149 testes do servidor aprovados, incluindo 12 novos; zero geração paga.
 - Compilação final Android 1.5/code7 aprovada: assembleDebug, assembleDebugAndroidTest,
   30 testes unitários (zero falhas/erros), lintDebug (zero erros, 81 avisos).
   APK: android/build/releases/Koiwai-1.5.apk. SHA256:
   D4F9A92D9102D95353ED67D5AD9B9C03957456C1B3003CC75D87788308E15573.
-- `OrganizationApiLiveTest` preparado para conferir categorias no Android e,
-  com `koiSeedDemo=true`, sem abrir Activity: criar exemplos, repetir, pesquisar
-  o lanche por seu ID e consultar o plano, sem geração de IA.
-- Usuário desconectou o Poco durante o trabalho: **V1.5 ainda não instalada**,
-  exemplos **ainda não criados na conta**, testes físicos **pendentes**.
-- V1.4 permanece instalada e confirmada pelo usuário. Não confundir o teste
-  de API preparado com teste realizado nem com avaliação visual de telas.
+- Poco reconectado: APK atualizado com install -r, confirmado versionName1.5/code7.
+- `OrganizationApiLiveTest` APROVADO no Poco: 2 testes em 20,74s. Conferiu
+  cálculo por categoria; criou 12 exemplos com sessão existente; repetiu sem
+  duplicação; pesquisou o lanche por ID original; consultou plano do dia.
+  Sem geração IA, exportação de token, reset ou alteração de permissões.
+- Exemplos Teste persistem na conta por autorização do usuário. Manifesto com
+  IDs/recibos guardado no arquivo privado de preferências koi-demo do app,
+  separado por conta. Não publicar esse manifesto nem apagá-lo na limpeza.
+- Teste usa o mesmo cliente dos painéis; não equivale à avaliação visual de
+  todas as telas. Conferência manual dos cartões ainda pendente.
 
 ## Próxima conferência no celular
 
-Atualizar APK com `adb install -r`, sem desinstalar/resetar. Confirmar sessão.
-Rodar teste de API autorizado de exemplos; guardar manifesto privado no celular.
-Depois verificar Home → Plano do dia, Memória → Teste Lanche e Rotina →
+Instalação e teste de API concluídos. Agora verificar Home → Plano do dia, Memória → Teste Lanche e Rotina →
 Orçamento (alimentação e total). A limpeza final deve usar IDs do manifesto,
 sem apagar registros reais ou edições indiscriminadamente.
 
