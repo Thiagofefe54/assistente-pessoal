@@ -63,7 +63,25 @@ um serviço autônomo 24h em nuvem. O PC pode estar desligado.
 aprovados (0 erros, 97 avisos). Daemon Gradle encerrado para liberar RAM.
 APK android/build/releases/Koiwai-1.6.apk; SHA256
 5A13A9957C0765A96E3D47C6D7D9BCA328DBC7F98261545B82DC3EA932267EA3.
-Publicação e testes físicos em andamento; ainda não declarar instalado/testado.
+Servidor publicado: commit 6c384dde45818428f635c11de4c9ee695c865b42,
+Render dep-db4ehs3ncjis73coaung LIVE09/10/2026 10:16:30 SãoPaulo.
+Saúde HTTPS200/providerpoe; quatro endpoints novos anônimos recusados com401.
+Logs de erro após publicação não mostraram erros na consulta de conferência.
+
+Poco14c3a88a atualizado com install-r; confirmado1.6/code8. Sem apagar dados.
+CompanionApiLiveTest: **2 testes aprovados em34,344s** usando a sessão dentro
+ do aparelho, sem exportar token ou gerar IA. Check-in início/repetição/fim/Desfazer;
+reagendamento preservando19h/repetição, retrysemduplicação, conclusão avançando
+hábito e Desfazer. Apenas as duas fixtures próprias criadas foram removidas;
+recibos das ações continuam na conta. As12 TesteV1.5 permanecem.
+
+Tela Meu ritmo aberta e capturada com dados no Poco; primeiro print saiu vazio
+por captura imediata após abertura, segundo mostrou revisão e sugestões carregadas.
+LogAndroidRuntime não mostrou erro nessa conferência. Isso não comprova todas as
+abas visualmente nem a entrega de notificações ao longo do dia.
+Novas regras de frequência/prioridade têm5 testes unitários. Teste físico de
+notificações V1.6, descanso prolongado e reinício ainda pendentes.
+Dashboard revisado no Brave; checklist manual0/5, não preenchida pelo agente.
 Os testes físicos preparados usam só fixtures fictícias próprias e removem apenas
 elas. A base Teste V1.5 autorizada permanece. Não houve reset.
 

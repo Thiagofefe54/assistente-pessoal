@@ -1,6 +1,6 @@
 # Koiwai — leia primeiro ao retomar
 
-## Checkpoint V1.6 Meu ritmo — preparado, 09/10/2026
+## Checkpoint V1.6 Meu ritmo — publicado e instalado, 09/10/2026
 
 Ler ENTREGA_COMPANHEIRA_V1_6.md. Check-ins início/fim, revisão do dia, hábitos
 últimos7dias, reagendar amanhã preservando horário e Desfazer. Config. amplia
@@ -10,10 +10,22 @@ Endpoints review/checkin/task-action/undo reutilizam RPC/RLS sem migração.
 163 backend +35 Android unitários passaram, sem geração paga; builds e lint
 0erros97avisos aprovados. APK1.6/code8 build/releases/Koiwai-1.6.apk SHA256
 5A13A9957C0765A96E3D47C6D7D9BCA328DBC7F98261545B82DC3EA932267EA3.
-DaemonGradle parado. Ainda falta publicar/instalar/testar no Poco; não afirmar feito.
+DaemonGradle parado. Servidor commit6c384dde45818428f635c11de4c9ee695c865b42,
+Renderdep-db4ehs3ncjis73coaung LIVE09/10 10:16:30 SãoPaulo; saúde200/providerpoe,
+endpoints novos sem sessão401; logs de erro após deploy vazios na conferência.
+Poco14c3a88a install-r aprovado,1.6/code8 confirmado. CompanionApiLiveTest2tests
+PASS34,344s:checkin início/retry/fim/undo,taskreschedule preservahora/repetição,
+completeavança/undo. Zero geração paga/tokenexport/reset. Duas fixtures próprias
+removidas; recibos ficam. ScreenshotMeu ritmo carregado, sem crashobservado.
+Ainda faltam conferência visual das abas pelo usuário e entrega real de avisos
+V1.6 ao longo dos horários/descanso/reinício; não declarar essa bateria concluída.
 Usuário confirmou V1.5 perfeita e autorizou todo este pacote; Poco reconectado.
 Testes físicos preparados criam/removem só fixtures próprias; 12 TesteV1.5 ficam.
-Dashboard atualizado com checklist manual própria V1.6, ainda não conferida.
+Dashboard atualizado/reaberto no Brave, checklist manual própria V1.6 0/5.
+Usuário perguntou sobre primeiro print vazio: captura antes de renderizar; segundo
+mostrou tela normal. Não havia erroAndroidRuntime na conferência.
+Próximo: acompanhar avisos reais e retorno do usuário; depois ampliar inteligência,
+integrações autorizadas/voz/visual. V2definitiva não concluída.
 
 ## Checkpoint V1.5 Organização — instalada no Poco, 08/10/2026
 
