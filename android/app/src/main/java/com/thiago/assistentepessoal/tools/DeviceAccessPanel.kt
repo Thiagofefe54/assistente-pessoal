@@ -58,6 +58,7 @@ fun DeviceAccessPanel(){
 fun ConnectionsPanel(){
     val context=LocalContext.current
     CalendarConnectionPanel()
+    BankConnectionPanel()
     KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue){
         Eyebrow("CONEXÕES",KoiColors.Blue)
         Text("Seu mundo com a Koi",fontSize=22.sp)

@@ -1,5 +1,26 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint V1.9 Saldo — app instalado, conexão desativada, 09/10/2026
+
+Ler ENTREGA_SALDO_V1_9.md. Usuário quer SOMENTE saldo, não extrato/pagamentos.
+Meu Pluggy oferece API pessoal gratuita; ver fontes/condições atuais no relatório.
+Inter e Next vistos no widget; nextJoy não confirmado. Usuário entrou no site e
+chegou ao formulário do Inter, perguntou sobre confiança; resposta sem garantia
+riscozero, fluxo regulado preferido. Consentimento concluído ainda não confirmado.
+Backend bank-status/bank-summary auth existente e owner fixo no servidor, config
+privada até3UUIDitems; sem ID fornecido pelo cliente. Saldo BANK/BRL, centavos,
+retorno sem números/titular/CPF/IDs; data provedor, totais parciais explícitos.
+CacheRAM60s com autorização antes/cacheporconfig, negativecache, no-storeHTTP;
+sem cacheAndroid, IA, gravações/migração, transações, pagamentos ou refresh forçado.
+PLUGGY_ENABLED=false default; nenhum segredo/configuração real alterado.
+177backend PASS8novos +46Android PASS; lint0erros104avisos; build aprovado.
+Poco14c3a88a install-r1.9/code11; APKbuild/releases/Koiwai-1.9.apk SHA256
+8C5458F6FBB5077F96B1FB479DB0093F1997D768FC880843261C2C4192264405.
+Nenhum saldo real consultado. Backend publicação pendente neste checkpoint.
+Falta consentimento pessoal, Dashboard MeuPluggy proxy, autorização específica
+para criar/configurar credenciais servidor e testar consulta real. Não pedir chaves
+no chat nem afirmar bancos conectados. Saldo não enviado ao Chat/IA ainda.
+
 ## Checkpoint V1.8 Planejamento — instalada, 09/10/2026
 
 Ler ENTREGA_PLANEJAMENTO_V1_8.md. Somente Android; sem backend/Render/migração.

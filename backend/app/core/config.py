@@ -24,6 +24,12 @@ class Settings(BaseSettings):
     groq_fallback_model: str = "openai/gpt-oss-20b"
     groq_timeout_seconds: int = Field(default=30, ge=5, le=45)
     groq_max_completion_tokens: int = Field(default=1536, ge=128, le=4096)
+    # Personal read-only connection: disabled until credentials and consent are ready.
+    pluggy_enabled: bool = False
+    pluggy_owner_id: str = ''
+    pluggy_client_id: SecretStr = SecretStr('')
+    pluggy_client_secret: SecretStr = SecretStr('')
+    pluggy_item_ids: SecretStr = SecretStr('')
 
     @model_validator(mode="after")
     def validate_auth_config(self):

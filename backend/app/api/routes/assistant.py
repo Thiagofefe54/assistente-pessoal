@@ -1,5 +1,5 @@
 from uuid import UUID
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, Response
 from backend.app.core.auth import current_user
 from backend.app.api.routes.reports import ZoneRequest
 from backend.app.core.assistant_panel import day_panel
@@ -12,6 +12,7 @@ from backend.app.core.day_plan import day_plan
 from backend.app.core.demo import seed_demo
 from backend.app.core import companion
 from typing import Literal
+from backend.app.core import banking
 
 
 class SearchRequest(ZoneRequest):
@@ -25,6 +26,18 @@ class SearchRequest(ZoneRequest):
         return self
 
 router = APIRouter(prefix='/assistant', tags=['Meu dia'])
+
+
+@router.post('/bank-status')
+def bank_status(body:ZoneRequest,response:Response,owner:UUID=Depends(current_user)):
+    response.headers['Cache-Control']='no-store'
+    return banking.status(owner)
+
+
+@router.post('/bank-summary')
+def bank_summary(body:ZoneRequest,response:Response,owner:UUID=Depends(current_user)):
+    response.headers['Cache-Control']='no-store'
+    return banking.summary(owner)
 
 
 class CheckinRequest(ZoneRequest):
