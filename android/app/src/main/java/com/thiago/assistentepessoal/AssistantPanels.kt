@@ -27,7 +27,7 @@ internal suspend fun readAssistant(app: KoiwaiApplication, owner: String, usage:
 }
 
 internal suspend fun assistantRequest(app: KoiwaiApplication, owner: String, path:String, body:JSONObject?=null, allowCached:Boolean=true): JSONObject {
-    require(path in setOf("day","usage","search","plan","demo","review","checkin","task-action","undo","bank-status","bank-summary"))
+    require(path in setOf("day","usage","search","plan","demo","review","checkin","task-action","undo","bank-status","bank-summary","google-status","google-connect","google-disconnect","google-read"))
     val endpoint = BackendEndpoint.resolve(BuildConfig.BACKEND_URL, BuildConfig.DEBUG)
     if (!endpoint.authenticated) throw IOException("Este painel precisa do servidor HTTPS.")
     val token = app.auth.token(owner) ?: throw IOException("Entre novamente na sua conta.")
@@ -53,7 +53,9 @@ internal suspend fun assistantRequest(app: KoiwaiApplication, owner: String, pat
             if (connection.responseCode != 200) throw PanelFailure(connection.responseCode,when(connection.responseCode) {
                 401 -> "Entre novamente na sua conta."
                 404 -> "O servidor ainda está recebendo esta atualização. Tente depois."
-                409 -> "Esse registro mudou. Confira a lista atual antes de fazer uma nova ação."
+                403 -> if(path.startsWith("google-"))"Esta conta não autorizou o serviço ou a API ainda não foi habilitada. Confira a conexão Google." else "Esta consulta não está autorizada."
+                409 -> if(path.startsWith("google-"))"A conexão mudou ou expirou. Atualize a lista ou conecte a conta novamente." else "Esse registro mudou. Confira a lista atual antes de fazer uma nova ação."
+                503 -> if(path.startsWith("google-"))"As conexões Google ainda estão sendo configuradas ou o serviço está indisponível. Tente mais tarde." else "Não consegui atualizar agora. Tente mais tarde."
                 422 -> "Confira os dados: intervalos duram até 48h e reagendamentos vão até 7 dias."
                 else -> "Não consegui atualizar agora. Confira sua conexão e tente mais tarde."
             })

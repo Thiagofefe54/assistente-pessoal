@@ -6,6 +6,7 @@ from backend.app.core.config import settings
 from backend.app.api.routes.journal import router as journal_router
 from backend.app.api.routes.reports import router as reports_router
 from backend.app.api.routes.assistant import router as assistant_router
+from backend.app.api.routes.connections import router as connections_router
 
 
 app = FastAPI(
@@ -35,3 +36,4 @@ app.include_router(
 app.include_router(journal_router, prefix="/api/v1")
 app.include_router(reports_router, prefix="/api/v1")
 app.include_router(assistant_router, prefix="/api/v1")
+app.include_router(connections_router, prefix="/api/v1")

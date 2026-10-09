@@ -3,12 +3,14 @@
 Decisão atual: usuário retirou Outlook/Microsoft do escopo e não quer cadastrar Azure.
 As referências Microsoft abaixo registram a investigação anterior, sem ação pendente.
 
-Estado em 09/10/2026: preparação. Nenhuma dessas quatro contas foi autorizada para
-a Koi. Os atalhos existentes abrem os serviços; a agenda lê calendários sincronizados
-no Android. O projeto Google dedicado e o cadastro OAuth foram criados; Externo,
-modo Testing, três contas de teste salvas. Cliente WEB criado com a opção de agente
-de IA; Client ID, Client Secret e redirect guardados no .env privado e no Render
-(Save only, sem nova publicação). Não há tokens de usuário nem contas conectadas.
+Estado em 09/10/2026: fluxo OAuth, armazenamento cifrado e painel Android V1.12
+implementados; APK preparado, publicação em andamento. Nenhuma das três contas
+Google foi autorizada pessoalmente na Koi ainda. Cliente WEB, três usuários de teste
+e segredos estão configurados; tabelas privadas aplicadas no Supabase. Consultas
+disponíveis no código: eventos da agenda principal, agendas, listas Tasks,
+cabeçalhos de cinco mensagens Gmail e metadados Drive. Sem envio à IA/cache.
+Calendar/Tasks/Gmail/Drive ativados e verificados. Confira o checkpoint da entrega
+antes de anunciar instalação ou consultas reais. Outlook foi cancelado.
 
 Microsoft: entrada pessoal concluída pelo usuário. O portal Azure abriu a Home,
 mas o acesso ao diretório solicitou nova entrada e voltou ao erro de conta ausente
@@ -29,8 +31,9 @@ na ordem técnica necessária, sem tratar a lista inteira como já implementada.
 
 Retorno Google configurado no cliente:
 https://koiwai-backend.onrender.com/api/v1/connections/google/callback
-Esse endpoint ainda NÃO existe. Antes de iniciar autorizações, implementar o fluxo
-protegido e a persistência abaixo, habilitar/verificar as APIs necessárias e testar.
+Esse endpoint está implementado com state/PKCE/cookie e persistência cifrada.
+Antes de iniciar autorizações, verificar publicação e APIs habilitadas e instalar
+o APK. A autorização de cada conta é concluída pessoalmente pelo usuário.
 
 ## Ordem de entrega
 

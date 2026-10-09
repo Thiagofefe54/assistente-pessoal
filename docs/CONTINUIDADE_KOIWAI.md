@@ -1,5 +1,31 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint Google V1.12 — 09/10/2026 (substitui pendências antigas abaixo)
+
+Fluxo OAuth e painel Android implementados. Servidor: sessão Koi validada, dono
+extraído no servidor, state de uso único persistente, PKCE e cookie HttpOnly/Secure
+por fluxo. Até três identidades Google distintas; reautorizar atualiza por subject.
+Tokens cifrados Fernet, vinculados ao dono/finalidade, guardados somente em tabelas
+Supabase com RLS e sem privilégios anon/authenticated. SQL google_connections.sql
+APLICADO; bloqueio REST anônimo e acesso privado do servidor VERIFICADOS.
+Chave Supabase koiwai_connections e chave de cifragem criadas após autorização
+específica, salvas no .env ignorado e Render. Não gerar outra chave de cifragem
+sem migração dos tokens. GOOGLE_ENABLED=true no servidor. Segredos fora do APK/Git.
+
+Backend: 202 testes PASS. Android: 53 testes PASS, APK V1.12/code14 preparado em
+android/build/releases/Koiwai-1.12.apk. Ainda NÃO instalado: adb devices vazio.
+Publicação da nova implementação em andamento; conferir deploy antes de anunciar.
+Calendar, Tasks, Gmail e Drive habilitados e verificados após autorização dos termos.
+Nenhuma conta Google pessoal foi autorizada pelo aplicativo ou consultada ainda.
+Android: Rotina → Ferramentas → Conexões → Google com a Koi; conectar/reautorizar,
+atualizar, consultar e desconectar individualmente. Consultas sem IA/cache:
+20 eventos da agenda principal, 20 agendas, 20 LISTAS Tasks, cinco cabeçalhos Gmail
+(sem corpo), 20 metadados Drive (sem conteúdo). Não chamar listas de tarefas reais.
+Ainda faltam criação/edição Google, rascunhos, conteúdo de arquivos e ferramentas
+Google no chat. Não afirmar que conexão de cliente equivale a autorização pessoal.
+Modo Google Testing pode exigir reautorização em sete dias. Outlook cancelado.
+Mais detalhes: ENTREGA_GOOGLE_V1_12.md e PLANO_CONEXOES_MULTICONTAS.md.
+
 ## Em andamento — consultas úteis e três contas Google — 09/10/2026
 
 DECISÃO ATUAL: usuário desistiu da conta Outlook/Microsoft e do cadastro Azure.

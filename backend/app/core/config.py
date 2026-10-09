@@ -30,6 +30,12 @@ class Settings(BaseSettings):
     pluggy_client_id: SecretStr = SecretStr('')
     pluggy_client_secret: SecretStr = SecretStr('')
     pluggy_item_ids: SecretStr = SecretStr('')
+    google_enabled: bool = False
+    google_client_id: str = ''
+    google_client_secret: SecretStr = SecretStr('')
+    google_redirect_uri: str = ''
+    connections_encryption_key: SecretStr = SecretStr('')
+    connections_supabase_secret_key: SecretStr = SecretStr('')
 
     @model_validator(mode="after")
     def validate_auth_config(self):
