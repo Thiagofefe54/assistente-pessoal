@@ -24,8 +24,17 @@ Cliente OAuth, autorizações e adapters ainda pendentes;
 não chamar as quatro contas conectadas. Brave reconectado ID1, projeto aberto.
 Google Tasks/Gmail/Drive não existem como adapters no código. Agenda atual lê apenas
 calendários sincronizados do Android. Outlook ainda sem app/Graph OAuth.
-Usuário solicitado a identificar três contas Google/uma Outlook só por e-mails;
-não colocar endereços pessoais no Git. Aba Público-alvo mantida handoff para retomar.
+Usuário forneceu três contas Google/uma Outlook no chat; não colocar endereços no Git.
+Formulário cliente WEB 'Koiwai - assistente pessoal' preparado, flag AI-agent=true,
+redirect proposto https://koiwai-backend.onrender.com/api/v1/connections/google/callback.
+ATENÇÃO: callback ainda NÃO implementado; não iniciar autorização/ligação antes de
+implementar/validar retorno, state/PKCE, sessão/owner e armazenamento cifrado.
+Pergunta pendente: criar cliente, adicionar três test users e guardar credenciais só
+.env/Render. Não clicar Criar sem resposta. Googleaba1253037152 (BraveID1) handoff;
+config criada/proof android/build/google-koiwai-configurado.png; formulário/proof
+android/build/google-cliente-preparado.png. Arquivos privados/ignorados.
+Outlook: portal Entra aberto, conta pessoal informada na tela normal de entrada;
+aguardando estado/login. Nenhum app Microsoft, segredo ou plano criado.
 Ler PLANO_CONEXOES_MULTICONTAS.md para dependências e ordem. Não confundir plugin
 do Codex com autorização da Koi. Consentimentos/criação de credenciais via navegador
 exigem confirmação específica no momento; login/senhas/códigos com o usuário.
