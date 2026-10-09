@@ -17,8 +17,9 @@ Poco14c3a88a install-r aprovado,1.6/code8 confirmado. CompanionApiLiveTest2tests
 PASS34,344s:checkin início/retry/fim/undo,taskreschedule preservahora/repetição,
 completeavança/undo. Zero geração paga/tokenexport/reset. Duas fixtures próprias
 removidas; recibos ficam. ScreenshotMeu ritmo carregado, sem crashobservado.
-Ainda faltam conferência visual das abas pelo usuário e entrega real de avisos
-V1.6 ao longo dos horários/descanso/reinício; não declarar essa bateria concluída.
+Usuário confirmou Check-ins e Hábitos: “As duas abas abriram bem”. Ainda falta
+entrega real de avisosV1.6 ao longo dos horários/descanso/reinício; não declarar
+essa bateria concluída.
 Usuário confirmou V1.5 perfeita e autorizou todo este pacote; Poco reconectado.
 Testes físicos preparados criam/removem só fixtures próprias; 12 TesteV1.5 ficam.
 Dashboard atualizado/reaberto no Brave, checklist manual própria V1.6 0/5.

@@ -77,8 +77,8 @@ recibos das ações continuam na conta. As12 TesteV1.5 permanecem.
 
 Tela Meu ritmo aberta e capturada com dados no Poco; primeiro print saiu vazio
 por captura imediata após abertura, segundo mostrou revisão e sugestões carregadas.
-LogAndroidRuntime não mostrou erro nessa conferência. Isso não comprova todas as
-abas visualmente nem a entrega de notificações ao longo do dia.
+LogAndroidRuntime não mostrou erro nessa conferência. Usuário conferiu Check-ins e Hábitos e confirmou: “As duas abas abriram bem”.
+Isso não comprova a entrega de notificações ao longo do dia.
 Novas regras de frequência/prioridade têm5 testes unitários. Teste físico de
 notificações V1.6, descanso prolongado e reinício ainda pendentes.
 Dashboard revisado no Brave; checklist manual0/5, não preenchida pelo agente.
