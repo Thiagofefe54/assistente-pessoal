@@ -1,5 +1,20 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint V1.6 Meu ritmo — preparado, 09/10/2026
+
+Ler ENTREGA_COMPANHEIRA_V1_6.md. Check-ins início/fim, revisão do dia, hábitos
+últimos7dias, reagendar amanhã preservando horário e Desfazer. Config. amplia
+Cuidados com seu dia: tipos, horários, 1–3/dia, mínimo4h e carinho6h opt-in.
+Descanso compartilhado respeitado; entrega local pelo Android sujeita a atraso.
+Endpoints review/checkin/task-action/undo reutilizam RPC/RLS sem migração.
+163 backend +35 Android unitários passaram, sem geração paga; builds e lint
+0erros97avisos aprovados. APK1.6/code8 build/releases/Koiwai-1.6.apk SHA256
+5A13A9957C0765A96E3D47C6D7D9BCA328DBC7F98261545B82DC3EA932267EA3.
+DaemonGradle parado. Ainda falta publicar/instalar/testar no Poco; não afirmar feito.
+Usuário confirmou V1.5 perfeita e autorizou todo este pacote; Poco reconectado.
+Testes físicos preparados criam/removem só fixtures próprias; 12 TesteV1.5 ficam.
+Dashboard atualizado com checklist manual própria V1.6, ainda não conferida.
+
 ## Checkpoint V1.5 Organização — instalada no Poco, 08/10/2026
 
 Ler ENTREGA_ORGANIZACAO_V1_5.md. Busca por palavras/período com fontes, plano

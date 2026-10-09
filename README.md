@@ -1,3 +1,10 @@
+# Novidades da V1.6 — Meu ritmo com a Koi
+
+Check-ins com início e fim, revisão do dia, constância dos hábitos e sugestões
+aplicáveis de reagendamento com Desfazer. Acompanhamento opcional com tipos,
+horários, frequência e silêncio configuráveis. Botões e avisos não geram IA;
+entrega local depende do Android e internet. [Entrega e estado](docs/ENTREGA_COMPANHEIRA_V1_6.md).
+
 # Novidades da V1.5
 
 Busca de lembranças por palavras e período, com trechos originais; plano do dia que

@@ -59,7 +59,7 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:St
     val motion = LocalKoiMotion.current
     LaunchedEffect(account?.id) { day=null }
     LaunchedEffect(taskRequest) { if(taskRequest>0) {selected="routine";category="Tarefas";day=null} }
-    LaunchedEffect(lifeRequest){lifeRequest?.split('|')?.firstOrNull()?.takeIf{it in listOf("Contas","Orçamento","Diário")}?.let{selected="routine";category=it;day=null}}
+    LaunchedEffect(lifeRequest){lifeRequest?.split('|')?.firstOrNull()?.takeIf{it in listOf("Contas","Orçamento","Diário","Meu ritmo")}?.let{selected="routine";category=it;day=null}}
     LaunchedEffect(reportRequest) {reportRequest?.split('|')?.let { parts ->
         if(parts[0]=="day") {day=parts[1];selected="memory"} else {day=null;selected="reports"}
     }}
@@ -98,7 +98,7 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:St
                 }) { route ->
                     states.SaveableStateProvider("$route:${account?.id ?: "local"}") {
                         when(route) {
-                            "home" -> HomeScreen({selected="chat"},{selected="routine"},{openAccount("home")})
+                            "home" -> HomeScreen({selected="chat"},{selected="routine"},{openAccount("home")},{selected="routine";category="Meu ritmo"})
                             "chat" -> ChatScreen({back()},{openAccount("chat")},{day=it;selected="memory"},{selected="routine";category="Ferramentas"},{area->
                                 if(area=="Lembranças") selected="facts" else {selected="routine";category=area}
                             })
@@ -107,6 +107,7 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:St
                                 reportRequest?.split('|')?.get(0) ?: "week",reportRequest?.split('|')?.get(1) ?: java.time.LocalDate.now().toString())}
                             "facts" -> MemoriesScreen({selected="memory"},{openAccount("facts")})
                             "routine" -> when(category) {
+                                "Meu ritmo" -> CompanionScreen({category=null},{category=it})
                                 "Contas","Orçamento","Diário" -> key(category){com.thiago.assistentepessoal.routine.LifeScreen(category!!,{category=null},{openAccount("routine")})}
                                 "Tarefas","Agenda","Hábitos" -> key(category){TasksScreen({category=null},{openAccount("routine")},category ?: "Tarefas")}
                                 "Notas","Listas","Metas","Treinos","Finanças","Registros" -> key(category){PersonalScreen(if(category=="Registros") "Notas" else category!!,{category=null},{openAccount("routine")})}
@@ -124,7 +125,7 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:St
 }
 
 @Composable
-private fun HomeScreen(onChat: () -> Unit, onRoutine: () -> Unit, onAccount: () -> Unit) {
+private fun HomeScreen(onChat: () -> Unit, onRoutine: () -> Unit, onAccount: () -> Unit,onCompanion:()->Unit) {
     val app=LocalContext.current.applicationContext as KoiwaiApplication
     val account by app.auth.account.collectAsState()
     val tasksRepo by app.tasks.collectAsState()
@@ -171,6 +172,9 @@ private fun HomeScreen(onChat: () -> Unit, onRoutine: () -> Unit, onAccount: () 
                 else "${tasks.count {it.completedAt==null && it.archivedAt==null}} pendentes • ${tasks.count {it.overdue()}} vencidas",color=KoiColors.Muted,fontSize=13.sp)
         }
         KoiAction("✦  Conversar comigo",onChat,Modifier.fillMaxWidth())
+        KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple,onClick=onCompanion){
+            Eyebrow("ACOMPANHAMENTO",KoiColors.Purple);Text("Meu ritmo com a Koi →",fontSize=22.sp,fontWeight=FontWeight.SemiBold);Text("Check-ins • hábitos • revisão do dia",color=KoiColors.Muted)
+        }
         DayOverviewPanel(onRoutine)
         DayPlanPanel(onRoutine)
         WeatherPanel(compact=true)
@@ -278,6 +282,7 @@ private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit, 
 
 private data class RoutineArea(val name:String,val icon:String,val subtitle:String,val accent:Color)
 private val areas=listOf(
+    RoutineArea("Meu ritmo","memory","Hábitos, momentos e carinho.",KoiColors.Purple),
     RoutineArea("Tarefas","tasks","Um passo de cada vez.",KoiColors.Red),
     RoutineArea("Agenda","agenda","Tempo para o que importa.",KoiColors.Blue),
     RoutineArea("Notas","notes","Dê espaço às suas ideias.",KoiColors.Purple),

@@ -40,7 +40,7 @@ class Interpretation(BaseModel):
     speech_act: Literal['request', 'report', 'question', 'conversation']
     evidence: str = Field(max_length=8000)
     device: DeviceRequest | None
-    read_query: Literal['unpaid_bills_this_month', 'expenses_this_month', 'income_this_month', 'budget_this_month', 'diary_this_week', 'diary_last_week', 'diary_this_month', 'memory_all', 'finance_compare_month', 'finance_compare_week', 'day_overview','memory_search','diary_search','task_plan','finance_categories'] | None = None
+    read_query: Literal['unpaid_bills_this_month', 'expenses_this_month', 'income_this_month', 'budget_this_month', 'diary_this_week', 'diary_last_week', 'diary_this_month', 'memory_all', 'finance_compare_month', 'finance_compare_week', 'day_overview','memory_search','diary_search','task_plan','finance_categories','daily_review'] | None = None
     read_filter: ReadFilter | None = None
 
     @property
@@ -130,6 +130,7 @@ do período atual até hoje com o mesmo trecho do período anterior (domain reco
 day_overview para resumo do meu dia, tarefas de hoje, contas próximas e diário
 (domain conversation, operation read). Use null em alterações, filtros específicos,
 outros períodos, hipóteses, relatos ou dúvidas sobre como fazer.
+daily_review (domain conversation, operation read) consulta revisão do dia, conquistas, hábitos, check-ins e sugestões.
 read_query exige operation read e speech_act question/request. Não combine consultas.
 memory_search (domain memory) procura assuntos nas lembranças, notas, diário e
 mensagens originais; diary_search (domain diary) limita aos acontecimentos do Diário.

@@ -29,7 +29,7 @@ class TaskReminders(private val context:Context) {
     fun setEnabled(value:Boolean) {
         prefs.edit().putBoolean("enabled",value).commit()
         if(!value) {
-            work.cancelAllWorkByTag(TAG);manager.cancelAll()
+            work.cancelAllWorkByTag(TAG);registry().keys().forEach{manager.cancel(it,1)}
             val edit=prefs.edit()
             prefs.all.keys.filter {it.startsWith("scheduled-") || it.startsWith("snooze-")}.forEach {edit.remove(it)}
             edit.commit()

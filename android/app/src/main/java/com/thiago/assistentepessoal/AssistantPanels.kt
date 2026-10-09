@@ -27,7 +27,7 @@ internal suspend fun readAssistant(app: KoiwaiApplication, owner: String, usage:
 }
 
 internal suspend fun assistantRequest(app: KoiwaiApplication, owner: String, path:String, body:JSONObject?=null): JSONObject {
-    require(path in setOf("day","usage","search","plan","demo"))
+    require(path in setOf("day","usage","search","plan","demo","review","checkin","task-action","undo"))
     val endpoint = BackendEndpoint.resolve(BuildConfig.BACKEND_URL, BuildConfig.DEBUG)
     if (!endpoint.authenticated) throw IOException("Este painel precisa do servidor HTTPS.")
     val token = app.auth.token(owner) ?: throw IOException("Entre novamente na sua conta.")
@@ -44,12 +44,14 @@ internal suspend fun assistantRequest(app: KoiwaiApplication, owner: String, pat
                 connection.doOutput = true
                 connection.setRequestProperty("Content-Type", "application/json; charset=utf-8")
                 connection.outputStream.bufferedWriter(Charsets.UTF_8).use {
-                    it.write((body ?: JSONObject()).put("timezone", ZoneId.systemDefault().id).toString())
+                    it.write((body ?: JSONObject()).apply{if(!has("timezone"))put("timezone", ZoneId.systemDefault().id)}.toString())
                 }
             }
             if (connection.responseCode != 200) throw IOException(when(connection.responseCode) {
                 401 -> "Entre novamente na sua conta."
                 404 -> "O servidor ainda está recebendo esta atualização. Tente depois."
+                409 -> "Esse registro mudou. Confira a lista atual antes de fazer uma nova ação."
+                422 -> "Confira os dados: intervalos duram até 48h e reagendamentos vão até 7 dias."
                 else -> "Não consegui atualizar agora. Confira sua conexão e tente mais tarde."
             })
             val result = JSONObject(connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readBoundedText(100000) })

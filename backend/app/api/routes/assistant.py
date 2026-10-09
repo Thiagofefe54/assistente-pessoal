@@ -10,6 +10,8 @@ from pydantic import Field, model_validator
 from backend.app.core.recall import recall
 from backend.app.core.day_plan import day_plan
 from backend.app.core.demo import seed_demo
+from backend.app.core import companion
+from typing import Literal
 
 
 class SearchRequest(ZoneRequest):
@@ -23,6 +25,58 @@ class SearchRequest(ZoneRequest):
         return self
 
 router = APIRouter(prefix='/assistant', tags=['Meu dia'])
+
+
+class CheckinRequest(ZoneRequest):
+    request_id:UUID
+    category:Literal['work','gym','study','home','sleep','other']
+    phase:Literal['start','finish','note']='note'
+    note:str=Field(default='',max_length=2000)
+    record_id:UUID|None=None
+    expected_updated_at:str|None=Field(default=None,max_length=80)
+    test_data:bool=False
+    @model_validator(mode='after')
+    def finish_identity(self):
+        if self.phase=='finish' and (not self.record_id or not self.expected_updated_at):raise ValueError('Escolha um início para finalizar.')
+        if self.phase!='finish' and (self.record_id or self.expected_updated_at):raise ValueError('Identidade inesperada.')
+        return self
+
+
+class TaskActionRequest(ZoneRequest):
+    request_id:UUID
+    task_id:UUID
+    expected_updated_at:str=Field(min_length=1,max_length=80)
+    action:Literal['reschedule','complete']
+    target_date:date|None=None
+    @model_validator(mode='after')
+    def date_required(self):
+        if (self.action=='reschedule')!=(self.target_date is not None):raise ValueError('Confira a data da ação.')
+        return self
+
+
+class UndoRequest(ZoneRequest):
+    request_id:UUID
+    target_kind:Literal['task','record']
+
+
+@router.post('/review')
+def daily_review(body:ZoneRequest,request:Request,owner:UUID=Depends(current_user)):
+    return companion.review(owner,request.headers['authorization'],body.timezone)
+
+
+@router.post('/checkin')
+def checkin(body:CheckinRequest,request:Request,owner:UUID=Depends(current_user)):
+    return companion.checkin(owner,request.headers['authorization'],body)
+
+
+@router.post('/task-action')
+def task_action(body:TaskActionRequest,request:Request,owner:UUID=Depends(current_user)):
+    return companion.task_action(owner,request.headers['authorization'],body)
+
+
+@router.post('/undo')
+def undo(body:UndoRequest,request:Request,owner:UUID=Depends(current_user)):
+    return companion.undo(request.headers['authorization'],body)
 
 
 @router.post('/day')

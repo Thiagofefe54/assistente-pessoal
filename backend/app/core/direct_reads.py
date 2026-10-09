@@ -14,7 +14,7 @@ def money(cents):
 
 def direct_read(semantic, owner, authorization, timezone, now):
     query = semantic.read_query
-    expected = 'diary' if query and query.startswith('diary_') else 'memory' if query in ('memory_all','memory_search') else 'conversation' if query == 'day_overview' else 'task' if query=='task_plan' else 'record'
+    expected = 'diary' if query and query.startswith('diary_') else 'memory' if query in ('memory_all','memory_search') else 'conversation' if query in ('day_overview','daily_review') else 'task' if query=='task_plan' else 'record'
     if not query or semantic.domain != expected or semantic.operation != 'read' or semantic.speech_act not in ('question', 'request'):
         return None
     today = datetime.fromisoformat(now).astimezone(ZoneInfo(timezone)).date()
@@ -44,6 +44,17 @@ def direct_read(semantic, owner, authorization, timezone, now):
         if not data['priorities']: answer+=' nenhuma pendência sem horário encontrada.'
         if data['partial']: answer+='\nLista resumida; confira as demais tarefas na Rotina.'
         answer+='\n'+data['note']
+        return {'reply':answer,'task_draft':None,'action_receipt':None}
+    if query == 'daily_review':
+        from backend.app.core.companion import review
+        data=review(owner,authorization,timezone,datetime.fromisoformat(now))
+        answer=f"Seu dia comigo 💜\n{data['completed_count']} conclusões registradas hoje; {data['pending_count']} pendências até hoje ou sem data."
+        for r in data['completed']:answer+=f"\n✓ {r['time']} · {r['title']}"
+        for r in data['habits']:answer+=f"\nHábito {r['title']}: {r['days_done']} dias com conclusão nos últimos 7 dias."
+        for r in data['alerts']:answer+='\n'+r['text']
+        for r in data['suggestions']:answer+=f"\nSugestão: levar {r['title']} para {r['target_date']}, mantendo {r['time'] or 'sem horário'}. Você pode aplicar em Meu ritmo."
+        if data['partial']:answer+='\nConsulta limitada; confira os registros nas respectivas telas.'
+        answer+='\n'+data['encouragement']
         return {'reply':answer,'task_draft':None,'action_receipt':None}
     if query == 'memory_all':
         from backend.app.core.memory import confirmed_facts

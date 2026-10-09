@@ -17,7 +17,7 @@ class MainActivity : ComponentActivity() {
     private fun lifeIntent(intent:Intent){
         val raw=intent.getStringExtra("openLife")
         val area=when(raw){"bills"->"Contas";"budget"->"Orçamento";"diary"->"Diário";else->raw}
-        area?.takeIf{it in listOf("Contas","Orçamento","Diário")}?.let{lifeRequest.value="$it|${System.nanoTime()}"}
+        area?.takeIf{it in listOf("Contas","Orçamento","Diário","Meu ritmo")}?.let{lifeRequest.value="$it|${System.nanoTime()}"}
     }
     private fun reportIntent(intent:Intent) {
         val kind=intent.getStringExtra("reportKind") ?: return
