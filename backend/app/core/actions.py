@@ -14,7 +14,7 @@ from backend.app.core.context_budget import TOOL_TONE, compact_json, recent_hist
 from backend.app.core.tasks import TaskProposal
 from backend.app.core.conversation import TASK_SCHEMA
 from backend.app.core.journal import cloud
-from backend.app.core.schedule import relative_deadline, simple_relative_title
+from backend.app.core.schedule import relative_deadline, simple_relative_title, explicit_reminder
 
 
 class TaskPatch(BaseModel):
@@ -161,9 +161,13 @@ Se action null, responda naturalmente sem fingir que salvou ou concluiu algo.
     if semantic is not None:
         instructions += '\nIntenção atual: '+compact_json(semantic.model_dump())+'\nOperação da ferramenta: '+semantic.tool_operation+'. Pedidos indiretos claros, mesmo em forma de pergunta, são pedidos. read/none usam action null. Execute somente a operação interpretada sobre dados fornecidos; se faltar alvo, esclareça.\n'
     try:
+        reminder=explicit_reminder(message,tasks['now'],timezone) if tasks.get('now') else None
         due=relative_deadline(message,tasks['now'],timezone) if tasks.get('now') else None
         title=simple_relative_title(message) if due else None
-        if title:
+        if reminder:
+            plan=ActionPlan(reply='Vou salvar seu lembrete.',action=TaskAction(type='create',task_id=None,patch=None,
+                draft=TaskProposal(title=reminder[0],notes='',due_date=reminder[1],due_time=reminder[2],recurrence='none')))
+        elif title:
             plan=ActionPlan(reply='Vou salvar seu lembrete.',action=TaskAction(type='create',task_id=None,patch=None,
                 draft=TaskProposal(title=title,notes='',due_date=due[0],due_time=due[1],recurrence='none')))
         else:

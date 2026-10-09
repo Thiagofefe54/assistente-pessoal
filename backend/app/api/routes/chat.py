@@ -18,7 +18,8 @@ from zoneinfo import ZoneInfo, ZoneInfoNotFoundError
 from backend.app.core.actions import existing_action, direct_conversation, digest, undo_action
 from backend.app.core.personal import applies, follows_record, personal_conversation, undo_personal
 from backend.app.core.ai import generate, KOI_INSTRUCTIONS, reply
-from backend.app.core.intent import interpret
+from backend.app.core.intent import interpret, Interpretation
+from backend.app.core.schedule import explicit_reminder
 from backend.app.core.direct_reads import direct_read
 
 router = APIRouter(prefix="/chat", tags=["Chat"])
@@ -137,7 +138,13 @@ Não identifique pessoas nem invente características pessoais sensíveis.
         previous=existing_personal(user_id,authorization,payload.request_id,digest(payload.message,payload.timezone))
         if previous: return ChatResponse(**previous)
         try:
-            semantic=interpret(payload.message,history,capture=payload.capture_reports)
+            reminder=explicit_reminder(payload.message,
+                (payload.requested_at or datetime.now(ZoneInfo(payload.timezone))).isoformat(),payload.timezone)
+            if reminder:
+                semantic=Interpretation(domain='task',operation='create',speech_act='request',
+                    evidence=payload.message,device=None)
+            else:
+                semantic=interpret(payload.message,history,capture=payload.capture_reports)
         except (ValueError,KeyError,TypeError):
             raise HTTPException(502,'Não consegui entender esse pedido. Pode dizer de outro jeito?') from None
         read_result=direct_read(semantic,user_id,authorization,payload.timezone,

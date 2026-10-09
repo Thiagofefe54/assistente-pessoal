@@ -47,6 +47,20 @@ class PoeTests(unittest.TestCase):
         self.assertIn('read_query',data['messages'][0]['content'])
         self.assertNotIn('response_format',data)
 
+    def test_system_rules_and_schema_share_one_message_and_json_fence_is_validated(self):
+        value={'domain':'conversation','operation':'none','speech_act':'conversation','evidence':'oi','device':None,'read_query':None}
+        self.network.return_value.open.return_value=self.result('```json\n'+json.dumps(value)+'\n```')
+        answer=ai.generate([{'role':'system','content':'Regra A'},
+                            {'role':'system','content':'Regra B'},
+                            {'role':'user','content':'oi'}],FORMAT)
+        self.assertEqual(value,json.loads(answer))
+        data=json.loads(self.network.return_value.open.call_args.args[0].data)
+        systems=[m for m in data['messages'] if m['role']=='system']
+        self.assertEqual(1,len(systems))
+        self.assertIn('Regra A',systems[0]['content'])
+        self.assertIn('Regra B',systems[0]['content'])
+        self.assertIn('read_query',systems[0]['content'])
+
     def test_invalid_schema_does_not_execute_or_retry(self):
         for value in ('{}','{"domain":"unknown"}','```json\n{}\n```'):
             self.network.return_value.open.return_value=self.result(value)

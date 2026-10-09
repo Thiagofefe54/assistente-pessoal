@@ -1,6 +1,17 @@
 # Koiwai — leia primeiro ao retomar
 
-## Checkpoint: integração Poe — 08/10/2026
+## Checkpoint: falha no lembrete Poe — 08/10/2026
+
+Ler CORRECAO_LEMBRETE_POE_2026_10_08.md. Celular conectado; tela mostrou pedido
+Me lembra de estudar amanhã às 19h. falhando. Dois 502 no servidor às 21:34;
+Poe cobrou quatro chamadas naquele minuto (49 pontos), sem dados para atribuir
+campo de schema que falhou. Correção sem chamadas pagas: lembrete explícito
+hoje/amanhã/horário resolve localmente, zero IA, preservando RPC/recibo/owner;
+regras+schema em system único, JSON fence completo validado, diagnóstico seguro.
+124 testes simulados passaram. Publicação em preparação; teste físico pendente.
+Não reenviar pedido automaticamente nem prometer estorno do Poe.
+
+## Checkpoint anterior: integração Poe — 08/10/2026
 
 Ler IA_POE.md. Usuário autorizou chave Koiwai no .env privado/segredos Render e
 testes até 200 pontos. Chave criada/guardada, nenhuma compra nova. Consumo real

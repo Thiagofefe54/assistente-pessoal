@@ -9,6 +9,24 @@ def plain(text):
     return ''.join(c for c in unicodedata.normalize('NFKD', text.lower()) if not unicodedata.combining(c))
 
 
+def explicit_reminder(message, now, timezone):
+    """Resolve only a complete, explicit singular reminder; no historical intent."""
+    match=re.fullmatch(r'\s*(?:(?:koiwai|coiwai|koi|coi)[,!]?\s*)?'
+        r'(?:me\s+lembre|me\s+lembra|lembre-me)\s+de\s+(.+?)\s+'
+        r'(hoje|amanh[ãa])\s+[àa]s\s+(\d{1,2})(?::(\d{2})|h(\d{2})?)?[.!]?\s*',message,re.I)
+    if not match: return None
+    title=match[1].strip()
+    # Quotes, negation, conditions, compound instructions and dates within the
+    # title require the semantic path. Never extract an embedded quoted order.
+    if not 1<=len(title)<=160 or re.search(r'["“”\'\n;]|\b(?:nao|nunca|sem|se|mas|e|hoje|amanha|depois|ontem)\b',plain(title)):
+        return None
+    hour=int(match[3]);minute=int(match[4] or match[5] or '0')
+    if not 0<=hour<=23 or not 0<=minute<=59: return None
+    anchor=datetime.fromisoformat(now).astimezone(ZoneInfo(timezone))
+    day=anchor.date()+timedelta(days=1 if plain(match[2])=='amanha' else 0)
+    return title,day.isoformat(),f'{hour:02}:{minute:02}'
+
+
 def relative_deadline(message, now, timezone):
     message = re.sub(r'"[^"\n]*"|“[^”\n]*”|\'[^\'\n]*\'', '', message)
     match = re.search(r'\b(?:daqui\s+(?:a\s+)?|em\s+)(\d{1,5}|um|uma|dois|duas|dez|quinze|meia)\s*(minutos?|mins?|horas?|dias?)\b', plain(message))

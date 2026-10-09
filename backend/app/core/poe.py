@@ -10,10 +10,14 @@ from backend.app.core.context_budget import compact_json
 
 
 def text_completion(messages, response_format=None, max_tokens=None):
-    inputs=[dict(m) for m in messages]
+    # Some model gateways keep only one system message. Merge our trusted rules
+    # and schema so the schema cannot disappear behind another system message.
+    instructions='\n\n'.join(m['content'] for m in messages if m['role']=='system')
+    inputs=[dict(m) for m in messages if m['role']!='system']
     if response_format:
         schema=response_format['json_schema']['schema']
-        inputs.insert(0,{'role':'system','content':'Responda somente JSON válido, sem Markdown. Obedeça exatamente este schema: '+compact_json(schema)})
+        instructions+='\n\nResponda somente JSON válido, sem Markdown. Obedeça exatamente este schema: '+compact_json(schema)
+    if instructions: inputs.insert(0,{'role':'system','content':instructions})
     payload={'model':settings.poe_model,'messages':inputs,'stream':False,
              'max_completion_tokens':max_tokens or settings.poe_max_output_tokens}
     if settings.poe_model=='GPT-OSS-120B': payload['extra_body']={'reasoning_effort':'low'}
@@ -28,8 +32,19 @@ def text_completion(messages, response_format=None, max_tokens=None):
     if choice.get('finish_reason')!='stop' or not isinstance(content,str) or not content.strip():
         raise ValueError('Incomplete response')
     if response_format:
-        value=json.loads(content)
-        if not Draft202012Validator(schema).is_valid(value): raise ValueError('Invalid structured response')
+        # Accept a whole JSON code fence without another paid generation. Never
+        # extract a JSON fragment from arbitrary prose or relax the schema.
+        import re
+        wrapped=re.fullmatch(r'\s*```(?:json)?\s*\n(.*?)\n```\s*',content,re.S)
+        if wrapped: content=wrapped[1].strip()
+        try: value=json.loads(content)
+        except ValueError:
+            logging.getLogger(__name__).warning('Poe structured rejected category=json')
+            raise ValueError('Invalid structured response') from None
+        error=next(Draft202012Validator(schema).iter_errors(value),None)
+        if error:
+            logging.getLogger(__name__).warning('Poe structured rejected category=schema validator=%s',error.validator)
+            raise ValueError('Invalid structured response')
     usage=result.get('usage',{})
     if isinstance(usage,dict):
         counts=[usage.get(k) for k in ('prompt_tokens','completion_tokens','total_tokens')]
