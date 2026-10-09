@@ -1,6 +1,6 @@
 # Koiwai — leia primeiro ao retomar
 
-## Checkpoint V1.7 Expansão — preparada, 09/10/2026
+## Checkpoint V1.7 Expansão — publicada e instalada, 09/10/2026
 
 Ler ENTREGA_EXPANSAO_V1_7.md. Usuário pediu todas as frentes exceto visual/Windows.
 Implementado contexto lexical de até3trechos/40registros ativos recentes na conversa,
@@ -15,9 +15,13 @@ pedidos falhos contam, manualseparado, pode gastar pontos. Não é quota globalP
 169backend +37unitáriosAndroid passaram; buildslint0erros102avisos; daemonparado.
 APK1.7/code9 build/releases/Koiwai-1.7.apk SHA256
 6D0843D81E474BD51BD5718263E12B1ED9E53AF7D8605C5060B2E1D83C418C25.
-Nenhuma chamada paga/reset/migração/novo segredo/plano. Ainda não publicado/instalado.
-Usuário desconectou celular, depois confirmou reconectado para instalar quandopronto.
-Tests físicos preparados ExpansionDeviceTest: cacheisolamento/read-only,assistmanifest.
+Nenhuma chamada paga/reset/migração/novo segredo/plano. Render LIVE
+09/10/2026 11:29:06 São Paulo, dep-db4fjurl550s73bjgk30, runtime b104bf568e09cf488f1ae7dee5268e0278db1fcc.
+Saúde200/providerpoe; chat/review sem sessão401; logs de erro vazios nesta conferência.
+Poco14c3a88a install-r aprovado (app+testes),1.7/code9 confirmado.
+ExpansionDeviceTest:2PASS0,023s, cache privado isolado/read-only e declaraçãoASSIST.
+ACTION_ASSIST abriu Chat; screenshot carregada com conta conectada/histórico preservado.
+Isso não verifica o gesto físico nem a escolha padrão. Voz/agenda aguardam usuário.
 Gmail/Tasks/DriveOAuth e Inter/nextJoy não conectados. Interdocs públicasPJ;
 sem APIgratuitaPF confirmada. Nunca declarar bancos/Googlecompleto funcionando.
 Faltam testes físicos de voz/agenda/padrão/snapshots e estabilidade prolongada.
@@ -575,3 +579,6 @@ Teste físico TaskRemindersLiveTest aprovado (1 teste, 46,219 s). Confirmou entr
 Usuário quer um começo limpo/reset completo quando chegarmos à V1. Não é pedido
 para apagar agora. Escopo de conversas, lembranças, tarefas e preferências deverá
 ser combinado nessa etapa; não resetar contas/infraestrutura/credenciais por inferência.
+
+Painel local V1.7 recarregado no Brave e cartão interativo de voz conferido.
+Checklist manual de voz/agenda enviada; ainda sem resposta neste checkpoint.

@@ -102,9 +102,16 @@ entrega até este checkpoint. 37 testes unitáriosAndroid aprovados; assembleDeb
 aprovados (0erros102avisos). Gradle encerrado para liberar RAM.
 APK android/build/releases/Koiwai-1.7.apk SHA256
 6D0843D81E474BD51BD5718263E12B1ED9E53AF7D8605C5060B2E1D83C418C25.
-Ainda não instalado/publicado até este checkpoint.
-Celular desconectado pelo usuário; avisar quando APKfinal estiver pronto.
-Testes físicos preparados: cache privado/isolamento por conta e ACTION_ASSIST.
+Publicado no Render em 09/10/2026 11:29:06 (São Paulo), deploy
+dep-db4fjurl550s73bjgk30, commit b104bf568e09cf488f1ae7dee5268e0278db1fcc.
+Saúde200/providerpoe; chat/review sem sessão401; nenhum log de erro na conferência.
+Instalado por atualização no Poco14c3a88a; versão1.7/code9 confirmada.
+ExpansionDeviceTest:2 testes físicos PASS0,023s (cache privado/isolamento/read-only
+e declaraçãoACTION_ASSIST). AçãoASSIST abriu Chat, conta e histórico preservados.
+Não é teste do gesto físico, seleção como padrão ou consulta real sem rede.
 Reconhecimento local, qualidade da voz, escolha do assistente, leitura do calendário
 e notificações prolongadas dependem de verificação no Poco e permissões do usuário.
 Sem migração ou alteração de segredos/plano; não houve reset.
+
+Painel local V1.7 recarregado no Brave e cartão interativo de voz conferido.
+Checklist manual de voz/agenda enviada; ainda sem resposta neste checkpoint.
