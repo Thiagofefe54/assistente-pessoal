@@ -151,6 +151,10 @@ Não identifique pessoas nem invente características pessoais sensíveis.
         read_result=direct_read(semantic,user_id,authorization,payload.timezone,
             (payload.requested_at or datetime.now(ZoneInfo(payload.timezone))).isoformat())
         if read_result is not None:
+            if semantic.read_query=='finance_guidance':
+                if not semantic.evidence.strip() or semantic.evidence.strip() not in payload.message:
+                    raise HTTPException(502,'Não consegui confirmar o assunto da consulta. Pode dizer de outro jeito?')
+                read_result['action_receipt']['request_id']=str(payload.request_id)
             return ChatResponse(**read_result)
         if semantic.domain=='device':
             tool=semantic.device

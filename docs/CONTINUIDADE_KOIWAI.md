@@ -1,5 +1,28 @@
 # Koiwai — leia primeiro ao retomar
 
+## Em andamento — consultas úteis e quatro contas — 09/10/2026
+
+Usuário mostrou resposta genérica a pedido de orientação sobre seu dinheiro; pediu
+conectar três contas Google e uma Outlook. Prioridade real: autonomia, trabalho,
+organização, metas e finanças utilizáveis. Inter continua somente saldo; não ampliar
+pagamentos/Next. Separar salário e benefícios conforme regras, sem presumir dinheiro
+disponível. Não gravar estimativas pessoais em Git/documentação pública.
+finance_guidance adicionado ao schema semântico: modelo escolhe cartão bancário plan,
+sem segunda geração nem dados bancários ao Poe. Recibo inclui request_id para
+compatibilidade ChatBackend atual. Guardas read/domain/question/request/filtro e
+evidência do pedido atual; nunca grava gasto nem executa pagamento. 186 testes PASS.
+Uma interpretação real curta no Poe reconheceu a pergunta como record/read e
+finance_guidance; não foi teste de interface. Publicação ainda pendente.
+Google Cloud: projeto separado Koiwai criado, ID handy-geography-511119-h4,
+sem billing/crédito/teste pago. Não havia cliente OAuth no projeto anterior; não
+alteramos outros projetos. Branding, client, autorizações e adapters ainda pendentes;
+não chamar as quatro contas conectadas. Brave reconectado ID1, projeto aberto.
+Google Tasks/Gmail/Drive não existem como adapters no código. Agenda atual lê apenas
+calendários sincronizados do Android. Outlook ainda sem app/Graph OAuth.
+Ler PLANO_CONEXOES_MULTICONTAS.md para dependências e ordem. Não confundir plugin
+do Codex com autorização da Koi. Consentimentos/criação de credenciais via navegador
+exigem confirmação específica no momento; login/senhas/códigos com o usuário.
+
 ## Checkpoint — continuidade de conversa — 09/10/2026
 
 Usuário confirmou também a comparação saldo/contas no Chat da V1.11.

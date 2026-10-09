@@ -40,7 +40,7 @@ class Interpretation(BaseModel):
     speech_act: Literal['request', 'report', 'question', 'conversation']
     evidence: str = Field(max_length=8000)
     device: DeviceRequest | None
-    read_query: Literal['unpaid_bills_this_month', 'expenses_this_month', 'income_this_month', 'budget_this_month', 'diary_this_week', 'diary_last_week', 'diary_this_month', 'memory_all', 'finance_compare_month', 'finance_compare_week', 'day_overview','memory_search','diary_search','task_plan','finance_categories','daily_review'] | None = None
+    read_query: Literal['unpaid_bills_this_month', 'expenses_this_month', 'income_this_month', 'budget_this_month', 'diary_this_week', 'diary_last_week', 'diary_this_month', 'memory_all', 'finance_compare_month', 'finance_compare_week', 'day_overview','memory_search','diary_search','task_plan','finance_categories','daily_review','finance_guidance'] | None = None
     read_filter: ReadFilter | None = None
 
     @property
@@ -115,7 +115,7 @@ Para device use operation create e speech_act request.
 device só possui open_app (value nome do app), play_music (value busca ou vazio),
 open_settings (value wifi, bluetooth ou app), timer (value segundos inteiros),
 alarm (value HH:mm), navigate (value lugar), search_web (value busca).
-Não há pagamentos, envio de mensagens, leitura de bancos, toque em outras telas,
+Não há pagamentos, envio de mensagens, leitura de bancos pelo modelo, toque em outras telas,
 pausar player nem integração Google. Não invente ferramenta. device null fora de device.
 Se faltar alvo/horário, escolha conversation/none e a resposta poderá esclarecer.
 read_query permite consulta direta sem uma segunda IA. Use somente para pergunta
@@ -141,6 +141,19 @@ Lembranças confirmadas não têm data do acontecimento. Se assunto estiver em c
 recente, use esse assunto para resolver 'aquilo que contei'. Não invente palavras.
 task_plan (domain task) sugere prioridades do dia sem alterar tarefas; finance_categories
 (domain record) lista gastos do mês por categoria. read_filter null nos demais casos.
+finance_guidance (domain record, operation read, speech_act question/request) prepara
+um cartão privado no telefone para comparar o saldo do Inter com contas e orçamento
+cadastrados. O modelo não recebe os valores bancários; não precisa saber o saldo para
+escolher essa ferramenta. Se a pessoa pede ajuda para organizar SEU dinheiro, saber
+se pode gastar ou comprar algo, ou quanto reservar para compromissos, consulte esse
+cartão antes de produzir dicas genéricas. Ex.: 'como eu posso gastar meu dinheiro?',
+'dá para me dar um presente sem atrapalhar as contas?', 'me ajuda a organizar o que
+tenho'. Esse último só usa finance_guidance se o assunto recente for financeiro.
+Não use para explicações gerais ('o que é orçamento?'), investimentos, recomendação
+de produto, saldo de pontos de IA, relato de gasto/receita, negação de consulta ou
+pedido de transferência/pagamento. Um pedido de ajuda pessoal com 'como' pode
+autorizar LEITURA, nunca escrita. Não invente compromisso nem valor disponível.
+read_filter null nesta consulta. Sem segundo texto gerado após essa escolha.
 Registros identificados como Teste ou fictícios são exemplos; não os trate como fatos
 reais da vida da pessoa. O histórico ajuda a localizar a referência, nunca autoriza ação.
 '''

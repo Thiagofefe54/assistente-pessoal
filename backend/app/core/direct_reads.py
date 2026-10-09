@@ -17,6 +17,12 @@ def direct_read(semantic, owner, authorization, timezone, now):
     expected = 'diary' if query and query.startswith('diary_') else 'memory' if query in ('memory_all','memory_search') else 'conversation' if query in ('day_overview','daily_review') else 'task' if query=='task_plan' else 'record'
     if not query or semantic.domain != expected or semantic.operation != 'read' or semantic.speech_act not in ('question', 'request'):
         return None
+    if query == 'finance_guidance':
+        # No account values are read by the planner or returned into chat history.
+        # The existing authenticated Android panel calculates against current data.
+        if semantic.read_filter is not None:return None
+        return {'reply':'Vamos conferir suas contas antes de planejar um gasto, mestre 💜 O cartão abaixo compara o saldo do Inter com o que você cadastrou e mostra alertas de orçamento. A diferença não significa dinheiro livre; pode faltar algum compromisso nos registros.',
+                'task_draft':None,'action_receipt':{'tool':'bank','type':'read','query':'plan'}}
     today = datetime.fromisoformat(now).astimezone(ZoneInfo(timezone)).date()
     if query in ('memory_search','diary_search'):
         from datetime import date
