@@ -7,8 +7,16 @@ do dia/finanças/diário na Home; saldo do Poe em Config.; leituras naturais amp
 para lembranças, diário anterior e comparação de períodos. Cartões sem geração IA;
 chat usa interpretação antes de ler, salvo lembrete explícito já resolvido sem IA.
 137 testes backend, testes unitários Android, assembleDebug e lintDebug passaram.
-Publicação, instalação e conferência física em andamento; atualizar este checkpoint
-com evidência final. Sem reset ou mudanças de banco/segredos/plano.
+Servidor publicado: commit 9571a2646fb4cd52c0448cbbd242c6031d8c1bf2, Render
+dep-db44jn7lk1mc73eqdd0g LIVE em 08/10/2026 22:57:40 (São Paulo).
+Saúde HTTP 200/provider poe. V1.4/code6 instalada por atualização no Poco.
+Usuário conferiu Meu dia e Consultar saldo no Poco: “Os dois funcionaram”.
+Bateria automática de telas não concluída (abertura de atividades no Poco);
+teste adicional do cliente autenticado APROVADO no Poco (1 teste, 3,217s):
+mesmo cliente dos cartões leu Meu dia e pontos com sessão existente, sem geração
+de IA, exportação de token ou mudanças nos registros. Sem reset ou mudanças
+de banco/segredos/plano. APK final: android/build/releases/Koiwai-1.4.apk,
+SHA256 98D886B3C6F0A4449CE6257E01368F99BAEDB994DFC0767ADE4DEA34B0DAB76F.
 Usuário confirmou que os cinco testes anteriores de conversa, criação, consulta,
 conclusão e finanças passaram. Essas são evidências do usuário, não teste automático.
 Poe é o provedor ativo, plano já contratado R$24,90; Render/Supabase continuam grátis.

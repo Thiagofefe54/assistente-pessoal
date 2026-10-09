@@ -3,7 +3,7 @@
 ## Direção atual — revisão de 08/10/2026
 
 Leia o checkpoint de continuidade e a [entrega V1.4](ENTREGA_MEUDIA_V1_4_2026_10_08.md)
-antes do planejamento histórico abaixo. V1.3 instalada; V1.4 implementada com
+antes do planejamento histórico abaixo. V1.4 instalada no Poco, com
 Meu dia, saldo Poe e leituras ampliadas. Diário, contas, orçamento e acompanhamento
 opt-in já existem. Próximos pacotes: busca mais ampla, categorias/importação,
 Google autorizado, voz/assistente, então redesign e Windows.

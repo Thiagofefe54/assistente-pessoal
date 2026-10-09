@@ -22,7 +22,7 @@ import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 
 /** Authenticated account-scoped reads. No key, generation, persistence or redirects. */
-private suspend fun readAssistant(app: KoiwaiApplication, owner: String, usage: Boolean): JSONObject {
+internal suspend fun readAssistant(app: KoiwaiApplication, owner: String, usage: Boolean): JSONObject {
     val endpoint = BackendEndpoint.resolve(BuildConfig.BACKEND_URL, BuildConfig.DEBUG)
     if (!endpoint.authenticated) throw IOException("Este painel precisa do servidor HTTPS.")
     val token = app.auth.token(owner) ?: throw IOException("Entre novamente na sua conta.")

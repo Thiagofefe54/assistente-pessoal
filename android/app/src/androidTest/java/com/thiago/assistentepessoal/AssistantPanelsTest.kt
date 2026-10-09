@@ -6,14 +6,24 @@ import androidx.test.platform.app.InstrumentationRegistry
 import org.junit.Assume.assumeTrue
 import org.junit.Rule
 import org.junit.Test
+import org.junit.Before
 
 /** Reads only. No fictional records, chat generations, changes or exported session. */
 class AssistantPanelsTest {
     @get:Rule val compose = createAndroidComposeRule<MainActivity>()
 
+    @Before fun keepAwakeWhileChecking() {
+        compose.runOnUiThread { compose.activity.window.addFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON) }
+    }
+
+    private fun showBalanceButton() {
+        compose.onNode(hasScrollToIndexAction()).performScrollToNode(hasText("Consultar saldo", substring=false))
+    }
+
     @Test fun newPanelsAreReachableWithoutChangingPreferences() {
         compose.onNodeWithText("Conferir meu dia").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Config.", substring=false).performClick()
+        showBalanceButton()
         compose.onNodeWithText("Consultar saldo").performScrollTo().assertIsDisplayed()
     }
 
@@ -26,6 +36,7 @@ class AssistantPanelsTest {
         compose.onNodeWithText("Diário e comparação ↓").performScrollTo().performClick()
         compose.onNodeWithText("Comparação de despesas").performScrollTo().assertIsDisplayed()
         compose.onNodeWithText("Config.", substring=false).performClick()
+        showBalanceButton()
         compose.onNodeWithText("Consultar saldo").performScrollTo().performClick()
         compose.waitUntil(100000) { compose.onAllNodes(hasText("pontos disponíveis", substring=true)).fetchSemanticsNodes().isNotEmpty() }
         compose.onNodeWithText("Consultar saldo").performScrollTo().assertIsDisplayed()

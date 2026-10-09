@@ -38,8 +38,22 @@ alterações posteriores exigem nova consulta. Não apagam nem editam dados.
 
 - 137 testes backend passaram, incluindo comparação de datas/centavos,
   exclusão de arquivados/futuros/pagos, isolamento da sessão e cache de saldo.
-- Compilação do APK, testes unitários Android e lint passaram.
-- Publicação e instalação: registrar o resultado final no checkpoint de continuidade.
+- Compilação do APK e APK de testes, 30 testes unitários Android e lint passaram.
+  Lint: zero erros, 80 avisos preexistentes/gerais; não afirmar código sem avisos.
+- Backend publicado no Render: dep-db44jn7lk1mc73eqdd0g LIVE em 08/10/2026
+  22:57:40 (São Paulo), commit 9571a26. Saúde 200/provider poe. V1.4/code6
+  instalada no Poco com atualização, sem limpar dados.
+- O primeiro teste de tela leu Meu dia e abriu a comparação; falhou ao buscar um
+  botão ainda não composto na lista das configurações. A rolagem do teste foi
+  corrigida. Rodadas seguintes ficaram presas na abertura de atividades no Poco;
+  não foram aprovadas. Toques remotos recusados com INJECT_EVENTS; não foram
+  alteradas proteções. Usuário abriu os dois cartões e confirmou: “Os dois
+  funcionaram”. Isso valida o teste manual, não aprova a bateria de navegação.
+- Teste direto do mesmo cliente Android dos cartões APROVADO no Poco: Meu dia
+  autenticado e saldo Poe (1 teste, 3,217s). Sessão ficou dentro do app; nenhum
+  token/dado pessoal foi exportado, nenhum registro foi criado ou alterado.
+- APK final Koiwai-1.4.apk instalado: SHA256
+  98D886B3C6F0A4449CE6257E01368F99BAEDB994DFC0767ADE4DEA34B0DAB76F.
 - Nenhuma geração paga de IA foi usada nos testes deste pacote.
 - As cinco frases anteriores foram aprovadas pelo usuário: conversa, criar tarefa,
   consultar, concluir e contas pendentes. Isso não prova toda paráfrase nova.

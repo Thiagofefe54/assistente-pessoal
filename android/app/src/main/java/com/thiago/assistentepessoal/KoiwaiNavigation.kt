@@ -367,6 +367,9 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
             }
         }
         item {
+            PoeUsagePanel()
+        }
+        item {
             Eyebrow("APARÊNCIA • V${BuildConfig.VERSION_NAME}")
             KoiPanel(Modifier.fillMaxWidth()) {
                 Row(verticalAlignment=Alignment.CenterVertically) {
@@ -398,7 +401,6 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
         item {com.thiago.assistentepessoal.routine.ReminderSettings()}
         item {com.thiago.assistentepessoal.routine.LifeReminderSettings()}
         item {ReportSettings()}
-        item {PoeUsagePanel()}
         item {
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple) {
                 Eyebrow("VOZ DA KOI",KoiColors.Purple)
