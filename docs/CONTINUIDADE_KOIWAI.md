@@ -20,7 +20,9 @@ Gmail3/Drive2 PASS (Drive vazio), só contagens impressas; conferência no Poco 
 Perfis de voz Android e limpeza de texto falado preparados; não é voz contínua própria.
 Amostra feminina suave5,2s em res/raw, botão ouvir/parar, local. Gerada pelo Runway
 com2créditos gratuitos existentes; nenhuma compra/Poe. Usuário ainda precisa ouvir.
-Primeiro deploy 80f475f LIVE; adições finais de leitor/voz aguardam publicação.
+Publicação final abce280e3bb8c9cdece67ba92e44cdd85c88cb3d LIVE no Render,
+deploy dep-db4lp5vavr4c73fnvgog, 09/10/2026 às18:29 São Paulo. Smoke HTTPS PASS:
+health200, google-day/content sem sessão401, private/no-store nos três endpoints.
 Relatório ENTREGA_V1_14.md distingue entregue e pendente.
 Usuário autorizou pacote amplo, visual final e Windows excluídos; está fora, conectar
 Poco depois. Instalar V1.14, que inclui V1.13, preservando dados. Conferir cartões,

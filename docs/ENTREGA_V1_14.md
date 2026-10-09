@@ -28,7 +28,7 @@
 
 ## Publicação / aparelho
 
-Servidor aguardando publicação final. APK NÃO instalado. Usuário está fora e conectará o Poco depois.
+Servidor publicado e LIVE no Render: commit abce280e3bb8c9cdece67ba92e44cdd85c88cb3d, deploy dep-db4lp5vavr4c73fnvgog, concluído em 09/10/2026 às 18:29 (São Paulo). Smoke HTTPS passou: health 200, google-day e google-content sem sessão 401, todos com private/no-store. APK NÃO instalado. Usuário está fora e conectará o Poco depois.
 V1.14 inclui a V1.13, que também ainda aguardava instalação. No retorno, instalar somente a mais nova com install -r, preservando dados.
 
 ## Revisão das áreas solicitadas
