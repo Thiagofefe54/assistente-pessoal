@@ -12,13 +12,20 @@ sem segunda geração nem dados bancários ao Poe. Recibo inclui request_id para
 compatibilidade ChatBackend atual. Guardas read/domain/question/request/filtro e
 evidência do pedido atual; nunca grava gasto nem executa pagamento. 186 testes PASS.
 Uma interpretação real curta no Poe reconheceu a pergunta como record/read e
-finance_guidance; não foi teste de interface. Publicação ainda pendente.
+finance_guidance; não foi teste de interface. Publicado no Render commit196c039,
+dep-db4jmpei0phs73culpf0 live19:08:15Z; /api/v1/health HTTP200/ok/poe.
+App1.11 já aceita recibo bank/plan com request_id válido; nenhum APK novo necessário.
+Pendente teste manual com nova mensagem; não editar/apagar a conversa anterior.
 Google Cloud: projeto separado Koiwai criado, ID handy-geography-511119-h4,
 sem billing/crédito/teste pago. Não havia cliente OAuth no projeto anterior; não
-alteramos outros projetos. Branding, client, autorizações e adapters ainda pendentes;
+alteramos outros projetos. Cadastro OAuth/branding criado depois de confirmação
+específica do usuário para política API Google; Externo/Testing, 0 usuários de teste.
+Cliente OAuth, autorizações e adapters ainda pendentes;
 não chamar as quatro contas conectadas. Brave reconectado ID1, projeto aberto.
 Google Tasks/Gmail/Drive não existem como adapters no código. Agenda atual lê apenas
 calendários sincronizados do Android. Outlook ainda sem app/Graph OAuth.
+Usuário solicitado a identificar três contas Google/uma Outlook só por e-mails;
+não colocar endereços pessoais no Git. Aba Público-alvo mantida handoff para retomar.
 Ler PLANO_CONEXOES_MULTICONTAS.md para dependências e ordem. Não confundir plugin
 do Codex com autorização da Koi. Consentimentos/criação de credenciais via navegador
 exigem confirmação específica no momento; login/senhas/códigos com o usuário.

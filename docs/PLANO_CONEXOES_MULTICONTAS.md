@@ -2,7 +2,8 @@
 
 Estado em 09/10/2026: preparação. Nenhuma dessas quatro contas foi autorizada para
 a Koi. Os atalhos existentes abrem os serviços; a agenda lê calendários sincronizados
-no Android. O projeto Google dedicado foi criado; não há cliente ou tokens ainda.
+no Android. O projeto Google dedicado e o cadastro OAuth foram criados; Externo,
+modo Testing, nenhuma conta de teste adicionada. Não há cliente ou tokens ainda.
 
 ## Ordem de entrega
 
