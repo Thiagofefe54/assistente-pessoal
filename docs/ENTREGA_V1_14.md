@@ -13,13 +13,18 @@
 - Plano local converte horários do fuso de cada tarefa antes de comparar o dia. Pedido de outro dia usa a data solicitada; não ignora silenciosamente intervalo de vários dias.
 - Middleware protege respostas da API, inclusive erros, com Cache-Control private/no-store, Pragma no-cache e nosniff. Cache explícito privado Android existente continua limitado aos quatro painéis permitidos e separado por dono.
 
+- Leitor privado Google por toque: texto Gmail sem anexos, HTML convertido para texto sem scripts/imagens/links ativos; Google Docs exportado para texto, TXT/CSV/Markdown em prévia. Até 16 mil caracteres, 64KB por download Drive, respostas Gmail até 1MB; truncamento explícito. Sem leitura em massa, IA, histórico, cache ou marcação como lido. Formatos binários não são abertos pelo leitor.
+- Voz: perfis Koi delicada (.94/1.10), animada (1.02/1.08) e tranquila (.88/1.02) com exemplo e aplicação explícita. Texto falado remove emoji/marcação/URL bruta. Usa a voz Android escolhida, não supõe gênero nem gera voz contínua própria.
+
+- Amostra feminina suave de 5,2s gerada com o plugin Runway, preset Katie em português, 2 créditos gratuitos existentes (saldo retornado498). MP3 de84.471bytes embutido em res/raw/koi_voice_preview.mp3; botão Ouvir amostra da Koi, reprodução local com parar e liberação ao sair da tela. Não configura síntese contínua nem cria identidade vocal exclusiva.
+
 ## Verificação
 
-- 245 testes backend PASS; 57 testes unitários Android PASS; build debug V1.14/code16 PASS.
+- 253 testes backend PASS; 59 testes unitários Android PASS; build debug V1.14/code16 PASS.
 - Consultas reais: busca fictícia Gmail/Drive nas três contas passou, sem resultados esperados. Tarefas reais lidas nas três contas com sucesso; apenas contagens impressas.
 - Leitura conjunta das três agendas passou. Nesse teste, somente Google era real; a parte local do plano usou fixture, pois não utilizamos uma sessão do Poco.
-- Sem escrita Google real, sem chamada Poe e sem contratação nesta entrega. Conteúdo pessoal e credenciais não impressos nem registrados no Git.
-- APK preparado: android/build/releases/Koiwai-1.14.apk. SHA256 0581D256D2757DFDBB340B8125B9C69F025799F3D9C3959BB527D82BDFF59B62.
+- Sem escrita Google real, sem chamada Poe e sem contratação nesta entrega. Leitor com fixtures e consultas reais: três prévias Gmail e duas exportações Drive compatíveis passaram (documentos retornaram texto vazio); somente contagens/status impressos. Conferência visual de textos e voz no Poco pendente. Conteúdo pessoal e credenciais não impressos nem registrados no Git.
+- APK preparado: android/build/releases/Koiwai-1.14.apk. SHA256 0EE2B14956BE8748D9B6DD57DE7239A439BA1B505A7071A74BB55762B495CA5C.
 
 ## Publicação / aparelho
 
@@ -47,14 +52,16 @@ V1.14 inclui a V1.13, que também ainda aguardava instalação. No retorno, inst
 4. Config. → Consultas Google: desligar automático, mandar um pedido novo e conferir que consulta só ao tocar.
 5. Chat: Organize meu dia de amanhã com a agenda Google.
 6. Chat: Planeje minhas tarefas para amanhã (conferir data no plano local).
-7. Testes fictícios de criação/conclusão/reabertura Google da ENTREGA_GOOGLE_V1_13.md, sempre com conta/título explícitos.
+7. Config. → Ajustar a voz → Ouvir amostra da Koi e Aplicar e ouvir Koi delicada; comparar e escolher voz instalada.
+8. Ler texto na Koi em um resultado Gmail/Drive compatível; fechar e conferir que texto não ficou no histórico.
+9. Testes fictícios de criação/conclusão/reabertura Google da ENTREGA_GOOGLE_V1_13.md, sempre com conta/título explícitos.
 
 ## Pendências reais — não declarar prontas
 
 - Paginação completa, agendas secundárias, escolha de lista/calendar, busca sem limite e ações fora do recorte.
-- Rascunhos/envio Gmail, leitura de corpo/anexos e conteúdo/edição Drive: não implementados; sem ampliar escopos nesta entrega.
+- Rascunhos/envio Gmail, anexos e edição Drive: não implementados; leitor limitado de texto entregue, sem ampliar escopos.
 - Eventos Google recorrentes, convidados, apagar/undo: não implementados. Google Tasks API continua com vencimento por dia, sem alarme.
-- Palavra de ativação Koi em segundo plano, voz própria, execução autônoma de novas integrações: não implementadas. Escolha como assistente/voz precisa conferência real no aparelho.
+- Palavra de ativação Koi em segundo plano, voz contínua própria, execução autônoma de novas integrações: não implementadas. Perfis Android entregues; amostra curta de voz entregue, aguardando usuário ouvir. Escolha como assistente/voz precisa conferência real no aparelho.
 - Comunicação automática com ChatGPT/Codex: não implementada. Assinatura pessoal não foi convertida em credencial de integração.
 - Proatividade independente do Android e do despertar do Render, conclusão dos resumos longos e revisão final visual: permanecem no roadmap.
 - Nenhuma nova conta foi necessária. Outlook/Microsoft e Next continuam cancelados.
@@ -65,3 +72,6 @@ V1.14 inclui a V1.13, que também ainda aguardava instalação. No retorno, inst
 - https://developers.google.com/workspace/tasks/reference/rest/v1/tasks/list
 - https://developers.google.com/workspace/gmail/api/guides/filtering
 - https://developers.google.com/workspace/drive/api/guides/search-files
+
+- Leitura: https://developers.google.com/workspace/drive/api/guides/manage-downloads
+- Gmail: https://developers.google.com/workspace/gmail/api/reference/rest/v1/Format

@@ -37,7 +37,7 @@ class KoiVoice(context:Context){
     fun speak(text:String){
         configure(prefs.getFloat("voice-rate",1f),prefs.getFloat("voice-pitch",1f),prefs.getString("voice-name",null))
         if(!ready){info="A voz está iniciando ou não está disponível.";return}
-        text.chunked(TextToSpeech.getMaxSpeechInputLength().coerceAtLeast(1000)).forEachIndexed{index,part->
+        speechText(text).chunked(TextToSpeech.getMaxSpeechInputLength().coerceAtLeast(1000)).forEachIndexed{index,part->
             if(engine?.speak(part,if(index==0)TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD,null,"koi-$index")==TextToSpeech.ERROR)info="Não consegui reproduzir a voz. Confira a voz instalada no Android."
         }
     }
@@ -66,9 +66,43 @@ class KoiVoice(context:Context){
     var rate by remember{mutableFloatStateOf(prefs.getFloat("voice-rate",1f))}
     var pitch by remember{mutableFloatStateOf(prefs.getFloat("voice-pitch",1f))}
     var selected by remember{mutableStateOf(prefs.getString("voice-name",null))}
+    var previewPlayer by remember{mutableStateOf<android.media.MediaPlayer?>(null)}
+    var previewError by remember{mutableStateOf<String?>(null)}
+    val lifecycle=androidx.lifecycle.compose.LocalLifecycleOwner.current
+    DisposableEffect(lifecycle){
+        val observer=androidx.lifecycle.LifecycleEventObserver{_,event->if(event==androidx.lifecycle.Lifecycle.Event.ON_STOP){previewPlayer?.release();previewPlayer=null}}
+        lifecycle.lifecycle.addObserver(observer)
+        onDispose{lifecycle.lifecycle.removeObserver(observer);previewPlayer?.release();previewPlayer=null}
+    }
     com.thiago.assistentepessoal.KoiPanel(androidx.compose.ui.Modifier.fillMaxWidth()){
         androidx.compose.material3.TextButton(onClick={expanded=!expanded}){androidx.compose.material3.Text(if(expanded)"Fechar ajustes de voz" else "Ajustar a voz da Koi")}
         if(expanded){
+            androidx.compose.material3.Text("Uma amostra de voz para a Koi")
+            androidx.compose.material3.TextButton(onClick={
+                voice.stop();previewPlayer?.release();previewPlayer=null;previewError=null
+                try{
+                    val player=android.media.MediaPlayer.create(context,com.thiago.assistentepessoal.R.raw.koi_voice_preview)
+                    if(player==null)previewError="Não consegui reproduzir a amostra." else{
+                        previewPlayer=player
+                        player.setOnCompletionListener{it.release();if(previewPlayer===it)previewPlayer=null}
+                        player.setOnErrorListener{p,_,_->p.release();if(previewPlayer===p)previewPlayer=null;previewError="Não consegui reproduzir a amostra.";true}
+                        player.start()
+                    }
+                }catch(e:Exception){previewError="Não consegui reproduzir a amostra."}
+            }){androidx.compose.material3.Text("Ouvir amostra da Koi · 5 segundos")}
+            androidx.compose.material3.TextButton(enabled=previewPlayer!=null,onClick={previewPlayer?.release();previewPlayer=null}){androidx.compose.material3.Text("Parar amostra")}
+            androidx.compose.material3.Text("Amostra feminina suave em português, gerada para você. Funciona sem internet. Respostas do chat ainda usam a voz Android escolhida abaixo; esta prévia não é uma voz contínua exclusiva.")
+            previewError?.let{androidx.compose.material3.Text(it)}
+            androidx.compose.material3.Text("Perfis da Koi · comece por Koi delicada")
+            koiVoiceProfiles.forEach{profile->
+                androidx.compose.material3.TextButton(enabled=voice.ready,onClick={
+                    previewPlayer?.release();previewPlayer=null
+                    rate=profile.rate;pitch=profile.pitch
+                    prefs.edit().putFloat("voice-rate",rate).putFloat("voice-pitch",pitch).putString("voice-profile",profile.title).apply()
+                    voice.configure(rate,pitch,selected);voice.speak(profile.example)
+                }){androidx.compose.material3.Text("Aplicar e ouvir · ${profile.title}")}
+            }
+            androidx.compose.material3.Text("Perfil ajusta ritmo e tom da voz instalada. Escolha abaixo a voz que você acha mais feminina; o Android não informa gênero. Não cria voz exclusiva nem contrata serviço.")
             androidx.compose.material3.Text("Velocidade da fala")
             androidx.compose.material3.Slider(value=rate,onValueChange={rate=it;prefs.edit().putFloat("voice-rate",it).apply()},valueRange=.7f..1.3f)
             androidx.compose.material3.Text("Tom da voz")
@@ -79,7 +113,7 @@ class KoiVoice(context:Context){
                 }
             }
             androidx.compose.material3.Text("Qualidade depende das vozes instaladas no Android. Ajustes não criam uma voz nova.")
-            androidx.compose.material3.TextButton(onClick={voice.speak("Oi, Mestre. Um passo de cada vez, estou aqui com você.")},enabled=voice.ready){androidx.compose.material3.Text("Ouvir esta voz")}
+            androidx.compose.material3.TextButton(onClick={previewPlayer?.release();previewPlayer=null;voice.speak("Oi, Mestre. Um passo de cada vez, estou aqui com você.")},enabled=voice.ready){androidx.compose.material3.Text("Ouvir esta voz")}
         }
     }
 }

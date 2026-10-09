@@ -43,6 +43,21 @@ class GoogleDayRequest(BaseModel):
     valid_zone = field_validator('timezone')(GoogleRequest.valid_zone.__func__)
 
 
+class GoogleContentRequest(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    timezone:str|None=Field(default=None,max_length=80)
+    connection_id:UUID
+    service:Literal['mail','drive']
+    item_id:str=Field(min_length=1,max_length=200,pattern=r'^[A-Za-z0-9_-]+$')
+
+
+@router.post('/assistant/google-content')
+def google_content(body:GoogleContentRequest,response:Response,owner:UUID=Depends(current_user)):
+    from backend.app.core.google_content import preview
+    response.headers.update(HEADERS)
+    return preview(owner,body.connection_id,body.service,body.item_id)
+
+
 @router.post('/assistant/google-day')
 def google_day(body: GoogleDayRequest, response: Response, request: Request, owner: UUID = Depends(current_user)):
     from datetime import datetime

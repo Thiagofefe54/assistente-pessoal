@@ -10,11 +10,18 @@ concluídas, exclui excluídas. Painel de busca/data e filtros de status; abrir 
 em destinos fixos; Config. controla auto consulta de novos pedidos.
 Plano local respeita fuso por tarefa e data pedida. API pessoal inclui no-store,
 inclusive erros. Memória/finanças/hábitos/voz/lembretes preservados e regressão PASS.
-245 backend PASS; 57 Android PASS; APK V1.14/code16 preparado, NÃO instalado.
+253 backend PASS; 59 Android PASS; APK V1.14/code16 preparado, NÃO instalado.
 Sem gasto Poe nesta entrega. Consultas reais Gmail/Drive/Tasks nas três contas PASS;
 agendas reais agregadas PASS com plano LOCAL fictício no probe. Não confundir com
 teste integral autenticado no Poco ou escrita Google real. Sem novas contas/escopos.
-Publicação final pendente. Relatório ENTREGA_V1_14.md distingue entregue e pendente.
+Leitor privado por toque Gmail/Google Docs/TXT/CSV/Markdown: até16mil caracteres,
+sem anexos, HTML ativo, IA, cache ou memória; testes fictícios PASS, leitura real
+Gmail3/Drive2 PASS (Drive vazio), só contagens impressas; conferência no Poco pendente.
+Perfis de voz Android e limpeza de texto falado preparados; não é voz contínua própria.
+Amostra feminina suave5,2s em res/raw, botão ouvir/parar, local. Gerada pelo Runway
+com2créditos gratuitos existentes; nenhuma compra/Poe. Usuário ainda precisa ouvir.
+Primeiro deploy 80f475f LIVE; adições finais de leitor/voz aguardam publicação.
+Relatório ENTREGA_V1_14.md distingue entregue e pendente.
 Usuário autorizou pacote amplo, visual final e Windows excluídos; está fora, conectar
 Poco depois. Instalar V1.14, que inclui V1.13, preservando dados. Conferir cartões,
 controle de auto consulta e ações Google fictícias no retorno.
