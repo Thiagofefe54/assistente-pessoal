@@ -5,7 +5,8 @@ import hmac
 import json
 import secrets
 import time
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
 from urllib.parse import urlencode, urlsplit, quote
 from urllib.request import Request, build_opener
 from urllib.error import HTTPError, URLError
@@ -289,21 +290,44 @@ def access_token(owner, row):
     return value['access']
 
 
-def consult(owner, connection, service):
+def consult(owner, connection, service, query=None, start=None, end=None, local_timezone='America/Sao_Paulo'):
     if service not in SCOPE:
         raise HTTPException(422, 'Serviço Google inválido.')
     row = account(owner, connection)
     if SCOPE[service] not in row['scopes']:
         raise HTTPException(403, 'Esta conta não autorizou esse serviço. Conecte novamente para ampliar o acesso.')
     token = access_token(owner, row)
+    # Search is submitted only to the selected Google service, never to the model.
+    zone=ZoneInfo(local_timezone)
+    first=date.fromisoformat(start) if start else None
+    last=date.fromisoformat(end) if end else first
+    if first and last and (last<first or (last-first).days>31):
+        raise HTTPException(422,'Consulte até 31 dias por vez.')
+    if query and (len(query)>200 or any(ord(c)<32 for c in query)):
+        raise HTTPException(422,'Use um termo de busca de até 200 caracteres.')
+    def midnight(day):return datetime.combine(day,datetime.min.time(),zone)
+    mail_terms=[];drive_terms=['trashed = false']
+    if query:
+        # Only a literal subject/name phrase; input cannot add search operators.
+        phrase=query.replace('\\','\\\\').replace('"','\\"')
+        mail_terms.append('subject:"'+phrase+'"')
+        name=query.replace('\\','\\\\').replace("'","\\'")
+        drive_terms.append("name contains '"+name+"'")
+    if first:
+        mail_terms.append('after:'+str(int(midnight(first).timestamp())-1))
+        drive_terms.append("modifiedTime >= '"+midnight(first).astimezone(timezone.utc).isoformat()+"'")
+    if last:
+        finish=midnight(last+timedelta(days=1))
+        mail_terms.append('before:'+str(int(finish.timestamp())))
+        drive_terms.append("modifiedTime < '"+finish.astimezone(timezone.utc).isoformat()+"'")
     urls = {
         'calendar': 'https://www.googleapis.com/calendar/v3/calendars/primary/events?' + urlencode({
             'timeMin': stamp(), 'singleEvents': 'true', 'orderBy': 'startTime', 'maxResults': 20}),
         'calendars': 'https://www.googleapis.com/calendar/v3/users/me/calendarList?maxResults=20',
         'tasks': 'https://tasks.googleapis.com/tasks/v1/users/@me/lists?maxResults=20',
-        'mail': 'https://gmail.googleapis.com/gmail/v1/users/me/messages?maxResults=5',
+        'mail': 'https://gmail.googleapis.com/gmail/v1/users/me/messages?'+urlencode({'maxResults':5,**({'q':' '.join(mail_terms)} if mail_terms else {})}),
         'drive': 'https://www.googleapis.com/drive/v3/files?' + urlencode({'pageSize': 20,
-            'q': 'trashed = false', 'fields': 'nextPageToken,files(id,name,mimeType,webViewLink,modifiedTime)',
+            'q': ' and '.join(drive_terms), 'fields': 'nextPageToken,incompleteSearch,files(id,name,mimeType,webViewLink,modifiedTime)',
             'orderBy': 'modifiedTime desc'}),
     }
     data = request_json(urls[service], headers={'Authorization': 'Bearer ' + token})
@@ -344,4 +368,6 @@ def consult(owner, connection, service):
                     if isinstance(v, dict) else v if isinstance(v, bool) else None)
                for k, v in item.items()} for item in result]
     return {'account': metadata(row), 'service': service, 'items': result,
-            'partial': bool(data.get('nextPageToken')), 'checked_at': stamp()}
+            'partial': bool(data.get('nextPageToken') or data.get('incompleteSearch')), 'checked_at': stamp(),
+            'note':('Busca por assunto no Gmail; até cinco cabeçalhos, sem corpo da mensagem.' if service=='mail' else
+                    'Busca por nome no Drive; até vinte metadados, sem conteúdo dos arquivos.' if service=='drive' else '')}

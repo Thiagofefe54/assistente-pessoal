@@ -110,7 +110,7 @@ def search(body:SearchRequest,request:Request,owner:UUID=Depends(current_user)):
 
 @router.post('/plan')
 def plan(body:ZoneRequest,request:Request,owner:UUID=Depends(current_user)):
-    return day_plan(owner,request.headers['authorization'],datetime.now(ZoneInfo(body.timezone)).date())
+    return day_plan(owner,request.headers['authorization'],datetime.now(ZoneInfo(body.timezone)).date(),body.timezone)
 
 
 @router.post('/demo')

@@ -7,6 +7,7 @@ from backend.app.api.routes.journal import router as journal_router
 from backend.app.api.routes.reports import router as reports_router
 from backend.app.api.routes.assistant import router as assistant_router
 from backend.app.api.routes.connections import router as connections_router
+from backend.app.core.privacy import PrivateApiResponses
 
 
 app = FastAPI(
@@ -33,6 +34,7 @@ app.include_router(
     chat_router,
     prefix="/api/v1",
 )
+app.add_middleware(PrivateApiResponses)
 app.include_router(journal_router, prefix="/api/v1")
 app.include_router(reports_router, prefix="/api/v1")
 app.include_router(assistant_router, prefix="/api/v1")

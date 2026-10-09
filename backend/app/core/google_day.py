@@ -1,23 +1,27 @@
-"""Compare one Google calendar with local Koi tasks; never move or invent tasks."""
+"""Private day planning across calendars; never move or invent tasks."""
 from datetime import datetime,timedelta
 from zoneinfo import ZoneInfo
 from backend.app.core.day_plan import day_plan
 
 
 def combine_day(owner,authorization,day,timezone,events,partial):
-    local=day_plan(owner,authorization,day)
+    local=day_plan(owner,authorization,day,timezone)
     zone=ZoneInfo(timezone)
     midnight=datetime.combine(day,datetime.min.time(),zone)
     begin,end=midnight+timedelta(hours=8),midnight+timedelta(hours=22)
     busy=[]
     for event in events:
+        if event.get('blocks_time') is False:continue
         start,finish=event.get('start',{}),event.get('end',{})
         try:
             if start.get('date'):
                 if start['date']<=day.isoformat()<finish.get('date',''):busy.append((begin,end))
             elif start.get('dateTime') and finish.get('dateTime'):
-                a=datetime.fromisoformat(start['dateTime']).astimezone(zone)
-                b=datetime.fromisoformat(finish['dateTime']).astimezone(zone)
+                a=datetime.fromisoformat(start['dateTime'])
+                b=datetime.fromisoformat(finish['dateTime'])
+                if a.utcoffset() is None or b.utcoffset() is None or b<=a:
+                    raise ValueError('Invalid event interval')
+                a,b=a.astimezone(zone),b.astimezone(zone)
                 if b>begin and a<end:busy.append((max(a,begin),min(b,end)))
         except (ValueError,TypeError):
             partial=True

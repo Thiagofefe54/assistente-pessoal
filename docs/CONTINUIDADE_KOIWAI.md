@@ -1,5 +1,24 @@
 # Koiwai — leia primeiro ao retomar
 
+## Checkpoint V1.14 — Dia conectado — 09/10/2026
+
+Implementados: google-day privado agrega até três agendas principais; linha do tempo,
+conflitos entre contas e cruzamento com tarefas Koi. Falhas parciais explícitas; se todas
+falham, não sugere dia livre. Eventos transparentes/recusados não bloqueiam.
+Busca Gmail por assunto e Drive por nome/data no provedor. Tasks inclui ocultas
+concluídas, exclui excluídas. Painel de busca/data e filtros de status; abrir Google
+em destinos fixos; Config. controla auto consulta de novos pedidos.
+Plano local respeita fuso por tarefa e data pedida. API pessoal inclui no-store,
+inclusive erros. Memória/finanças/hábitos/voz/lembretes preservados e regressão PASS.
+245 backend PASS; 57 Android PASS; APK V1.14/code16 preparado, NÃO instalado.
+Sem gasto Poe nesta entrega. Consultas reais Gmail/Drive/Tasks nas três contas PASS;
+agendas reais agregadas PASS com plano LOCAL fictício no probe. Não confundir com
+teste integral autenticado no Poco ou escrita Google real. Sem novas contas/escopos.
+Publicação final pendente. Relatório ENTREGA_V1_14.md distingue entregue e pendente.
+Usuário autorizou pacote amplo, visual final e Windows excluídos; está fora, conectar
+Poco depois. Instalar V1.14, que inclui V1.13, preservando dados. Conferir cartões,
+controle de auto consulta e ações Google fictícias no retorno.
+
 ## Checkpoint V1.13 — Google no chat — 09/10/2026
 
 Implementado GoogleTool no intérprete + google_assistant/google_day + cartão

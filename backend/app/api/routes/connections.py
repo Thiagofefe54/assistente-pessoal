@@ -17,7 +17,7 @@ HEADERS = {'Cache-Control': 'no-store', 'Referrer-Policy': 'no-referrer',
 
 class GoogleRequest(BaseModel):
     model_config = ConfigDict(extra='forbid')
-    timezone: str | None = None  # Shared Android transport adds this field.
+    timezone: str | None = Field(default=None,min_length=1,max_length=80)  # Shared Android transport adds this field.
     connection_id: UUID | None = None
     service: Literal['calendar','calendars','tasks','task_items','mail','drive'] | None = None
     start: date | None = None
@@ -33,6 +33,23 @@ class GoogleRequest(BaseModel):
         except (KeyError,ValueError):
             raise ValueError('Fuso horário inválido.') from None
         return value
+
+
+class GoogleDayRequest(BaseModel):
+    model_config = ConfigDict(extra='forbid')
+    timezone: str = Field(default='America/Sao_Paulo',min_length=1,max_length=80)
+    day: date | None = None
+    connection_ids: list[UUID] | None = Field(default=None,min_length=1,max_length=3)
+    valid_zone = field_validator('timezone')(GoogleRequest.valid_zone.__func__)
+
+
+@router.post('/assistant/google-day')
+def google_day(body: GoogleDayRequest, response: Response, request: Request, owner: UUID = Depends(current_user)):
+    from datetime import datetime
+    from backend.app.core.google_overview import overview
+    response.headers.update(HEADERS)
+    return overview(owner,request.headers['authorization'],
+        body.day or datetime.now(ZoneInfo(body.timezone)).date(),body.timezone,body.connection_ids)
 
 
 @router.post('/assistant/google-status')

@@ -51,6 +51,33 @@ class OrganizationTests(unittest.TestCase):
         with patch('backend.app.core.day_plan.load_task_rows',return_value=rows):data=day_plan(OWNER,'x',TODAY)
         self.assertTrue(data['partial']);self.assertEqual(8,len(data['priorities']));self.assertEqual(30,data['eligible_count'])
 
+    def test_plan_converts_task_timezone_before_selecting_day(self):
+        rows=[dict(id='a',title='UTC mission',due_date='2026-10-09',due_time='01:00:00',timezone='UTC'),
+              dict(id='b',title='Later',due_date='2026-10-08',due_time='23:00:00',timezone='America/Los_Angeles')]
+        with patch('backend.app.core.day_plan.load_task_rows',return_value=rows):
+            result=day_plan(OWNER,'fixture',TODAY,'America/Sao_Paulo')
+        self.assertEqual(['a'],[r['id'] for r in result['scheduled']]);self.assertEqual('22:00',result['scheduled'][0]['time'])
+        self.assertEqual('2026-10-09',rows[0]['due_date'])
+
+    def test_plan_malformed_timezone_reports_partial_without_inventing_time(self):
+        rows=[dict(id='a',title='Broken',due_date='2026-10-08',due_time='09:00:00',timezone='broken')]
+        with patch('backend.app.core.day_plan.load_task_rows',return_value=rows):result=day_plan(OWNER,'fixture',TODAY)
+        self.assertTrue(result['partial']);self.assertEqual([],result['scheduled'])
+
+    def test_chat_day_plan_uses_requested_day_without_another_ai_call(self):
+        meaning=Interpretation(domain='task',operation='read',speech_act='request',evidence='amanhã',device=None,
+            read_query='task_plan',read_filter=ReadFilter(query='',start='2026-10-09',end='2026-10-09'))
+        with patch('backend.app.core.day_plan.day_plan',return_value={'scheduled':[],'priorities':[],'partial':False,'note':'fixture'}) as plan:
+            result=direct_read(meaning,OWNER,'fixture','America/Sao_Paulo','2026-10-08T12:00:00-03:00')
+        self.assertEqual(date(2026,10,9),plan.call_args.args[2]);self.assertIn('09/10/2026',result['reply'])
+
+    def test_plan_never_silently_ignores_period_filter(self):
+        meaning=Interpretation(domain='task',operation='read',speech_act='request',evidence='semana',device=None,
+            read_query='task_plan',read_filter=ReadFilter(query='',start='2026-10-09',end='2026-10-15'))
+        with patch('backend.app.core.day_plan.day_plan') as plan:
+            self.assertIsNone(direct_read(meaning,OWNER,'fixture','UTC','2026-10-08T12:00:00+00:00'))
+        plan.assert_not_called()
+
     def test_recall_exact_sources_owner_filters_accent_and_period(self):
         rows=[row('diary','2026-10-01',title='Academia',content_unused='')]
         rows[0]['content']='Hoje fiz exercício na academia.'

@@ -376,6 +376,7 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
         }
         item {com.thiago.assistentepessoal.tools.AssistantRolePanel()}
         item {com.thiago.assistentepessoal.tools.VoiceCustomizationPanel(voice)}
+        item {com.thiago.assistentepessoal.tools.GooglePrivacySettings()}
         item {
             PoeUsagePanel()
         }

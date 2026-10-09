@@ -41,10 +41,16 @@ def direct_read(semantic, owner, authorization, timezone, now):
         return {'reply':answer,'task_draft':None,'action_receipt':None}
     if query=='task_plan':
         from backend.app.core.day_plan import day_plan
-        data=day_plan(owner,authorization,today)
-        answer='Vamos deixar seu dia mais leve? 💜\nHorários já marcados:'
+        from datetime import date
+        filters=semantic.read_filter
+        target=today
+        if filters:
+            if filters.query or (filters.end and not filters.start) or (filters.start and filters.end and filters.start!=filters.end):return None
+            if filters.start:target=date.fromisoformat(filters.start)
+        data=day_plan(owner,authorization,target,timezone)
+        answer=f'Vamos deixar seu dia mais leve? 💜\nPlano de {target:%d/%m/%Y}\nHorários já marcados:'
         for r in data['scheduled']: answer+=f"\n• {r['time']} — {r['title']}"
-        if not data['scheduled']: answer+=' nenhum para hoje.'
+        if not data['scheduled']: answer+=' nenhum para esse dia.'
         answer+='\nPrioridades sugeridas:'
         for r in data['priorities']: answer+=f"\n• {r['title']}{' — pendência de '+r['date'] if r['overdue'] else ''}"
         if not data['priorities']: answer+=' nenhuma pendência sem horário encontrada.'

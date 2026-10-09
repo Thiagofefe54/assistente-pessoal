@@ -152,11 +152,24 @@ class GoogleAssistantTests(unittest.TestCase):
             a.read(OWNER,CONNECTION,'calendar','2026-10-10',None)
         self.assertIn('timeMax=2026-10-11T00%3A00%3A00',req.call_args.args[3])
 
-    def test_mail_date_filters_only_recent_slice_and_reports_partial(self):
+    def test_mail_filters_are_delegated_to_provider_search(self):
         with patch.object(g,'consult',return_value={'items':[{'subject':'Yesterday','date':'Fri, 09 Oct 2026 12:00:00 -0300'},
             {'subject':'Today','date':'Sat, 10 Oct 2026 12:00:00 -0300'}],'partial':False}):
             result=a.read(OWNER,CONNECTION,'mail','2026-10-10',None)
-        self.assertEqual('Today',result['items'][0]['subject']);self.assertEqual(1,len(result['items']));self.assertTrue(result['partial'])
+        self.assertEqual(2,len(result['items']));self.assertFalse(result['partial'])
+
+    def test_free_and_declined_events_do_not_block_time(self):
+        self.assertFalse(a.blocks_time({'transparency':'transparent'}))
+        self.assertFalse(a.blocks_time({'attendees':[{'self':True,'responseStatus':'declined'}]}))
+        self.assertTrue(a.blocks_time({'attendees':[{'self':False,'responseStatus':'declined'}]}))
+        self.assertTrue(a.blocks_time({'attendees':None}))
+
+    def test_deleted_tasks_are_omitted_and_hidden_completed_are_requested(self):
+        row={'id':CONNECTION,'email':'fixture@example.com','scopes':[g.SCOPE['tasks']],'updated_at':'today'}
+        with patch.object(g,'account',return_value=row),patch.object(a,'google_call',side_effect=[{'items':[{'id':'list'}]},
+            {'items':[{'id':'gone','deleted':True},{'id':'done','title':'Lesson','status':'completed','hidden':True}]}]) as req:
+            result=a.read(OWNER,CONNECTION,'task_items')
+        self.assertEqual(['done'],[i['id'] for i in result['items']]);self.assertIn('showHidden=true',req.call_args.args[3])
 
 
 class GoogleChatTests(unittest.IsolatedAsyncioTestCase):

@@ -112,11 +112,14 @@ Consultas operation read, speech_act question/request; google null fora de googl
 account é e-mail EXATO citado no pedido atual, ou null. Não invente conta nem ID.
 title é título novo EXATO informado; target é título existente EXATO citado no
 pedido atual para update/complete/reopen. Nunca IDs inventados ou obtidos do histórico.
+Para read com busca no Gmail, target é o assunto procurado; Drive usa nome do
+arquivo, Calendar/Tasks título. Não coloque operadores de busca nem invente termos.
 start/end são datas AAAA-MM-DD para consultas e Tasks; calendar create/update usa
 instantes ISO com fuso. Resolva amanhã/hoje pelo relógio. Não invente hora/duração:
 calendar precisa de começo e fim explícitos, senão mantenha campo ausente/null.
 Google Tasks permite vencimento por dia, não horário de lembrete.
 plan true somente para consultar/cruzar Google Agenda e tarefas da Koi, sem alterar;
+quando account null, o cartão reúne as agendas principais das contas conectadas.
 service calendar, operation read. Para organizar um dia específico use start=end
 nesse dia. plan false nos outros pedidos.
 Calendar aceita create/update; Tasks create/update/complete/reopen. Gmail/Drive só
@@ -148,8 +151,11 @@ Não há pagamentos, envio de mensagens, leitura de bancos pelo modelo, toque em
 pausar player. Google só possui as ferramentas delimitadas acima. Não invente
 ferramenta. device null fora de device.
 Se faltar alvo/horário, escolha conversation/none e a resposta poderá esclarecer.
-read_query permite consulta direta sem uma segunda IA. Use somente para pergunta
-simples de leitura, sem alterações nem filtros extras: unpaid_bills_this_month
+read_query permite consulta direta sem uma segunda IA.
+Para task_plan de amanhã/outro dia, read_filter com query vazia e start=end na
+data escolhida. Não use o dia de hoje quando a pessoa pediu outro dia.
+Para as demais consultas, use somente para pergunta simples de leitura, sem
+alterações nem filtros extras: unpaid_bills_this_month
 para contas pendentes do mês atual (consulta genérica de contas assume esse mês);
 expenses_this_month/income_this_month para total gasto/recebido neste mês;
 budget_this_month para limites mensais e consumo; diary_this_week, diary_last_week,

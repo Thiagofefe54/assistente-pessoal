@@ -5,7 +5,6 @@ from datetime import date, datetime, timedelta
 from urllib.parse import quote, urlencode
 from uuid import UUID
 from zoneinfo import ZoneInfo
-from email.utils import parsedate_to_datetime
 from fastapi import HTTPException
 from backend.app.core import google_connections as g
 from backend.app.core.schedule import plain
@@ -66,26 +65,16 @@ def version(value):
     return value if isinstance(value,str) and 1<=len(value)<=2048 and not any(ord(c)<32 or ord(c)==127 for c in value) else None
 
 
+def blocks_time(event):
+    attendees=event.get('attendees',[])
+    if not isinstance(attendees,list):attendees=[]
+    return event.get('transparency')!='transparent' and not any(
+        isinstance(a,dict) and a.get('self') is True and a.get('responseStatus')=='declined' for a in attendees)
+
+
 def read(owner, connection, service, start=None, end=None, query=None, timezone='America/Sao_Paulo'):
     if service not in ('calendar','task_items'):
-        result=g.consult(owner,connection,service)
-        if (start or end) and service in ('mail','drive'):
-            first=date.fromisoformat(start) if start else None
-            last=date.fromisoformat(end) if end else first
-            filtered=[]
-            for item in result['items']:
-                try:
-                    at=(parsedate_to_datetime(item.get('date','')) if service=='mail' else
-                        datetime.fromisoformat(item.get('modifiedTime',''))).astimezone(ZoneInfo(timezone)).date()
-                    if (first is None or at>=first) and (last is None or at<=last):filtered.append(item)
-                except (TypeError,ValueError):pass
-            result['items']=filtered
-            result['partial']=True  # Date filtering is within the bounded recent slice.
-        if query:
-            needle=plain(query)
-            result['items']=[i for i in result['items'] if needle in plain(str(i.get('name',i.get('subject',''))))]
-            result['partial']=True
-        return result
+        return g.consult(owner,connection,service,query,start,end,timezone) if service in ('mail','drive') else g.consult(owner,connection,service)
     row=g.account(owner,connection)
     today=datetime.now(ZoneInfo(timezone)).date()
     first=date.fromisoformat(start) if start else today
@@ -103,15 +92,17 @@ def read(owner, connection, service, start=None, end=None, query=None, timezone=
             if query and plain(query) not in plain(str(i.get('summary',''))):continue
             result.append({'id':i.get('id'),'title':str(i.get('summary','Sem título'))[:200],
                            'matchable':isinstance(i.get('summary'),str) and len(i['summary'])<=200,
-                           'start':event_time(i.get('start')),'end':event_time(i.get('end')),'etag':version(i.get('etag'))})
+                           'start':event_time(i.get('start')),'end':event_time(i.get('end')),'etag':version(i.get('etag')),
+                           'blocks_time':blocks_time(i)})
     else:
         lists=google_call(owner,connection,'tasks','users/@me/lists?maxResults=3')
         partial=bool(lists.get('nextPageToken'))
         for tasklist in items(lists)[:3]:
             data=google_call(owner,connection,'tasks','lists/'+identifier(tasklist.get('id'))+
-                '/tasks?maxResults=20&showCompleted=true&showHidden=false')
+                '/tasks?maxResults=20&showCompleted=true&showHidden=true&showDeleted=false')
             partial=partial or bool(data.get('nextPageToken'))
             for i in items(data)[:20]:
+                if i.get('deleted'):continue
                 due=str(i.get('due',''))[:10]
                 if start and due and not first.isoformat()<=due<=last.isoformat():continue
                 if start and not due:continue

@@ -165,7 +165,7 @@ class GoogleAuthTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(303,start['status'])
         for required in ('HttpOnly','Secure','SameSite=lax',g.CALLBACK_PATH,g.cookie_name(state)):
             self.assertIn(required,cookie)
-        self.assertEqual(b'no-store',headers[b'cache-control'])
+        self.assertEqual(b'private, no-store',headers[b'cache-control'])
         self.assertEqual(b'no-referrer',headers[b'referrer-policy'])
         self.assertNotIn(b'PRIVATE',body)
 
@@ -176,7 +176,7 @@ class GoogleAuthTests(unittest.IsolatedAsyncioTestCase):
         self.assertEqual(409,start['status']);self.assertNotIn(b'PRIVATE',body)
         headers=dict(start['headers'])
         self.assertIn(b'Max-Age=0',headers[b'set-cookie'])
-        self.assertEqual(b'no-store',headers[b'cache-control'])
+        self.assertEqual(b'private, no-store',headers[b'cache-control'])
         self.assertIn(b"frame-ancestors 'none'",headers[b'content-security-policy'])
 
     async def test_all_android_routes_require_login_before_tools(self):

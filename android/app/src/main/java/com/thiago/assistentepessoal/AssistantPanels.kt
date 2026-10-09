@@ -27,7 +27,7 @@ internal suspend fun readAssistant(app: KoiwaiApplication, owner: String, usage:
 }
 
 internal suspend fun assistantRequest(app: KoiwaiApplication, owner: String, path:String, body:JSONObject?=null, allowCached:Boolean=true): JSONObject {
-    require(path in setOf("day","usage","search","plan","demo","review","checkin","task-action","undo","bank-status","bank-summary","google-status","google-connect","google-disconnect","google-read"))
+    require(path in setOf("day","usage","search","plan","demo","review","checkin","task-action","undo","bank-status","bank-summary","google-status","google-connect","google-disconnect","google-read","google-day"))
     val endpoint = BackendEndpoint.resolve(BuildConfig.BACKEND_URL, BuildConfig.DEBUG)
     if (!endpoint.authenticated) throw IOException("Este painel precisa do servidor HTTPS.")
     val token = app.auth.token(owner) ?: throw IOException("Entre novamente na sua conta.")
@@ -56,7 +56,7 @@ internal suspend fun assistantRequest(app: KoiwaiApplication, owner: String, pat
                 403 -> if(path.startsWith("google-"))"Esta conta não autorizou o serviço ou a API ainda não foi habilitada. Confira a conexão Google." else "Esta consulta não está autorizada."
                 409 -> if(path.startsWith("google-"))"A conexão mudou ou expirou. Atualize a lista ou conecte a conta novamente." else "Esse registro mudou. Confira a lista atual antes de fazer uma nova ação."
                 503 -> if(path.startsWith("google-"))"As conexões Google ainda estão sendo configuradas ou o serviço está indisponível. Tente mais tarde." else "Não consegui atualizar agora. Tente mais tarde."
-                422 -> "Confira os dados: intervalos duram até 48h e reagendamentos vão até 7 dias."
+                422 -> if(path.startsWith("google-"))"Confira as datas, o termo de busca e o fuso. Consultas aceitam até 31 dias por vez." else "Confira os dados: intervalos duram até 48h e reagendamentos vão até 7 dias."
                 else -> "Não consegui atualizar agora. Confira sua conexão e tente mais tarde."
             })
             val result = JSONObject(connection.inputStream.bufferedReader(Charsets.UTF_8).use { it.readBoundedText(100000) })
