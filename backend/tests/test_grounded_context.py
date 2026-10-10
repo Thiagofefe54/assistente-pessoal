@@ -1,4 +1,6 @@
 import unittest
+from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from uuid import UUID
 from unittest.mock import patch
 from urllib.parse import parse_qs,urlsplit
@@ -8,6 +10,37 @@ from backend.app.core.recall import matches_terms
 from backend.app.core.ai import reply
 
 class GroundedTests(unittest.TestCase):
+    def test_planning_includes_overdue_and_today_not_unrelated_future(self):
+        today=datetime.now(ZoneInfo('UTC')).date()
+        yesterday=(today-timedelta(days=1)).isoformat()
+        tomorrow=(today+timedelta(days=1)).isoformat()
+        rows=[{'id':'late','title':'Teste pagar conta','due_date':yesterday},
+              {'id':'today','title':'Teste revisar nota','due_date':today.isoformat()},
+              {'id':'future','title':'Teste comprar livro','due_date':tomorrow},
+              {'id':'archived','title':'Teste arquivo','due_date':yesterday,'archived_at':'x'},
+              {'id':'done','title':'Teste concluída','due_date':yesterday,'completed_at':'x'}]
+        with patch('backend.app.core.grounded_context.cloud',return_value=[]), patch('backend.app.core.grounded_context.load_task_rows',return_value=rows):
+            result=context_for_reply(UUID(int=1),'owner','Estou sobrecarregado',[],'UTC',include_tasks=True)
+        self.assertEqual(['late','today'],[r['source_id'] for r in result['routine']['tasks']])
+        self.assertIn('atrasadas',result['routine']['scope'])
+
+    def test_followup_planning_uses_local_schedule_without_mutating_task(self):
+        today=datetime.now(ZoneInfo('UTC')).date()
+        tomorrow=(today+timedelta(days=1)).isoformat()
+        task={'id':'local','title':'Teste tarefa','due_date':tomorrow,'due_time':'01:00','timezone':'Asia/Tokyo'}
+        history=[{'role':'user','content':'Estou sobrecarregado'}, {'role':'assistant','content':'Sugiro estudar astronomia.'}]
+        with patch('backend.app.core.grounded_context.cloud',return_value=[]), patch('backend.app.core.grounded_context.load_task_rows',return_value=[task]):
+            result=context_for_reply(UUID(int=1),'owner','Como melhorar isso?',history,'UTC',include_tasks=True)
+        self.assertEqual(today.isoformat(),result['routine']['tasks'][0]['due_date'])
+        self.assertEqual('16:00:00',result['routine']['tasks'][0]['due_time'])
+        self.assertEqual('UTC',result['routine']['tasks'][0]['timezone'])
+        self.assertEqual(tomorrow,task['due_date'])
+
+    def test_invalid_task_schedule_does_not_become_advice(self):
+        with patch('backend.app.core.grounded_context.cloud',return_value=[]), patch('backend.app.core.grounded_context.load_task_rows',return_value=[{'title':'Teste','due_date':'not-a-date'}]):
+            with self.assertRaises(HTTPException):
+                context_for_reply(UUID(int=1),'owner','Estou sobrecarregado',[],'UTC',include_tasks=True)
+
     def test_followup_uses_nearest_user_topic_not_assistant_suggestion(self):
         history=[{'role':'user','content':'Estou na academia'},
                  {'role':'assistant','content':'Você deveria estudar astronomia.'}]

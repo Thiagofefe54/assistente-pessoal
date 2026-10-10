@@ -13,9 +13,11 @@
 - Avisos Gmail importantes: consulta somente IDs não lidos/importantes nas três contas, até 20 por conta/último dia; WorkManager aproximadamente 15min, primeira consulta define baseline, silêncio 22h–08h. Não analisa automaticamente corpos com IA.
 - Guia de início: [COMECE_AQUI_V2.md](COMECE_AQUI_V2.md).
 
+- Conversa: contexto de organização inclui atrasadas/hoje, referências ao assunto anterior e horários no fuso local. Orientação para corrigir respostas, esclarecer ambiguidades e propor um próximo passo concreto; sem chamadas adicionais de IA.
+
 ## Conferência e limites
 
-Backend 280 testes PASS, incluindo MIME, escopos, destinatário/header injection, envio incerto, repetição, isolamento por usuário, falha ao guardar recibo e consultas importantes parciais. Todas as chamadas de envio testadas com dados fictícios e mocks; nenhum e-mail real enviado e nenhuma geração Poe feita para os testes.
+Backend 283 testes PASS, incluindo MIME, escopos, destinatário/header injection, envio incerto, repetição, isolamento por usuário, falha ao guardar recibo e consultas importantes parciais. Todas as chamadas de envio testadas com dados fictícios e mocks; nenhum e-mail real enviado e nenhuma geração Poe feita para os testes.
 
 Android 61 testes unitários PASS; APK/testAPK e lint após aprofundar o visual PASS sem erro impeditivo. Manutenção no Poco para cancelar jobs/notificações antes do reset: 1 teste PASS. Testes Compose de navegação travaram antes de completar no aparelho; não contar como aprovados. Captura real da Home confirmou a primeira composição; avaliação das outras abas e dos novos consentimentos ainda necessária.
 
@@ -25,4 +27,4 @@ Prévia `2.0.0-preview.1`/code20; não anunciar V2 definitiva nem acesso irrestr
 
 ## Antes do uso
 
-Instalar APK final por atualização; conferir login e ausência de registros antigos. Selecionar Koi como assistente padrão pessoalmente. Conceder contatos/notificações apenas pelas telas do Android. Reautorizar contas Google para envio; testar um envio real somente com destinatário/texto concretos aprovados pelo usuário. Conferir captura escolhida pelo usuário e custo da interpretação; não disparar IA paga em testes de navegação.
+APK final instalado por atualização: 2.0.0-preview.1/code20. SHA256 `20A4022143855D28082114EEE15B577481826798ED1CDE4FE5041000EEE21551`. Login e histórico vazio conferidos. Painel compacto também confirmado por captura real; demais abas ainda exigem avaliação manual. Selecionar Koi como assistente padrão pessoalmente. Conceder contatos/notificações apenas pelas telas do Android. Reautorizar contas Google para envio; testar um envio real somente com destinatário/texto concretos aprovados pelo usuário. Conferir captura escolhida pelo usuário e custo da interpretação; não disparar IA paga em testes de navegação.

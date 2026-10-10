@@ -5,7 +5,7 @@
 Usuário autorizou reformulação completa de todas as abas, painel compacto de
 assistente, contatos/mensagens/e-mails/interpretação de tela e reset dos dados Koi,
 mantendo contas de e-mail. Android 2.0.0-preview.1/code20 instalado por atualização;
-nova passagem final de visual em andamento. Cinco abas e áreas internas com
+passagem final de visual compilada e instalada. Cinco abas e áreas internas com
 nova navegação, capítulos de memória, missões e cabeçalhos ilustrados.
 ACTION_ASSIST abre janela própria; seleção padrão deve ser feita pelo usuário.
 Contatos por busca/permissão; WhatsApp/SMS por rascunho revisado no app externo.
@@ -14,17 +14,25 @@ Captura única MediaProjection com consentimento, espera7s, revisão antes de IA
 Gmail envio revisado + claim/recibo privado, sem repetição incerta; novo escopo
 gmail.send exige reautorizar cada conta. Avisos importantes consultam IDs, não corpo,
 até20/conta/último dia, WorkManager15min, baseline e silêncio22h–08h.
-Backend280 testes PASS,34 específicos reexecutados após ajuste de resposta; Android61
-unitários PASS; build/lint PASS na etapa anterior; último visual em verificação.
+Backend283 testes PASS após melhoria de contexto: conselho sobre organização inclui
+tarefas atrasadas/hoje, referências ao assunto anterior e horários no fuso da
+conversa, sem alterar registros nem aumentar chamadas IA. Prompt orienta próximo
+passo, correções, ambiguidade e ações parcialmente concluídas. Android61 unitários
+PASS; último APK/testAPK/build/lint PASS, lint0 erros/124 avisos.
 No Poco: manutenção para cancelar jobs1 PASS; DeviceAccessV2Test3 PASS (serviços
 protegidos, limite/remoção de avisos fictícios e login+3conexões+histórico vazio).
-Compose V2NavigationTest travou; não dizer que navegação inteira foi aprovada.
+Compose V2NavigationTest expirou em60s ao iniciar ActivityScenario; não dizer que
+navegação inteira foi aprovada. Painel compacto aberto diretamente e captura real
+confirmada; Home também conferida. Demais telas/permissões ainda requerem avaliação.
 Reset:12 tabelas de dados Koi do dono zeradas, auth e3conexões Google preservadas,
 SQL final todas contagens0; localDB/cache zerados, só sessão mantida. Um relatório
 em trânsito foi removido novamente. Não apagamos Gmail/Agenda/Inter nem os dados
 de outros usuários. Sem envio real de e-mail, geração Poe ou compra de voz.
 Voz contínua ainda Android; MP3expressiva escolhida permanece no APK.
-Ver ENTREGA_V2_PREVIA.md e COMECE_AQUI_V2.md. Render novo ainda não publicado.
+Ver ENTREGA_V2_PREVIA.md e COMECE_AQUI_V2.md. Render LIVE174f46b,
+dep-db58olijnfac739kes8g; health200, três rotas Gmail anônimas401/private-no-store.
+Melhoria adicional de inteligência testada, aguardando nova publicação nesta etapa.
+APK finalSHA25620A4022143855D28082114EEE15B577481826798ED1CDE4FE5041000EEE21551.
 Não chamar V2 definitiva; faltam consentimentos físicos, captura/voz e uso diário.
 
 ## Auditoria pré-uso diário — 10/10/2026
