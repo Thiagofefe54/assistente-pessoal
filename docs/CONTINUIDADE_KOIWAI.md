@@ -14,7 +14,9 @@ e atualiza rótulos/botão; V1.14.1/code17 inclui V1.14. Backend257 testes PASS.
 Android59 testes/build PASS; APK1.14.1/code17 INSTALADO no Poco via install -r
 (Success), versão confirmada no package manager em10/10/2026. Home aberta
 verificada por captura: conta conectada, duas tarefas vencidas e notificação
-correspondente. Conversa de saldo/voz/novos painéis ainda precisa validação manual.
+correspondente. Usuário confirmou em10/10 os dois testes reais do Chat: pedido
+de saldo abre Saldo do Inter; correção explica fotografia sem novo cartão.
+Voz e novos painéis Google ainda precisam validação manual.
 Render LIVE commit476ac79, deploy dep-db4m1gflot8c73bi7aog às18:47 São Paulo.
 Smoke HTTPS health200, Google privado401/callback inválido400 PASS. Usuário remoto
 com USB; instalação concluída, conferência funcional em andamento. Ver

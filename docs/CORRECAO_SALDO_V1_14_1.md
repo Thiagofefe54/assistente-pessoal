@@ -27,8 +27,10 @@ APK android/build/releases/Koiwai-1.14.1.apk, code17, inclui V1.14.
 SHA256 27520D63555A38AE93BF8B0127738F46F160C7413E783BF8FF81D5B0E19D9718.
 INSTALADO no Poco via install -r (Success), versão1.14.1/code17 confirmada em
 10/10/2026. Home abriu com conta conectada e tarefas existentes. Conferência
-manual das respostas do saldo ainda pendente; não confundir instalação com
-validação de todas as funções. Atualização preservou instalação/dados.
+manual das respostas do saldo PASS por confirmação do usuário em10/10: pedido
+de saldo abre cartão certo; correção explica fotografia sem novo cartão.
+Isso não valida sincronização em tempo real nem demais funções Google/voz.
+Atualização preservou instalação/dados.
 Servidor LIVE commit476ac79f1d4da25bc4d3ad604688d9d6655fdbcc,
 deploy dep-db4m1gflot8c73bi7aog em 09/10/2026 às18:47 São Paulo.
 Smoke HTTPS: health200, endpoints Google privados401, callback inválido400.
