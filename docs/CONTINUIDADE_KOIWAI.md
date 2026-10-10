@@ -6,10 +6,11 @@ Android continua V1.15.0/code19, sem alterações no APK. Correções no servido
 resumo/contagem de tarefas convertem fuso sem alterar datas persistidas; agenda
 inválida marca parcial e não sugere janelas livres; preparação de relatórios
 tem exclusão por conta no processo para impedir geração paga simultânea.
-269 testes backend PASS; Android61 testes existentes/build PASS; lint111 avisos
+269 testes backend PASS; Android61 testes reexecutados/build PASS; lint111 avisos
 de estilo/recursos/dependências, sem erro impeditivo. Sem gastoPoe ou perda de dados.
 USB ausente nesta revisão. Ver AUDITORIA_PRE_USO_DIARIO.md para cobertura e
-limites. Publicação desta correção será registrada após confirmação Render.
+limites. Servidor PUBLICADO fb44d06, Render LIVE dep-db57egad0e5s73efeg8g,
+10/10/2026; health200 e painel anônimo401, ambos private/no-store.
 
 ## Packs 1–4 / V1.15.0 — 10/10/2026
 

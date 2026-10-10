@@ -33,13 +33,16 @@ Não é uma certificação de ausência de bugs nem uma leitura manual de cada l
 
 - 269 testes backend passaram, incluindo quatro novos testes de regressão e
   concorrência. Antes das correções, os testes de fuso e agenda reproduziram erros.
-- Android: 61 testes existentes aprovados; compilação do APK aprovada.
+- Android: 61 testes reexecutados e aprovados; compilação do APK aprovada.
 - Lint aprovado sem erros impeditivos; 111 avisos permanecem: 67 UseKtx,
   17 ApplySharedPref, 9 sobre dependências/versões e 18 de recursos e estilo.
   Não trocar `commit()` indiscriminadamente: persistência imediata é necessária
   em sessões e proteções contra duplicação.
 - Sem chamadas pagas de IA nesta auditoria. Nenhum dado financeiro pessoal usado
   como fixture; nenhum histórico ou conta apagado.
+- Publicado no Render: commit fb44d06, deploy dep-db57egad0e5s73efeg8g LIVE
+  em 10/10/2026. Saúde HTTP200; painel sem sessão HTTP401; respostas private/no-store.
+  Correções disponíveis no servidor para o APK já instalado, sem nova instalação.
 
 ## Limites e próximos testes
 
