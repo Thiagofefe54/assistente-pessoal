@@ -77,7 +77,7 @@ class KoiVoice(context:Context){
     com.thiago.assistentepessoal.KoiPanel(androidx.compose.ui.Modifier.fillMaxWidth()){
         androidx.compose.material3.TextButton(onClick={expanded=!expanded}){androidx.compose.material3.Text(if(expanded)"Fechar ajustes de voz" else "Ajustar a voz da Koi")}
         if(expanded){
-            androidx.compose.material3.Text("Uma amostra de voz para a Koi")
+            androidx.compose.material3.Text("Sua voz escolhida · Koi expressiva")
             androidx.compose.material3.TextButton(onClick={
                 voice.stop();previewPlayer?.release();previewPlayer=null;previewError=null
                 try{
@@ -89,9 +89,9 @@ class KoiVoice(context:Context){
                         player.start()
                     }
                 }catch(e:Exception){previewError="Não consegui reproduzir a amostra."}
-            }){androidx.compose.material3.Text("Ouvir amostra da Koi · 5 segundos")}
+            }){androidx.compose.material3.Text("Ouvir Koi expressiva · amostra de 5 segundos")}
             androidx.compose.material3.TextButton(enabled=previewPlayer!=null,onClick={previewPlayer?.release();previewPlayer=null}){androidx.compose.material3.Text("Parar amostra")}
-            androidx.compose.material3.Text("Amostra feminina suave em português, gerada para você. Funciona sem internet. Respostas do chat ainda usam a voz Android escolhida abaixo; esta prévia não é uma voz contínua exclusiva.")
+            androidx.compose.material3.Text("Amostra expressiva em português escolhida por você. Funciona sem internet. Respostas do chat ainda usam a voz Android escolhida abaixo; esta prévia não é uma voz contínua exclusiva.")
             previewError?.let{androidx.compose.material3.Text(it)}
             androidx.compose.material3.Text("Perfis da Koi · comece por Koi delicada")
             koiVoiceProfiles.forEach{profile->

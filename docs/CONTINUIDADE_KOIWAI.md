@@ -3,7 +3,11 @@
 Preferência de voz10/10: usuário rejeitou Katie e pediu estilo Yoshino Koiwai
 dublada em português. Direção suave/contida/tímida para voz original; duas
 amostras Rina/Pip geradas para comparação com4 créditos gratuitos Runway.
-Aguardar escolha antes de alterar APK. Ver DIRECAO_DE_VOZ_KOI.md.
+Usuário escolheu EXPRESSIVA(Pip). V1.14.2/code18 troca a amostra MP3 e rótulo;
+voz contínua ainda usa Android. Build PASS e áudio dentro do APK verificado igual
+ao escolhido; APK android/build/releases/Koiwai-1.14.2.apk NÃO instalado, USB
+ausente na conferência10/10. Sem nova geração,
+assinatura ou gasto nesta escolha. Ver DIRECAO_DE_VOZ_KOI.md.
 
 ## Correção V1.14.1 — saldo como fotografia, 09/10/2026
 
