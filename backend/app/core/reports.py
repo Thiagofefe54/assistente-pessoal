@@ -7,6 +7,7 @@ from datetime import datetime
 from fastapi import HTTPException
 from backend.app.core.journal import cloud,fingerprint,daily_report
 from backend.app.core.ai import generate
+from backend.app.core.report_guard import guard_preparation
 
 KINDS=('week','month','halfyear','year')
 
@@ -82,6 +83,7 @@ JSON {{"items":[{{"text":"...","source_keys":["key"]}}]}}.'''},
         return [{'text':i['text'].strip(),'source_keys':list(dict.fromkeys(i['source_keys']))} for i in items]
     except (ValueError,KeyError,TypeError): raise HTTPException(502,'Não consegui preparar um relatório com fontes válidas.') from None
 
+@guard_preparation('prepare')
 def period_report(owner,authorization,kind,anchor,timezone,prepare=False):
     start,end=period(kind,anchor);today=datetime.now(ZoneInfo(timezone)).date()
     if start>today: raise HTTPException(422,'Esse período ainda não começou.')

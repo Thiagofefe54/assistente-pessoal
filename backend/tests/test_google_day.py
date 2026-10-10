@@ -29,3 +29,16 @@ class GoogleDayTests(unittest.TestCase):
         with patch('backend.app.core.google_day.day_plan',return_value={**self.local(),'partial':True}):
             result=combine_day('owner','Bearer fixture',date(2026,10,10),'America/Sao_Paulo',[],False)
         self.assertTrue(result['partial']);self.assertIn('não garantem',result['note'])
+
+    def test_malformed_events_do_not_crash_or_claim_a_complete_calendar(self):
+        broken = [
+            {'start': None, 'end': {}},
+            {'start': {'date': '2026-10-10'}, 'end': {}},
+            {'start': {'date': '2026-10-11'}, 'end': {'date': '2026-10-10'}},
+            {'start': {'dateTime': '2026-10-10T09:00:00-03:00'}, 'end': {}},
+        ]
+        for event in broken:
+            with self.subTest(event=event), patch('backend.app.core.google_day.day_plan', return_value=self.local()):
+                result = combine_day('owner', 'Bearer fixture', date(2026,10,10), 'America/Sao_Paulo', [event], False)
+                self.assertTrue(result['partial'])
+                self.assertEqual([], result['windows'])

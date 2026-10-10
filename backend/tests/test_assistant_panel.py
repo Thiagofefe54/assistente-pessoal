@@ -20,6 +20,18 @@ def row(kind, day, amount=0, archived=None, title='Fictício', **extra):
 
 
 class PanelTests(unittest.TestCase):
+    def test_day_converts_task_timezone_without_changing_original_schedule(self):
+        tasks = [{'id': 'fixture', 'title': 'Estudo', 'due_date': '2026-10-09',
+                  'due_time': '01:00:00', 'timezone': 'UTC', 'completed_at': None, 'archived_at': None}]
+        with patch('backend.app.core.tasks.load_task_rows', return_value=tasks), \
+             patch('backend.app.core.assistant_panel.load_records', return_value=[]), \
+             patch('backend.app.core.assistant_panel.load_payments', return_value=[]):
+            data = day_panel(UUID(int=1), 'Bearer fixture', 'America/Sao_Paulo', datetime.fromisoformat('2026-10-08T20:00:00-03:00'))
+        self.assertEqual(1, data['tasks_pending_today'])
+        self.assertEqual([{'title': 'Estudo', 'time': '22:00'}], data['tasks'])
+        self.assertEqual('2026-10-09', tasks[0]['due_date'])
+        self.assertEqual('01:00:00', tasks[0]['due_time'])
+
     def test_month_compares_matching_elapsed_days_and_ignores_future_archived(self):
         rows = [row('expense', '2026-10-08', 1200), row('income','2026-10-01', 7000),
                 row('expense', '2026-09-08', 2000), row('expense','2026-09-09',9999),

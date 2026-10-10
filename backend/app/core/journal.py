@@ -12,6 +12,7 @@ from fastapi import HTTPException
 from backend.app.core.ai import generate
 from backend.app.core.auth import NoRedirect
 from backend.app.core.config import settings
+from backend.app.core.report_guard import guard_preparation
 
 
 def cloud(path: str, authorization: str, method: str = 'GET', payload=None):
@@ -115,6 +116,7 @@ def report_path(owner: UUID, day: date) -> str:
     return 'koi_daily_reports?' + urlencode({'user_id': 'eq.' + str(owner), 'local_date': 'eq.' + day.isoformat()})
 
 
+@guard_preparation('regenerate')
 def daily_report(owner: UUID, authorization: str, day: date, regenerate: bool = False) -> dict:
     path = report_path(owner, day)
     saved = cloud(path + '&select=*', authorization)

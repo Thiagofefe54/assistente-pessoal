@@ -1,6 +1,6 @@
 """Bounded, owner-scoped Google overview. Results never go to the language model."""
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from zoneinfo import ZoneInfo
 from fastapi import HTTPException
 from backend.app.core import google_assistant as google
@@ -9,9 +9,10 @@ from backend.app.core.google_day import combine_day
 
 def interval(event,day,zone):
     start,end=event.get('start',{}),event.get('end',{})
+    if not isinstance(start,dict) or not isinstance(end,dict):raise ValueError('Missing schedule')
     if start.get('date'):
-        a=datetime.fromisoformat(start['date']).replace(tzinfo=zone)
-        b=datetime.fromisoformat(end['date']).replace(tzinfo=zone)
+        a=datetime.combine(date.fromisoformat(start['date']),datetime.min.time(),zone)
+        b=datetime.combine(date.fromisoformat(end['date']),datetime.min.time(),zone)
     else:
         a,b=datetime.fromisoformat(start['dateTime']),datetime.fromisoformat(end['dateTime'])
         if a.utcoffset() is None or b.utcoffset() is None:raise ValueError('Missing zone')

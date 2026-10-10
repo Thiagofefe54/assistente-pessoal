@@ -4,7 +4,7 @@ from datetime import datetime, timedelta
 from zoneinfo import ZoneInfo
 from backend.app.core.life import overview, bill_dates
 from backend.app.core.personal import load_records, load_payments
-from backend.app.core.tasks import task_context
+from backend.app.core.tasks import task_context, local_schedule
 
 
 def comparison(records, today, period='month'):
@@ -35,7 +35,8 @@ def day_panel(owner, authorization, timezone, now=None):
     payments = load_payments(owner, authorization)
     tasks = task_context(owner, authorization, timezone, 'hoje', moment)
     life = overview(records, payments, today)
-    pending = [r for r in tasks['tasks'] if not r.get('archived_at') and not r.get('completed_at') and r.get('due_date') == today.isoformat()]
+    displayed = [dict(r, due_date=local_schedule(r, timezone)[0], due_time=local_schedule(r, timezone)[1]) for r in tasks['tasks']]
+    pending = [r for r in displayed if not r.get('archived_at') and not r.get('completed_at') and r.get('due_date') == today.isoformat()]
     pending.sort(key=lambda r: (r.get('due_time') or '99:99', r['title']))
     paid = {(p['bill_id'], p['occurrence_on']) for p in payments}
     bills = [{'title': r['title'], 'due': due, 'amount_cents': r['amount_cents']}

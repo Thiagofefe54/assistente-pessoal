@@ -75,6 +75,16 @@ def load_task_rows(owner, authorization):
     return rows
 
 
+def local_schedule(row, timezone):
+    """Return a display schedule without mutating the persisted task/version."""
+    due_date, due_time = row.get('due_date'), row.get('due_time')
+    if due_date and due_time:
+        moment = datetime.fromisoformat(due_date + 'T' + due_time).replace(
+            tzinfo=ZoneInfo(row.get('timezone') or timezone)).astimezone(ZoneInfo(timezone))
+        return moment.date().isoformat(), moment.strftime('%H:%M:%S')
+    return due_date, due_time
+
+
 def context_from_rows(rows, timezone, message, now, today):
     # Keep inference bounded. The model sees explicit completeness/counts, never
     # assumes an omitted task is absent. Focus the snapshot on the requested day.
@@ -90,7 +100,7 @@ def context_from_rows(rows, timezone, message, now, today):
     if brazilian:
         try: focus=date(int(brazilian[3]),int(brazilian[2]),int(brazilian[1]))
         except ValueError: pass
-    rows.sort(key=lambda r: (r['title'].casefold() not in message.casefold(),r.get('archived_at') is not None, r.get('due_date') != focus.isoformat(),
+    rows.sort(key=lambda r: (r['title'].casefold() not in message.casefold(),r.get('archived_at') is not None, local_schedule(r, timezone)[0] != focus.isoformat(),
         r.get('completed_at') is not None, r.get('due_date') or '9999', r.get('due_time') or ''))
     selected = rows[:60]
     for r in selected:
@@ -99,5 +109,5 @@ def context_from_rows(rows, timezone, message, now, today):
         r['same_title_date_count']=sum(t.get('due_date')==r.get('due_date') for t in same)
     return {'today': today.isoformat(), 'now': now.isoformat(), 'timezone': timezone, 'focus_date': focus.isoformat(),
         'total': len(rows), 'pending': sum(r.get('archived_at') is None and r.get('completed_at') is None for r in rows),
-        'focus_pending': sum(r.get('archived_at') is None and r.get('completed_at') is None and r.get('due_date') == focus.isoformat() for r in rows),
+        'focus_pending': sum(r.get('archived_at') is None and r.get('completed_at') is None and local_schedule(r, timezone)[0] == focus.isoformat() for r in rows),
         'complete_list': len(rows) <= 60, 'shown': len(selected), 'tasks': selected}

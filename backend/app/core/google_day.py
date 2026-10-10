@@ -1,5 +1,5 @@
 """Private day planning across calendars; never move or invent tasks."""
-from datetime import datetime,timedelta
+from datetime import date,datetime,timedelta
 from zoneinfo import ZoneInfo
 from backend.app.core.day_plan import day_plan
 
@@ -12,10 +12,14 @@ def combine_day(owner,authorization,day,timezone,events,partial):
     busy=[]
     for event in events:
         if event.get('blocks_time') is False:continue
-        start,finish=event.get('start',{}),event.get('end',{})
         try:
+            start,finish=event.get('start',{}),event.get('end',{})
+            if not isinstance(start,dict) or not isinstance(finish,dict):
+                raise ValueError('Missing event schedule')
             if start.get('date'):
-                if start['date']<=day.isoformat()<finish.get('date',''):busy.append((begin,end))
+                a,b=date.fromisoformat(start['date']),date.fromisoformat(finish['date'])
+                if b<=a:raise ValueError('Invalid event interval')
+                if a<=day<b:busy.append((begin,end))
             elif start.get('dateTime') and finish.get('dateTime'):
                 a=datetime.fromisoformat(start['dateTime'])
                 b=datetime.fromisoformat(finish['dateTime'])
@@ -23,7 +27,8 @@ def combine_day(owner,authorization,day,timezone,events,partial):
                     raise ValueError('Invalid event interval')
                 a,b=a.astimezone(zone),b.astimezone(zone)
                 if b>begin and a<end:busy.append((max(a,begin),min(b,end)))
-        except (ValueError,TypeError):
+            else:raise ValueError('Missing event schedule')
+        except (ValueError,TypeError,KeyError):
             partial=True
     merged=[]
     for a,b in sorted(busy):
@@ -40,8 +45,8 @@ def combine_day(owner,authorization,day,timezone,events,partial):
         if a>cursor:gaps.append({'start':cursor.strftime('%H:%M'),'end':a.strftime('%H:%M')})
         cursor=max(cursor,b)
     if cursor<end:gaps.append({'start':cursor.strftime('%H:%M'),'end':end.strftime('%H:%M')})
-    return {'date':day.isoformat(),'conflicts':collisions,'windows':gaps,
+    return {'date':day.isoformat(),'conflicts':collisions,'windows':[] if partial else gaps,
         'priorities':local['priorities'],'scheduled':local['scheduled'],
         'partial':partial or local['partial'], 'note':
-        'Recorte 08h–22h desta agenda principal. Janelas sem evento não garantem disponibilidade; '
+        'Recorte 08h–22h da agenda consultada. Consultas incompletas não mostram janelas livres. Janelas sem evento não garantem disponibilidade; '
         'outras agendas e duração das tarefas podem faltar. Nenhum horário foi alterado.'}
