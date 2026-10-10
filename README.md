@@ -1,4 +1,4 @@
-> **Prévia V2.2 instalada:** novo visual, conversas separadas com pastas/fixados/busca e Avisos da Koi com não lidos. Avisos antigos saem após 60 dias; conversas e lembranças permanecem. Toque carinhoso configurável após um dia sem conversar. [Como começar](docs/COMECE_AQUI_V2.md) · [O que foi verificado](docs/CONVERSAS_E_AVISOS_V2.md).
+> **Segunda prévia V2 instalada:** novo visual, conversas separadas com pastas/fixados/busca e Avisos da Koi com não lidos. Avisos antigos saem após 60 dias; conversas e lembranças permanecem. Toque carinhoso configurável após um dia sem conversar. [Como começar](docs/COMECE_AQUI_V2.md) · [O que foi verificado](docs/CONVERSAS_E_AVISOS_V2.md).
 
 # Prévia V2 · Koiwai
 

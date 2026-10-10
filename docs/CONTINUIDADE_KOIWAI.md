@@ -1,6 +1,6 @@
 # Koiwai — leia primeiro ao retomar
 
-## Prévia V2.2 conversas/avisos — trabalho atual 10/10/2026
+## Segunda prévia V2 conversas/avisos — trabalho atual 10/10/2026
 
 Usuário pediu chats separados bonitos; escolheu pastas Pessoal, Estudos, Trabalho,
 Outros e não lidos. Avisos da Koi dedicado; retenção APENAS avisos após60 dias em
@@ -16,7 +16,8 @@ local preservada em merge, retenção50/limite60dias sem apagar chats, lidos/ded
 migração1→6 e históricos/recibos/imagens preservados. Usuário confirmou Chats,
 Avisos, Nova conversa e quatro pastas. Chat vazio capturado, login mantido.
 Backend inteligência LIVE2799d23, dep-db58qqqd0e5s73ejj1ag. Prompt extra carinho
-validado com283 testes backend; nova publicação pendente no fechamento. Sem nova chamada Poe/compra. APK SHA256
+validado com283 testes backend e PUBLICADO: Render LIVE35cefd2,
+dep-db594ffavr4c73fst930. Health200, três rotas Gmail privadas401/private-no-store. Sem nova chamada Poe/compra. APK SHA256
 4F313B19D3ED8DB6A2662D10B0E168CFF35818ECE74434D3801BFAC528B09B68.
 
 ## Prévia V2 e novos acessos — 10/10/2026

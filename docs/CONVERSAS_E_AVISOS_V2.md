@@ -1,4 +1,4 @@
-# Conversas e avisos · prévia V2.2
+# Conversas e avisos · segunda prévia V2
 
 - Conversas separadas por ID UUID; histórico recente do modelo não cruza chats.
 - Lembranças/rotina do dono seguem compartilhadas; não são apagadas ao mudar de chat.
@@ -13,7 +13,9 @@
 
 ## Validação
 
-Backend 283 testes PASS; Android 62 unitários PASS. Build/lint PASS (0 erros/131 avisos). Dez testes físicos PASS: quatro novos de separação/recuperação/retensão/lidos e seis de persistência/migração/recibos/imagens. Prévia2/code21 instalada e usuário confirmou seletor/pastas. Aviso de ausência após 24h e novos e-mails reais ainda não avaliados em espera real.
+Backend 283 testes PASS; Android 62 unitários PASS. Build/lint PASS (0 erros/131 avisos). Dez testes físicos PASS: quatro novos de separação/recuperação/retenção/lidos e seis de persistência/migração/recibos/imagens. Prévia2/code21 instalada e usuário confirmou seletor/pastas. Aviso de ausência após 24h e novos e-mails reais ainda não avaliados em espera real.
+
+Servidor publicado LIVE35cefd2, dep-db594ffavr4c73fst930; health200 e rotas Gmail anônimas401 com private/no-store. Nenhuma geração paga ou envio real.
 
 ## Banco
 

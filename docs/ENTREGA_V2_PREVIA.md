@@ -15,7 +15,8 @@ Inteligência publicada LIVE2799d23, dep-db58qqqd0e5s73ejj1ag; 283 testes backen
 Prévia2/code21 instalada; build/lint PASS, 62 Android unitários e 10 testes físicos
 PASS (4 novos + 6 de persistência). Usuário confirmou seletor e quatro pastas.
 SHA256 APK: 4F313B19D3ED8DB6A2662D10B0E168CFF35818ECE74434D3801BFAC528B09B68.
-Prompt adicional de carinho aguardando publicação final.
+Prompt adicional de carinho PUBLICADO: Render LIVE35cefd2, deploy
+dep-db594ffavr4c73fst930. Health200; rotas Gmail anônimas401/private-no-store.
 
 ## Implementado
 
