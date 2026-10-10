@@ -2,7 +2,8 @@
 
 Conversa com contexto de tarefas, busca ampliada de lembranças, seleção de agendas
 e listas Google, e recuperação de consultas interrompidas. 265 testes do servidor
-e61 Android aprovados. APK preparado; validação no celular pendente.
+e61 Android aprovados. Instalada no Poco; quatro testes físicos distintos
+aprovados, incluindo consultas nas três contas Google e lembrete com tela apagada.
 [Entrega dos quatro packs e limites](docs/ENTREGA_PACKS_1_4_V1_15.md).
 
 # Continuidade de conversa — servidor

@@ -28,6 +28,14 @@ automática após timeout. Um resultado incerto não é anunciado como concluíd
 - APK: `android/build/releases/Koiwai-1.15.0.apk`.
 - SHA256: `B56E29882DC3777121E4E10443C7881FFF37ADA598AC84EEE22CECE41542D24F`.
 - MP3 embutido: 88.233 bytes, idêntico à amostra expressiva escolhida.
+- Instalado no Poco com `install -r`: Success. Package manager confirmou
+  V1.15.0/code19. Home abriu com conta conectada e tarefas existentes.
+- Quatro testes físicos distintos aprovados: consultas e seleção de agenda/lista
+  nas três contas Google; ciclo guardar/ler/corrigir/remover lembrança fictícia
+  com rejeição de edição antiga; painéis dia/consumo; lembrete, silêncio,
+  adiamento e conclusão. Lembrete repetido com tela confirmada Dozing antes e
+  durante execução: aprovado em 46,186s. A primeira execução também passou.
+  Dados dos testes foram removidos pelo próprio teste; preferências restauradas.
 - Nenhuma chamada Poe real, compra, assinatura, alteração de consentimento,
   migração de banco ou apagamento de dados nesta entrega.
 - Ambiente de compilação: Java25 falhava ao abrir pipe no diretório temporário;
@@ -43,9 +51,10 @@ de síntese expressiva com limite de uso. Não afirmar que a amostra fala qualqu
 
 ## Conferência no Poco e critérios para fechar os packs
 
-USB estava ausente em 10/10. A versão confirmada no aparelho antes desta entrega
-era V1.14.1/code17. Instalar a V1.15.0 com atualização que preserve dados;
-nunca desinstalar ou apagar histórico para passar em testes.
+USB estava ausente ao preparar o APK; o usuário conectou durante a entrega.
+V1.15.0/code19 instalada preservando dados. Não desinstalar ou apagar histórico
+para passar em testes. As conferências abaixo complementam os testes físicos já
+aprovados: não assumir que o teste de API validou todos os botões ou a conversa.
 
 1. Criar dado fictício: “Me lembra de estudar amanhã às 19h”. Consultar com
    frase diferente, concluir, reabrir, editar horário e verificar a lista.
@@ -68,13 +77,19 @@ nunca desinstalar ou apagar histórico para passar em testes.
 9. Acompanhar consumo Poe e sete dias de uso. Anotar falhas reais e corrigi-las
    antes de marcar os quatro packs concluídos e avançar para visual final V2.0.
 
-Esses testes físicos não foram executados nesta sessão. Não automatizar revogação
-de contas nem mexer em dados reais para simular uma falha. Windows e reformulação
-visual final continuam fora desta atualização.
+Foram executados os quatro testes físicos descritos nas evidências. Ainda faltam
+escritas Google reais nas três contas, conversa natural de ponta a ponta, voz,
+reinício, interrupção de rede durante ação, servidor dormindo e sete dias de uso.
+Não automatizar revogação de contas nem mexer em dados reais para simular uma
+falha. Windows e reformulação visual final continuam fora desta atualização.
 
 ## Publicação
 
-Preparada para publicação; substituir esta linha pelo resultado real do Render.
+Servidor publicado e LIVE no Render, commit
+`b7f03d11d1553fdf7d0fddf7dca16abe7dac1e84`, deploy
+`dep-db5768ss728c73c3dgn0`, concluído em 10/10/2026 às14:18 São Paulo.
+HTTPS health200; consultas Google sem sessão401; respostas private/no-store.
+Commits posteriores de testes/documentação não exigem novo deploy do servidor.
 
 ## Referências de implementação
 

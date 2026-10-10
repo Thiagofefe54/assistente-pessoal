@@ -3,16 +3,20 @@
 ## Packs 1–4 / V1.15.0 — 10/10/2026
 
 Pedido atual: quatro packs juntos, preservando dados; Windows e visual final adiados.
-V1.15.0/code19 pronta, NÃO instalada (ADB sem aparelhos). Última versão confirmada
-no Poco: V1.14.1/code17. APK inclui a amostra expressiva aprovada, não síntese
+V1.15.0/code19 INSTALADA no Poco (install-r Success, versão confirmada), conta
+e tarefas preservadas; Home conferida. APK inclui a amostra expressiva aprovada, não síntese
 contínua própria. 265 testes backend e61 Android PASS; build PASS. Sem gasto Poe.
 Conversa recebe tarefas relevantes/hoje e busca até200 registros mantendo3 trechos;
 Google consulta3 páginas/60 itens e permite agenda/lista escolhida no painel.
 Workers de consulta têm recuperação transitória limitada; ações/geração paga não
 são repetidas automaticamente. Ver ENTREGA_PACKS_1_4_V1_15.md para limites,
-hash do APK e checklist físico. Render aguardando publicação desta atualização.
+hash do APK e checklist físico. Render LIVE b7f03d1, deploydep-db5768ss728c73c3dgn0;
+health200 e consultas Google privadas401/private-no-store. Quatro testes físicos
+distintos PASS: três contas Google e seleção de agenda/lista; memória fictícia
+guardar/ler/corrigir/remover + versão antiga rejeitada; dia/consumo; notificação,
+silêncio, adiar e concluir (repetido com telaDozing confirmada). Sem chamadaPoe.
 Ainda não marcar packs nem V2.0 concluídos: faltam validação no Poco, critérios
-de reinício/tela apagada/autorizações e sete dias de uso. Voz contínua expressiva
+de reinício/rede/autorizações, escritas Google reais e sete dias de uso. Voz contínua expressiva
 precisa decisão viável; não comprar serviço sem orçamento e autorização.
 
 Preferência de voz10/10: usuário rejeitou Katie e pediu estilo Yoshino Koiwai
