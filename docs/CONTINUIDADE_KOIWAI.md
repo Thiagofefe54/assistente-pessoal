@@ -1,5 +1,32 @@
 # Koiwai — leia primeiro ao retomar
 
+## Prévia V2 e novos acessos — 10/10/2026
+
+Usuário autorizou reformulação completa de todas as abas, painel compacto de
+assistente, contatos/mensagens/e-mails/interpretação de tela e reset dos dados Koi,
+mantendo contas de e-mail. Android 2.0.0-preview.1/code20 instalado por atualização;
+nova passagem final de visual em andamento. Cinco abas e áreas internas com
+nova navegação, capítulos de memória, missões e cabeçalhos ilustrados.
+ACTION_ASSIST abre janela própria; seleção padrão deve ser feita pelo usuário.
+Contatos por busca/permissão; WhatsApp/SMS por rascunho revisado no app externo.
+Notificações opt-in/allowlist, no máximo40 atuais, só RAM; não é histórico completo.
+Captura única MediaProjection com consentimento, espera7s, revisão antes de IA.
+Gmail envio revisado + claim/recibo privado, sem repetição incerta; novo escopo
+gmail.send exige reautorizar cada conta. Avisos importantes consultam IDs, não corpo,
+até20/conta/último dia, WorkManager15min, baseline e silêncio22h–08h.
+Backend280 testes PASS,34 específicos reexecutados após ajuste de resposta; Android61
+unitários PASS; build/lint PASS na etapa anterior; último visual em verificação.
+No Poco: manutenção para cancelar jobs1 PASS; DeviceAccessV2Test3 PASS (serviços
+protegidos, limite/remoção de avisos fictícios e login+3conexões+histórico vazio).
+Compose V2NavigationTest travou; não dizer que navegação inteira foi aprovada.
+Reset:12 tabelas de dados Koi do dono zeradas, auth e3conexões Google preservadas,
+SQL final todas contagens0; localDB/cache zerados, só sessão mantida. Um relatório
+em trânsito foi removido novamente. Não apagamos Gmail/Agenda/Inter nem os dados
+de outros usuários. Sem envio real de e-mail, geração Poe ou compra de voz.
+Voz contínua ainda Android; MP3expressiva escolhida permanece no APK.
+Ver ENTREGA_V2_PREVIA.md e COMECE_AQUI_V2.md. Render novo ainda não publicado.
+Não chamar V2 definitiva; faltam consentimentos físicos, captura/voz e uso diário.
+
 ## Auditoria pré-uso diário — 10/10/2026
 
 Android continua V1.15.0/code19, sem alterações no APK. Correções no servidor:

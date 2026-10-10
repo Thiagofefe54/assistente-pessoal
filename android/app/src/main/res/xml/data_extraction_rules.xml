@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <data-extraction-rules>
-    <cloud-backup><exclude domain="database" path="." /><exclude domain="sharedpref" path="koiwai_session.xml" /><exclude domain="sharedpref" path="koiwai-reminders.xml" /><exclude domain="sharedpref" path="koiwai-reports.xml" /></cloud-backup>
-    <device-transfer><exclude domain="database" path="." /><exclude domain="sharedpref" path="koiwai_session.xml" /><exclude domain="sharedpref" path="koiwai-reminders.xml" /><exclude domain="sharedpref" path="koiwai-reports.xml" /></device-transfer>
+    <cloud-backup><exclude domain="database" path="." /><exclude domain="sharedpref" path="koiwai_session.xml" /><exclude domain="sharedpref" path="koiwai-reminders.xml" /><exclude domain="sharedpref" path="koiwai-reports.xml" /><exclude domain="sharedpref" path="koi-device-access.xml" /><exclude domain="sharedpref" path="koi-mail-pending.xml" /><exclude domain="sharedpref" path="koi-mail-alerts.xml" /></cloud-backup>
+    <device-transfer><exclude domain="database" path="." /><exclude domain="sharedpref" path="koiwai_session.xml" /><exclude domain="sharedpref" path="koiwai-reminders.xml" /><exclude domain="sharedpref" path="koiwai-reports.xml" /><exclude domain="sharedpref" path="koi-device-access.xml" /><exclude domain="sharedpref" path="koi-mail-pending.xml" /><exclude domain="sharedpref" path="koi-mail-alerts.xml" /></device-transfer>
 </data-extraction-rules>

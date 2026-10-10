@@ -29,8 +29,11 @@ class MainActivity : ComponentActivity() {
     }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        if(intent.action==Intent.ACTION_ASSIST){
+            startActivity(Intent(this,KoiAssistActivity::class.java));finish();return
+        }
         if(intent.getBooleanExtra("openTasks",false)) taskRequest.intValue++
-        if(intent.action==Intent.ACTION_ASSIST)assistRequest.intValue++
+        if(intent.action==Intent.ACTION_ASSIST || intent.getBooleanExtra("openChat",false))assistRequest.intValue++
         reportIntent(intent)
         lifeIntent(intent)
         enableEdgeToEdge(statusBarStyle=SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), navigationBarStyle=SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
@@ -39,8 +42,9 @@ class MainActivity : ComponentActivity() {
     override fun onNewIntent(intent:Intent) {
         super.onNewIntent(intent)
         setIntent(intent)
+        if(intent.action==Intent.ACTION_ASSIST){startActivity(Intent(this,KoiAssistActivity::class.java));return}
         if(intent.getBooleanExtra("openTasks",false)) taskRequest.intValue++
-        if(intent.action==Intent.ACTION_ASSIST)assistRequest.intValue++
+        if(intent.action==Intent.ACTION_ASSIST || intent.getBooleanExtra("openChat",false))assistRequest.intValue++
         reportIntent(intent)
         lifeIntent(intent)
     }

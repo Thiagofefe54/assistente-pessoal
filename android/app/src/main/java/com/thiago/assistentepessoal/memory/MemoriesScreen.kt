@@ -58,11 +58,7 @@ private fun ConnectedMemories(repo: MemoryRepository, onBack: () -> Unit, onSour
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
         item {
             TextButton(onClick=onBack) { Text("← Diário") }
-            Eyebrow("LEMBRANÇAS CONFIRMADAS",KoiColors.Purple)
-            Spacer(Modifier.height(8.dp))
-            Text("O que fica\ncom a Koi.",fontSize=32.sp,lineHeight=37.sp,fontWeight=FontWeight.Bold)
-            Spacer(Modifier.height(8.dp))
-            Text("Você escolhe o que ela leva para as próximas conversas.",color=KoiColors.Muted)
+            KoiPageHeading("LEMBRANÇAS CONFIRMADAS","O que fica comigo.","Você escolhe o que a Koi leva para as próximas conversas.",kind="memory")
         }
         item {
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue) {

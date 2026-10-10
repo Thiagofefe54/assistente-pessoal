@@ -120,8 +120,10 @@ import org.json.JSONObject
             GoogleReadResults(value){service,selection->readAccount(value.getJSONObject("account").getString("id"),service,selection)}
             Text("Dados consultados agora; não são enviados à IA nem guardados no cache do celular.",fontSize=11.sp,color=KoiColors.Muted)
         }
-        Text("O chat consulta Google e pode criar/ajustar Agenda e Tasks quando você pedir e identificar a conta. Você pode abrir textos compatíveis de e-mail e Drive nos detalhes. Envio de e-mail ainda não está disponível.",fontSize=11.sp,color=KoiColors.Muted)
+        Text("O chat consulta Google e pode criar/ajustar Agenda e Tasks. Para enviar e-mail, reautorize a conta e use Escrever e-mail abaixo.",fontSize=11.sp,color=KoiColors.Muted)
     }
+    GoogleMailPanel(status)
+    GoogleMailAlertsPanel()
     removing?.let{row->AlertDialog(onDismissRequest={removing=null},title={Text("Desconectar Google?")},
         text={Text("Remover ${row.getString("email")} da Koi. Seus dados no Google serão preservados.")},
         confirmButton={TextButton(onClick={removing=null;request("google-disconnect",JSONObject().put("connection_id",row.getString("id")))}){Text("Desconectar")}},

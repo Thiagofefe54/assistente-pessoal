@@ -7,7 +7,9 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.*
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.saveable.*
@@ -19,6 +21,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.*
@@ -42,7 +45,7 @@ fun KoiwaiTheme(content: @Composable () -> Unit) {
     MaterialTheme(colorScheme=darkColorScheme(primary=KoiColors.Purple,onPrimary=Color.White,
         secondary=KoiColors.Blue,background=KoiColors.Ink,surface=KoiColors.Card,
         onSurface=Color.White,onBackground=Color.White,onSurfaceVariant=KoiColors.Muted,
-        outline=Color(0xFF514262))) {
+        outline=Color(0xFF535C78)),shapes=Shapes(small=RoundedCornerShape(14.dp),medium=RoundedCornerShape(18.dp),large=RoundedCornerShape(24.dp))) {
         CompositionLocalProvider(LocalContentColor provides Color.White,content=content)
     }
 }
@@ -53,6 +56,7 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:St
     var accountReturn by rememberSaveable { mutableStateOf("settings") }
     var day by rememberSaveable { mutableStateOf<String?>(null) }
     var category by rememberSaveable { mutableStateOf<String?>(null) }
+    var routineGroup by rememberSaveable {mutableStateOf("Dia a dia")}
     val states = rememberSaveableStateHolder()
     val app = LocalContext.current.applicationContext as KoiwaiApplication
     val account by app.auth.account.collectAsState()
@@ -77,16 +81,17 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:St
     Box(Modifier.fillMaxSize()) {
         KoiBackdrop(selected)
         Scaffold(containerColor=Color.Transparent, bottomBar={
-            if(selected!="account") Surface(color=KoiColors.Ink.copy(alpha=.95f),shadowElevation=12.dp) {
-                Column {
-                    HorizontalDivider(color=KoiColors.Purple.copy(alpha=.18f))
-                    NavigationBar(containerColor=Color.Transparent,tonalElevation=0.dp) {
+            if(selected!="account") Box(Modifier.fillMaxWidth().navigationBarsPadding().padding(horizontal=14.dp,vertical=8.dp)) {
+                Surface(color=Color(0xFF181C30),shadowElevation=10.dp,shape=RoundedCornerShape(26.dp),modifier=Modifier.border(1.dp,Color.White.copy(alpha=.1f),RoundedCornerShape(26.dp))) {
+                    Row(Modifier.fillMaxWidth().padding(6.dp),horizontalArrangement=Arrangement.spacedBy(3.dp)) {
                         tabs.forEach { (route,label) ->
                             val active=selected==route || (route=="memory" && selected in listOf("facts","reports"))
-                            NavigationBarItem(selected=active,onClick={ selected=route;day=null;category=null },
-                                icon={ KoiGlyph(route,if(active) KoiColors.Purple else KoiColors.Muted) },
-                                label={ Text(label,fontSize=11.sp,fontWeight=if(active) FontWeight.Bold else FontWeight.Normal) },
-                                colors=NavigationBarItemDefaults.colors(selectedTextColor=Color.White,unselectedTextColor=KoiColors.Muted,indicatorColor=KoiColors.Purple.copy(alpha=.16f)))
+                            val accent=when(route){"routine"->KoiColors.Red;"memory","settings"->KoiColors.Blue;else->KoiColors.Purple}
+                            Column(Modifier.weight(1f).clip(RoundedCornerShape(20.dp)).background(if(active)accent.copy(alpha=.16f) else Color.Transparent)
+                                .selectable(active,onClick={selected=route;day=null;category=null},role=Role.Tab).padding(vertical=10.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(5.dp)){
+                                KoiGlyph(route,if(active)accent else KoiColors.Muted,Modifier.size(24.dp))
+                                Text(label,fontSize=10.sp,fontWeight=if(active)FontWeight.Bold else FontWeight.Normal,color=if(active)Color.White else KoiColors.Muted)
+                            }
                         }
                     }
                 }
@@ -99,7 +104,7 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:St
                 }) { route ->
                     states.SaveableStateProvider("$route:${account?.id ?: "local"}") {
                         when(route) {
-                            "home" -> HomeScreen({selected="chat"},{selected="routine"},{openAccount("home")},{selected="routine";category="Meu ritmo"})
+                            "home" -> HomeScreen({selected="chat"},{selected="routine"},{openAccount("home")},{selected="routine";category="Meu ritmo"},{selected="memory"})
                             "chat" -> ChatScreen({back()},{openAccount("chat")},{day=it;selected="memory"},{selected="routine";category="Ferramentas"},{area->
                                 if(area=="Lembranças") selected="facts" else {selected="routine";category=area}
                             })
@@ -113,7 +118,7 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:St
                                 "Tarefas","Agenda","Hábitos" -> key(category){TasksScreen({category=null},{openAccount("routine")},category ?: "Tarefas")}
                                 "Notas","Listas","Metas","Treinos","Finanças","Registros" -> key(category){PersonalScreen(if(category=="Registros") "Notas" else category!!,{category=null},{openAccount("routine")})}
                                 "Ferramentas" -> ToolsScreen({category=null})
-                                else -> RoutineScreen(null,{category=it},{category=null})
+                                else -> RoutineScreen(routineGroup,{routineGroup=it},{category=it})
                             }
                             "settings" -> SettingsScreen({openAccount("settings")},{selected="routine";category="Ferramentas"},{selected="facts"})
                             "account" -> AccountScreen {back()}
@@ -126,60 +131,81 @@ fun KoiwaiNavigation(taskRequest:Int=0,reportRequest:String?=null,lifeRequest:St
 }
 
 @Composable
-private fun HomeScreen(onChat: () -> Unit, onRoutine: () -> Unit, onAccount: () -> Unit,onCompanion:()->Unit) {
+private fun HomeScreen(onChat:()->Unit,onRoutine:()->Unit,onAccount:()->Unit,onCompanion:()->Unit,onMemory:()->Unit) {
     val app=LocalContext.current.applicationContext as KoiwaiApplication
     val account by app.auth.account.collectAsState()
-    val tasksRepo by app.tasks.collectAsState()
-    val tasks=tasksRepo?.tasks?.collectAsState()?.value
-    LaunchedEffect(tasksRepo) {tasksRepo?.refresh()}
+    val repo by app.tasks.collectAsState()
+    val tasks=repo?.tasks?.collectAsState()?.value
+    LaunchedEffect(repo){repo?.refresh()}
     val prefs=LocalContext.current.getSharedPreferences("koiwai-preferences",0)
     val treatment=prefs.getString("treatment","Mestre") ?: "Mestre"
-    var now by remember { mutableStateOf(ZonedDateTime.now()) }
-    LaunchedEffect(Unit) { while(true){now=ZonedDateTime.now();delay(30000)} }
+    var now by remember{mutableStateOf(ZonedDateTime.now())}
+    LaunchedEffect(Unit){while(true){now=ZonedDateTime.now();delay(30000)}}
     val greeting=when(now.hour){in 5..11->"Bom dia";in 12..17->"Boa tarde";else->"Boa noite"}
-    Column(Modifier.fillMaxSize().verticalScroll(rememberScrollState()).padding(horizontal=22.dp,vertical=16.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
-        Row(verticalAlignment=Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)) {
-                Eyebrow("SEU UNIVERSO PESSOAL",KoiColors.Purple)
-                Spacer(Modifier.height(7.dp))
-                Text("$greeting, $treatment.",fontSize=24.sp,lineHeight=29.sp,fontWeight=FontWeight.Bold)
-                Text(now.format(DateTimeFormatter.ofPattern("HH:mm • dd 'de' MMMM",pt)),color=KoiColors.Muted,fontSize=12.sp)
-            }
-            KoiChip(if(account==null) "Local" else "Conta",KoiColors.Blue)
-        }
-        Box(Modifier.fillMaxWidth().height(190.dp),contentAlignment=Alignment.Center) {
-            OrbitEmblem("spark",KoiColors.Purple,Modifier.size(190.dp))
-            Image(painterResource(R.drawable.koiwai),contentDescription="Koiwai",modifier=Modifier.size(180.dp))
-        }
-        Column(Modifier.fillMaxWidth(),horizontalAlignment=Alignment.CenterHorizontally) {
-            Text("Koiwai",fontSize=25.sp,letterSpacing=1.sp,fontWeight=FontWeight.Bold)
-            Text("Sua assistente pessoal",color=KoiColors.Muted,fontSize=13.sp)
-        }
-        Row(horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-            KoiPanel(Modifier.weight(1f),accent=KoiColors.Blue,onClick=onAccount) {
-                Eyebrow("SUA CONTA",KoiColors.Blue)
-                Text(if(account==null) "Local" else "Conectada",fontSize=21.sp,fontWeight=FontWeight.SemiBold)
-                Text("Conta e sincronização →",color=KoiColors.Muted,fontSize=11.sp)
-            }
-        }
-        KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Red,onClick=onRoutine) {
+    val pending=tasks.orEmpty().filter{it.completedAt==null && it.archivedAt==null}
+    val next=pending.sortedWith(compareBy<com.thiago.assistentepessoal.routine.KoiTask>{it.date ?: "9999"}.thenBy{it.time ?: "99"}).take(2)
+    LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
+        item {
             Row(verticalAlignment=Alignment.CenterVertically) {
-                KoiGlyph("routine",KoiColors.Red)
-                Text("Próximas tarefas",fontWeight=FontWeight.SemiBold,modifier=Modifier.weight(1f).padding(start=10.dp))
-                KoiGlyph("arrow",KoiColors.Muted,Modifier.size(20.dp))
+                Column(Modifier.weight(1f)){
+                    Eyebrow(now.format(DateTimeFormatter.ofPattern("EEEE • dd MMM",pt)).uppercase(pt),KoiColors.Blue)
+                    Spacer(Modifier.height(6.dp))
+                    Text("$greeting, $treatment.",fontSize=24.sp,fontWeight=FontWeight.Bold,lineHeight=30.sp)
+                }
+                IconButton(onClick=onAccount){KoiGlyph("settings",KoiColors.Blue)}
             }
-            Text(if(account==null) "Entre na sua conta para organizar suas missões."
-                else if(tasks==null) "Abra Rotina para conferir suas tarefas."
-                else "${tasks.count {it.completedAt==null && it.archivedAt==null}} pendentes • ${tasks.count {it.overdue()}} vencidas",color=KoiColors.Muted,fontSize=13.sp)
         }
-        KoiAction("✦  Conversar comigo",onChat,Modifier.fillMaxWidth())
-        KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple,onClick=onCompanion){
-            Eyebrow("ACOMPANHAMENTO",KoiColors.Purple);Text("Meu ritmo com a Koi →",fontSize=22.sp,fontWeight=FontWeight.SemiBold);Text("Check-ins • hábitos • revisão do dia",color=KoiColors.Muted)
+        item {
+            KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple) {
+                Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(8.dp)) {
+                    Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(9.dp)) {
+                        KoiChip("SEU ESPAÇO COM A KOI",KoiColors.Purple)
+                        Text("Vamos cuidar\ndo seu dia?",fontSize=29.sp,lineHeight=34.sp,fontWeight=FontWeight.Bold)
+                        Text("Sua assistente pessoal",color=KoiColors.Muted,fontSize=13.sp)
+                    }
+                    Box(Modifier.size(116.dp),contentAlignment=Alignment.Center){
+                        OrbitEmblem("spark",KoiColors.Purple,Modifier.fillMaxSize())
+                        Image(painterResource(R.drawable.koiwai),"Koiwai",Modifier.size(108.dp))
+                    }
+                }
+                KoiAction("✦  Conversar com a Koi",onChat,Modifier.fillMaxWidth())
+            }
         }
-        DayOverviewPanel(onRoutine)
-        DayPlanPanel(onRoutine)
-        WeatherPanel(compact=true)
-        Spacer(Modifier.height(4.dp))
+        item {
+            Row(horizontalArrangement=Arrangement.spacedBy(12.dp)) {
+                KoiPanel(Modifier.weight(1f),accent=KoiColors.Red,onClick=onRoutine){
+                    KoiGlyph("routine",KoiColors.Red);Text("Minha rotina",fontWeight=FontWeight.SemiBold)
+                    Text("Planos e missões",color=KoiColors.Muted,fontSize=12.sp)
+                }
+                KoiPanel(Modifier.weight(1f),accent=KoiColors.Blue,onClick=onMemory){
+                    KoiGlyph("memory",KoiColors.Blue);Text("Minha história",fontWeight=FontWeight.SemiBold)
+                    Text("Diário e lembranças",color=KoiColors.Muted,fontSize=12.sp)
+                }
+            }
+        }
+        item {
+            KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Red,onClick=onRoutine) {
+                Row(verticalAlignment=Alignment.CenterVertically){
+                    Text("Próximos passos",fontSize=18.sp,fontWeight=FontWeight.Bold,modifier=Modifier.weight(1f))
+                    KoiChip(if(tasks==null) "Rotina" else "${pending.size} pendentes",KoiColors.Red)
+                }
+                if(account==null)Text("Conecte sua conta para organizar suas missões.",color=KoiColors.Muted,fontSize=13.sp)
+                else if(tasks==null)Text("Abra sua rotina para conferir as tarefas.",color=KoiColors.Muted,fontSize=13.sp)
+                else if(next.isEmpty())Text("Um espaço livre para seu próximo plano 💜",color=KoiColors.Muted,fontSize=13.sp)
+                next.forEach {task ->
+                    Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(10.dp)){
+                        KoiGlyph("tasks",if(task.overdue())KoiColors.Red else KoiColors.Blue,Modifier.size(18.dp))
+                        Text(task.title,Modifier.weight(1f),fontSize=14.sp,maxLines=2,overflow=TextOverflow.Ellipsis)
+                        task.time?.let{Text(it.take(5),fontSize=12.sp,color=KoiColors.Muted)}
+                    }
+                }
+            }
+        }
+        item {KoiMenuRow("Meu ritmo","Hábitos, check-ins e pequenas conquistas","training",KoiColors.Purple,onCompanion)}
+        item {KoiDisclosure("Explorar meu dia","Resumo, planejamento e previsão do tempo","agenda",KoiColors.Blue){
+            DayOverviewPanel(onRoutine);DayPlanPanel(onRoutine);WeatherPanel(compact=true)
+        }}
+        item {Text("KOIWAI • UM PASSO DE CADA VEZ",fontSize=9.sp,letterSpacing=1.4.sp,color=KoiColors.Muted,modifier=Modifier.padding(vertical=4.dp))}
     }
 }
 
@@ -198,26 +224,14 @@ private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit, 
     val days=remember(messages,query) { messages.groupBy {it.localDate}.filter { (date,entries)-> query.isBlank() || date.contains(query) || dayLabel(date).contains(query,true) || entries.any {it.content.contains(query,true)} }.toSortedMap(compareByDescending {it}) }
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
         item {
-            Eyebrow("ARQUIVO PESSOAL",KoiColors.Blue)
-            Spacer(Modifier.height(8.dp))
-            Text(if(day==null) "Cada dia,\num capítulo." else dayLabel(day),fontSize=32.sp,lineHeight=37.sp,fontWeight=FontWeight.Bold)
-            Spacer(Modifier.height(8.dp))
-            Text("Suas conversas, organizadas por dia.",color=KoiColors.Muted,fontSize=13.sp)
+            KoiPageHeading("ARQUIVO PESSOAL",if(day==null) "Cada dia,\num capítulo." else dayLabel(day),"Suas conversas, organizadas por dia.",KoiColors.Blue,"memory")
         }
         if(day==null) {
-            item { RecallPanel(onDay,onFacts,onArea) }
-            item {KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue,onClick=onReports) {
-                Eyebrow("DIAS QUE VIRAM HISTÓRIA",KoiColors.Blue)
-                Text("Relatórios da Koi →",fontSize=20.sp)
-                Text("Semana, mês, semestre e ano, com capítulos de origem.",color=KoiColors.Muted)
+            item {KoiDisclosure("Buscar com a Koi","Encontre lembranças, relatos e planos","spark",KoiColors.Blue){RecallPanel(onDay,onFacts,onArea)}}
+            item {Row(horizontalArrangement=Arrangement.spacedBy(12.dp)){
+                KoiPanel(Modifier.weight(1f),KoiColors.Blue,onReports){KoiGlyph("agenda",KoiColors.Blue);Text("Relatórios",fontWeight=FontWeight.SemiBold);Text("Seus capítulos",fontSize=12.sp,color=KoiColors.Muted)}
+                KoiPanel(Modifier.weight(1f),KoiColors.Purple,onFacts){KoiGlyph("memory");Text("Lembranças",fontWeight=FontWeight.SemiBold);Text("O que fica comigo",fontSize=12.sp,color=KoiColors.Muted)}
             }}
-            item {
-                KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple,onClick=onFacts) {
-                    Eyebrow("O QUE A KOI LEVA COM ELA",KoiColors.Purple)
-                    Text("Lembranças confirmadas →",fontSize=20.sp,fontWeight=FontWeight.SemiBold)
-                    Text("Preferências, objetivos e detalhes que você escolhe guardar.",color=KoiColors.Muted,fontSize=13.sp)
-                }
-            }
             item {
                 Row(horizontalArrangement=Arrangement.spacedBy(8.dp)) {
                     val dayCount=messages.map{it.localDate}.distinct().size
@@ -236,27 +250,25 @@ private fun MemoryScreen(day: String?, onDay: (String)->Unit, onBack: ()->Unit, 
                     Text(if(query.isBlank()) "Converse com a Koi. As mensagens salvas vão formar sua linha do tempo." else "Tente outra palavra ou data.",color=KoiColors.Muted)
                 }
             }
-            items(days.keys.toList(),key={it}) { date ->
-                val entries=days.getValue(date)
-                val parsed=LocalDate.parse(date)
+            if(days.isNotEmpty())item{Eyebrow("SEUS CAPÍTULOS",KoiColors.Blue)}
+            items(days.keys.toList().chunked(2),key={it.joinToString("|")}) { pair ->
                 Row(horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-                    Column(Modifier.width(42.dp),horizontalAlignment=Alignment.CenterHorizontally) {
-                        Text(parsed.dayOfMonth.toString().padStart(2,'0'),fontSize=26.sp,fontWeight=FontWeight.Light,color=Color.White)
-                        Text(parsed.format(DateTimeFormatter.ofPattern("MMM",pt)).uppercase(pt),fontSize=10.sp,color=KoiColors.Blue,fontWeight=FontWeight.Bold)
-                        Spacer(Modifier.height(8.dp))
-                        Box(Modifier.width(1.dp).height(65.dp).background(KoiColors.Blue.copy(alpha=.28f)))
-                    }
+                    pair.forEach{date->
+                    val entries=days.getValue(date)
+                    val parsed=LocalDate.parse(date)
                     KoiPanel(Modifier.weight(1f),accent=KoiColors.Blue,onClick={onDay(date)}) {
-                        Row(verticalAlignment=Alignment.CenterVertically) {
-                            Text(if(parsed==LocalDate.now()) "Hoje" else parsed.format(DateTimeFormatter.ofPattern("EEEE",pt)).replaceFirstChar {it.titlecase(pt)},fontWeight=FontWeight.SemiBold,modifier=Modifier.weight(1f))
-                            KoiGlyph("arrow",KoiColors.Blue,Modifier.size(18.dp))
-                        }
-                        Text(entries.lastOrNull{it.role=="user"}?.content ?: entries.last().content,maxLines=2,overflow=TextOverflow.Ellipsis,color=KoiColors.Muted,fontSize=13.sp)
-                        Text("${entries.size} mensagens • ${parsed.year}",color=KoiColors.Blue,fontSize=11.sp)
+                        Eyebrow(parsed.format(DateTimeFormatter.ofPattern("MMM / yyyy",pt)).uppercase(pt),KoiColors.Blue)
+                        Text(parsed.dayOfMonth.toString().padStart(2,'0'),fontSize=44.sp,fontWeight=FontWeight.Light)
+                        Text(if(parsed==LocalDate.now()) "Hoje" else parsed.format(DateTimeFormatter.ofPattern("EEEE",pt)).replaceFirstChar {it.titlecase(pt)},fontWeight=FontWeight.SemiBold,fontSize=14.sp)
+                        HorizontalDivider(color=KoiColors.Blue.copy(alpha=.2f))
+                        Text(entries.lastOrNull{it.role=="user"}?.content ?: entries.last().content,maxLines=2,minLines=2,overflow=TextOverflow.Ellipsis,color=KoiColors.Muted,fontSize=12.sp)
+                        Text("${entries.size} mensagens →",color=KoiColors.Blue,fontSize=11.sp)
                     }
+                    }
+                    if(pair.size==1)Spacer(Modifier.weight(1f))
                 }
             }
-            item { Text("Relatórios periódicos chegam em uma próxima etapa. Suas lembranças já podem ser revisadas acima.",color=KoiColors.Muted,fontSize=12.sp) }
+            item { Text("Seus relatórios e lembranças ficam nos atalhos acima.",color=KoiColors.Muted,fontSize=12.sp) }
         } else {
             item { TextButton(onClick=onBack) {Text("← Todos os dias")}; KoiChip("Registro original",KoiColors.Blue) }
             item { JournalPanel(day,messages) }
@@ -298,51 +310,41 @@ private val areas=listOf(
     RoutineArea("Ferramentas","spark","Calcular, pesquisar e compartilhar.",KoiColors.Blue))
 
 @Composable
-private fun RoutineScreen(category:String?,onCategory:(String)->Unit,onBack:()->Unit) {
-    val area=areas.find{it.name==category}
-    LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
-        item {
-            Eyebrow("PAINEL DE MISSÕES",KoiColors.Red)
-            Spacer(Modifier.height(8.dp))
-            Text(area?.name ?: "Seu próximo\npasso.",fontSize=34.sp,lineHeight=39.sp,fontWeight=FontWeight.Bold)
-            Spacer(Modifier.height(8.dp))
-            Text(area?.subtitle ?: "Pequenas ações. Novas possibilidades.",color=KoiColors.Muted)
+private fun RoutineScreen(group:String,onGroup:(String)->Unit,onCategory:(String)->Unit) {
+    val groups=mapOf(
+        "Dia a dia" to listOf("Agenda","Meu ritmo","Hábitos","Listas"),
+        "Pessoal" to listOf("Notas","Diário","Metas","Treinos"),
+        "Dinheiro" to listOf("Finanças","Contas","Orçamento"),
+        "Conexões" to listOf("Ferramentas"))
+    val accent=when(group){"Dinheiro","Conexões"->KoiColors.Blue;"Pessoal"->KoiColors.Purple;else->KoiColors.Red}
+    LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
+        item {KoiPageHeading("PAINEL DE MISSÕES","Seu próximo passo.","Um lugar para organizar o que importa.",KoiColors.Red,"tasks")}
+        item {KoiPanel(Modifier.fillMaxWidth(),KoiColors.Red,{onCategory("Tarefas")}){
+            Row(verticalAlignment=Alignment.CenterVertically){
+                Column(Modifier.weight(1f),verticalArrangement=Arrangement.spacedBy(6.dp)){
+                    Eyebrow("COMECE POR AQUI",KoiColors.Red)
+                    Text("Minhas tarefas",fontSize=24.sp,fontWeight=FontWeight.Bold)
+                    Text("Planejar, acompanhar e concluir.",fontSize=13.sp,color=KoiColors.Muted)
+                }
+                OrbitEmblem("tasks",KoiColors.Red,Modifier.size(72.dp))
+            }
+        }}
+        item {Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(8.dp)){
+            groups.keys.forEach{label->FilterChip(selected=group==label,onClick={onGroup(label)},label={Text(label)})}
+        }}
+        items(areas.filter{it.name in groups.getValue(group)}.chunked(2)){pair ->
+            Row(horizontalArrangement=Arrangement.spacedBy(12.dp)){
+                pair.forEach{area->KoiPanel(Modifier.weight(1f),area.accent,{onCategory(area.name)}){
+                    KoiGlyph(area.icon,area.accent,Modifier.size(30.dp))
+                    Text(area.name,fontSize=17.sp,fontWeight=FontWeight.Bold)
+                    Text(area.subtitle,fontSize=12.sp,lineHeight=18.sp,color=KoiColors.Muted)
+                }}
+            }
         }
-        if(area!=null) {
-            item { TextButton(onClick=onBack){Text("← Todas as categorias")} }
-            item {
-                KoiPanel(Modifier.fillMaxWidth(),accent=area.accent) {
-                    OrbitEmblem(area.icon,area.accent,Modifier.size(150.dp).align(Alignment.CenterHorizontally))
-                    KoiChip("Em preparação",area.accent)
-                    Text("Seu espaço está tomando forma.",fontSize=23.sp,fontWeight=FontWeight.SemiBold)
-                    Text("O cadastro e a sincronização de ${area.name.lowercase(pt)} chegam na próxima etapa deste módulo.",color=KoiColors.Muted,lineHeight=23.sp)
-                }
-            }
-        } else {
-            item {
-                KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Red,onClick={onCategory("Tarefas")}) {
-                    Row(verticalAlignment=Alignment.CenterVertically) {
-                        Column(Modifier.weight(1f)) { Eyebrow("SEU FOCO",KoiColors.Red); Spacer(Modifier.height(10.dp)); Text("Tarefas",fontSize=26.sp,fontWeight=FontWeight.Bold);Text(areas[0].subtitle,color=KoiColors.Muted,fontSize=13.sp) }
-                        OrbitEmblem("tasks",KoiColors.Red,Modifier.size(88.dp))
-                    }
-                    Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically){KoiChip("Suas missões",KoiColors.Red);KoiGlyph("arrow",KoiColors.Red)}
-                }
-            }
-            items(areas.drop(1).chunked(2)) { pair ->
-                Row(horizontalArrangement=Arrangement.spacedBy(12.dp)) {
-                    pair.forEach { item ->
-                        KoiPanel(Modifier.weight(1f).heightIn(min=178.dp),accent=item.accent,onClick={onCategory(item.name)}) {
-                            KoiGlyph(item.icon,item.accent,Modifier.size(30.dp))
-                            Spacer(Modifier.height(3.dp))
-                            Text(item.name,fontSize=19.sp,fontWeight=FontWeight.SemiBold)
-                            Text(item.subtitle,color=KoiColors.Muted,fontSize=12.sp,lineHeight=17.sp)
-                            Text("Abrir →",color=item.accent,fontSize=10.sp)
-                        }
-                    }
-                }
-            }
-            item { Text("A Koi vai ajudar você a acompanhar tudo por aqui.",fontSize=12.sp,color=KoiColors.Muted) }
-        }
+        item {KoiPanel(Modifier.fillMaxWidth(),accent){
+            Eyebrow("COM A KOI",accent)
+            Text(when(group){"Dinheiro"->"Mais clareza para suas escolhas.";"Pessoal"->"Seu mundo também merece espaço.";"Conexões"->"Tudo conectado, no seu controle.";else->"Pequenos passos também contam."},fontSize=17.sp,fontWeight=FontWeight.SemiBold)
+        }}
     }
 }
 
@@ -359,12 +361,14 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
     var capture by remember {mutableStateOf(prefs.getBoolean("capture-reports",false))}
     var saved by remember {mutableStateOf(false)}
     var detail by rememberSaveable {mutableStateOf<String?>(null)}
-    LazyColumn(Modifier.fillMaxSize().imePadding(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(16.dp)) {
-        item {
-            Eyebrow("CONFIGURAÇÕES",KoiColors.Purple)
-            Spacer(Modifier.height(8.dp))
-            Text("Seu universo.\nDo seu jeito.",fontSize=32.sp,lineHeight=37.sp,fontWeight=FontWeight.Bold)
-        }
+    var section by rememberSaveable {mutableStateOf<String?>(null)}
+    val settingsList=rememberLazyListState()
+    LaunchedEffect(section){settingsList.scrollToItem(0)}
+    BackHandler(enabled=section!=null){section=null}
+    LazyColumn(Modifier.fillMaxSize().imePadding(),state=settingsList,contentPadding=PaddingValues(20.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
+        item {KoiPageHeading("CENTRAL DA KOI",section ?: "Do seu jeito.",if(section==null) "Escolha uma área. O restante fica fora do caminho." else "Ajuste o que faz diferença para você.",KoiColors.Blue,"settings")}
+        if(section!=null) item {TextButton(onClick={section=null}){Text("← Todas as configurações")}}
+        if(section==null) {
         item {
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue,onClick=onAccount) {
                 Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(14.dp)) {
@@ -374,15 +378,17 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
                 }
             }
         }
-        item {com.thiago.assistentepessoal.tools.AssistantRolePanel()}
-        item {com.thiago.assistentepessoal.tools.VoiceCustomizationPanel(voice)}
-        item {com.thiago.assistentepessoal.tools.GooglePrivacySettings()}
-        item {
-            PoeUsagePanel()
+            items(listOf(
+                Triple("Aparência e personalidade","Movimento e como a Koi chama você","spark"),
+                Triple("Voz e assistente","Falar com a Koi e chamar pelo Android","chat"),
+                Triple("Lembretes e carinho","Missões, rotina e relatórios","agenda"),
+                Triple("Conversa e memória","Relatos e lembranças confirmadas","memory"),
+                Triple("Conexões e privacidade","Google, celular e permissões","settings"),
+                Triple("Consumo e testes","Pontos de IA e dados fictícios","finance"),
+                Triple("Sobre a Koi","Versão e informações do aplicativo","notes")
+            )){(title,subtitle,icon)->KoiMenuRow(title,subtitle,icon,if(icon=="agenda")KoiColors.Red else KoiColors.Blue){section=title}}
         }
-        item {
-            DemoDataPanel()
-        }
+        if(section=="Aparência e personalidade") {
         item {
             Eyebrow("APARÊNCIA • V${BuildConfig.VERSION_NAME}")
             KoiPanel(Modifier.fillMaxWidth()) {
@@ -402,19 +408,10 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
                 },Modifier.fillMaxWidth(),treatment.trim().isNotEmpty() && treatment.trim().length<=30)
             }
         }
-        item {
-            KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue) {
-                Eyebrow("CONVERSA E MEMÓRIA",KoiColors.Blue)
-                Row(verticalAlignment=Alignment.CenterVertically){
-                    Column(Modifier.weight(1f)){Text("Guardar relatos do dia");Text("Preferências, acontecimentos e dinheiro informado",fontSize=12.sp,color=KoiColors.Muted)}
-                    Switch(checked=capture,onCheckedChange={capture=it;prefs.edit().putBoolean("capture-reports",it).apply()})
-                }
-                Text("Opcional. A Koi pode registrar relatos claros sem você dizer salve. Confira o resultado no chat e use Desfazer se precisar. Diário aparece em Notas; não lê sua conta bancária.",fontSize=12.sp,color=KoiColors.Muted)
-            }
         }
-        item {com.thiago.assistentepessoal.routine.ReminderSettings()}
-        item {com.thiago.assistentepessoal.routine.LifeReminderSettings()}
-        item {ReportSettings()}
+        if(section=="Voz e assistente") {
+        item {com.thiago.assistentepessoal.tools.AssistantRolePanel()}
+        item {com.thiago.assistentepessoal.tools.VoiceCustomizationPanel(voice)}
         item {
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple) {
                 Eyebrow("VOZ DA KOI",KoiColors.Purple)
@@ -431,6 +428,26 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
                 voice.info?.let{Text(it,color=KoiColors.Muted,fontSize=12.sp)}
             }
         }
+        }
+        if(section=="Lembretes e carinho") {
+        item {com.thiago.assistentepessoal.routine.ReminderSettings()}
+        item {com.thiago.assistentepessoal.routine.LifeReminderSettings()}
+        item {ReportSettings()}
+        }
+        if(section=="Conversa e memória") {
+        item {
+            KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue) {
+                Eyebrow("CONVERSA E MEMÓRIA",KoiColors.Blue)
+                Row(verticalAlignment=Alignment.CenterVertically){
+                    Column(Modifier.weight(1f)){Text("Guardar relatos do dia");Text("Preferências, acontecimentos e dinheiro informado",fontSize=12.sp,color=KoiColors.Muted)}
+                    Switch(checked=capture,onCheckedChange={capture=it;prefs.edit().putBoolean("capture-reports",it).apply()})
+                }
+                Text("Opcional. A Koi pode registrar relatos claros sem você dizer salve. Confira o resultado no chat e use Desfazer se precisar. Diário aparece em Notas; não lê sua conta bancária.",fontSize=12.sp,color=KoiColors.Muted)
+            }
+        }
+        }
+        if(section=="Conexões e privacidade") {
+        item {com.thiago.assistentepessoal.tools.GooglePrivacySettings()}
         item {
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue) {
                 Eyebrow("ATALHOS DA SUA KOI",KoiColors.Blue)
@@ -440,6 +457,16 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
                 TextButton(onClick={com.thiago.assistentepessoal.tools.openIntent(context,android.content.Intent(android.provider.Settings.ACTION_APP_NOTIFICATION_SETTINGS).putExtra(android.provider.Settings.EXTRA_APP_PACKAGE,context.packageName))}){Text("Permissões de notificações")}
             }
         }
+        }
+        if(section=="Consumo e testes") {
+        item {
+            PoeUsagePanel()
+        }
+        item {
+            DemoDataPanel()
+        }
+        }
+        if(section=="Sobre a Koi") {
         item {Eyebrow("SOBRE SUA KOI")}
         items(listOf("Voz e notificações","Memória e privacidade","Sobre a Koiwai")) { title ->
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue,onClick={detail=title}) {
@@ -447,6 +474,7 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
             }
         }
         item {Text("KOIWAI  /  FEITA PARA ACOMPANHAR VOCÊ",fontSize=9.sp,letterSpacing=1.sp,color=KoiColors.Muted,modifier=Modifier.padding(vertical=8.dp))}
+        }
     }
     detail?.let { title ->
         val description=when(title) {

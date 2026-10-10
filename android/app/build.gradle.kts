@@ -25,8 +25,8 @@ android {
         applicationId = "com.thiago.assistentepessoal"
         minSdk = 26
         targetSdk = 37
-        versionCode = 19
-        versionName = "1.15.0"
+        versionCode = 20
+        versionName = "2.0.0-preview.1"
 
         // Pass -PkoiBackendUrl=https://your-server.example for cloud builds.
         val backendUrl = koiConfig("koiBackendUrl").takeIf { it.isNotBlank() }

@@ -53,6 +53,22 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
     val mediaScope=rememberCoroutineScope()
     val voice=rememberKoiVoice()
     var voiceCapture by remember{mutableStateOf(false)}
+    var extras by remember {mutableStateOf(false)}
+    var screenConsent by remember{mutableStateOf(false)}
+    val sharedScreen by KoiSharedScreen.pending.collectAsState()
+    LaunchedEffect(sharedScreen?.id,account?.id){
+        sharedScreen?.let{capture->
+            if(capture.owner==account?.id){
+                if(capture.jpeg!=null){image=capture.jpeg;mediaInfo="Tela pronta. Confira a imagem e toque em Enviar para a IA interpretar. Pode consumir pontos de IA."}
+                else mediaInfo=capture.error
+            }
+            KoiSharedScreen.clear(capture.id)
+        }
+    }
+    if(screenConsent)AlertDialog(onDismissRequest={screenConsent=false},title={Text("Mostrar minha tela")},
+        text={Text("Depois de autorizar no Android, abra a tela desejada. A Koi fará uma única captura em 7 segundos e encerrará o acesso. Volte ao Chat para conferir a imagem antes de enviar à IA. Telas protegidas podem ficar vazias.")},
+        confirmButton={TextButton(onClick={screenConsent=false;openIntent(context,Intent(context,KoiScreenCaptureActivity::class.java))}){Text("Escolher tela")}},
+        dismissButton={TextButton(onClick={screenConsent=false}){Text("Cancelar")}})
     val microphone=rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()){granted ->
         if(granted)voiceCapture=true else mediaInfo="Permita o microfone para falar com a Koi."
     }
@@ -93,12 +109,12 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
         observedReply=last?.id;voiceHistoryLoaded=true
     }
     Column(Modifier.fillMaxSize().imePadding().padding(horizontal=18.dp,vertical=10.dp)) {
-        Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(10.dp)) {
+        Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(26.dp)).background(Brush.horizontalGradient(listOf(KoiColors.Purple.copy(alpha=.12f),KoiColors.Blue.copy(alpha=.05f)))).padding(horizontal=4.dp,vertical=8.dp),verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(10.dp)) {
             IconButton(onClick=onBack,modifier=Modifier.semantics{contentDescription="Voltar"}) {KoiGlyph("back",Color.White)}
             Image(painterResource(R.drawable.koiwai),null,Modifier.size(46.dp).clip(CircleShape).background(KoiColors.Purple.copy(alpha=.15f)).border(1.dp,KoiColors.Purple.copy(alpha=.5f),CircleShape))
             Column(Modifier.weight(1f)) {
-                Text("Koiwai",fontSize=22.sp,fontWeight=FontWeight.Bold)
-                Text(if(busy && history!=null) "Enviando…" else "Seu espaço com a Koi",color=KoiColors.Muted,fontSize=11.sp)
+                Text("Koiwai",fontSize=23.sp,fontWeight=FontWeight.Bold)
+                Text(if(busy && history!=null) "Preparando sua resposta…" else "Aqui, um passo de cada vez",color=KoiColors.Muted,fontSize=11.sp)
             }
             TextButton(onClick=onAccount,enabled=!busy) {Text("Conta",fontSize=12.sp)}
         }
@@ -111,10 +127,13 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
             if(history==null) item {Text("Carregando conversa…",color=KoiColors.Muted)}
             else if(messages.isEmpty()) item {
                 Column(Modifier.fillMaxWidth().padding(vertical=24.dp),horizontalAlignment=Alignment.CenterHorizontally,verticalArrangement=Arrangement.spacedBy(12.dp)) {
-                    OrbitEmblem("spark",KoiColors.Purple,Modifier.size(100.dp))
-                    Text("Vamos conversar?",fontSize=26.sp,fontWeight=FontWeight.Bold)
-                    Text("Um pensamento, uma ideia, seu dia.\nEste espaço é seu.",color=KoiColors.Muted,fontSize=14.sp)
-                    KoiChip("Seu espaço com a Koi",KoiColors.Blue)
+                    Box(Modifier.size(150.dp),contentAlignment=Alignment.Center){
+                        OrbitEmblem("spark",KoiColors.Purple,Modifier.fillMaxSize())
+                        Image(painterResource(R.drawable.koiwai),"Koi esperando sua mensagem",Modifier.size(128.dp))
+                    }
+                    Text("Pode chegar mais perto 💜",fontSize=24.sp,fontWeight=FontWeight.Bold)
+                    Text("Me conte seu dia. Vamos pensar juntos\nno próximo passo?",color=KoiColors.Muted,fontSize=14.sp)
+                    listOf("Quero organizar meu dia","Quero te contar uma coisa").forEach{suggestion->OutlinedButton(onClick={input=suggestion}){Text(suggestion)}}
                 }
             }
             messages.forEachIndexed { index,message ->
@@ -125,8 +144,14 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
                     Column {
                         MessageBubble(message,busy){repository.retry(message)}
                         if(message.role=="assistant")Row{
-                            TextButton(onClick={voice.speak(message.content)},enabled=voice.ready){Text("Ouvir")}
-                            TextButton(onClick={shareText(context,"Koiwai",message.content)}){Text("Compartilhar")}
+                            TextButton(onClick={voice.speak(message.content)},enabled=voice.ready){Text("Ouvir",fontSize=11.sp)}
+                            Box {
+                                var actions by remember {mutableStateOf(false)}
+                                TextButton(onClick={actions=true}){Text("Mais ···",fontSize=11.sp)}
+                                DropdownMenu(actions,{actions=false}){
+                                    DropdownMenuItem(text={Text("Compartilhar resposta")},onClick={actions=false;shareText(context,"Koiwai",message.content)})
+                                }
+                            }
                         }
                         if(message.role=="assistant"){
                             val urls=remember(message.content){Regex("https://[^\\s<>]+") .findAll(message.content).map{it.value.trimEnd('.',',',')',']')}.distinct().take(6).toList()}
@@ -165,24 +190,8 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
             }
         }
         if(busy && history!=null) ProcessingIndicator()
-        messages.lastOrNull { it.role=="user" && it.status==MessageStatus.SENT }?.let { last ->
-            if(account!=null && !busy) TextButton(onClick={onJournal(last.localDate)},modifier=Modifier.fillMaxWidth()) {
-                Text("✦ Resumo e lembranças desta conversa",fontSize=12.sp,color=KoiColors.Blue)
-            }
-        }
         if(input.length>8000) Text("Envie até 8.000 caracteres por mensagem.",color=KoiColors.Red,fontSize=12.sp)
         error?.let {Text(it,color=KoiColors.Red,fontSize=12.sp,modifier=Modifier.padding(bottom=8.dp))}
-        Row(Modifier.fillMaxWidth().horizontalScroll(rememberScrollState())){
-            TextButton(onClick={
-                if(androidx.core.content.ContextCompat.checkSelfPermission(context,android.Manifest.permission.RECORD_AUDIO)==android.content.pm.PackageManager.PERMISSION_GRANTED)voiceCapture=true
-                else microphone.launch(android.Manifest.permission.RECORD_AUDIO)
-            },enabled=!busy){Text("🎙 Voz")}
-
-            TextButton(onClick={if(account!=null)imageLauncher.launch("image/*") else mediaInfo="Entre na sua conta para analisar imagens."},enabled=!busy){Text("Imagem")}
-            TextButton(onClick={try{if(account!=null)cameraLauncher.launch(null) else mediaInfo="Entre na sua conta para analisar fotos."}catch(e:android.content.ActivityNotFoundException){mediaInfo="Não há aplicativo de câmera disponível."}},enabled=!busy){Text("Câmera")}
-            TextButton(onClick=onTools){Text("Ferramentas")}
-            TextButton(onClick={voice.stop()}){Text("Parar voz")}
-        }
         (mediaInfo ?: voice.info)?.let{Text(it,color=KoiColors.Muted,fontSize=11.sp,maxLines=3)}
         image?.let{encoded->Row(verticalAlignment=Alignment.CenterVertically){
             val preview=remember(encoded){runCatching{val bytes=android.util.Base64.decode(encoded,android.util.Base64.DEFAULT);android.graphics.BitmapFactory.decodeByteArray(bytes,0,bytes.size)?.asImageBitmap()}.getOrNull()}
@@ -190,10 +199,27 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
             TextButton(onClick={image=null;mediaInfo=null}){Text("Remover imagem")}
         }}
         Row(Modifier.fillMaxWidth().clip(RoundedCornerShape(22.dp)).background(KoiColors.Card.copy(alpha=.96f)).border(1.dp,KoiColors.Purple.copy(alpha=.35f),RoundedCornerShape(22.dp)).padding(6.dp),verticalAlignment=Alignment.CenterVertically) {
+            Box {
+                IconButton(onClick={extras=true},enabled=!busy,modifier=Modifier.semantics{contentDescription="Mais opções da conversa"}){Text("＋",fontSize=24.sp,color=KoiColors.Blue)}
+                DropdownMenu(expanded=extras,onDismissRequest={extras=false}) {
+                    DropdownMenuItem(text={Text("Escolher imagem")},onClick={extras=false;if(account!=null)imageLauncher.launch("image/*") else mediaInfo="Entre na sua conta para analisar imagens."})
+                    DropdownMenuItem(text={Text("Mostrar minha tela")},onClick={extras=false;if(account!=null)screenConsent=true else mediaInfo="Entre na sua conta para interpretar a tela."})
+                    DropdownMenuItem(text={Text("Tirar foto")},onClick={extras=false;try{if(account!=null)cameraLauncher.launch(null) else mediaInfo="Entre na sua conta para analisar fotos."}catch(_:android.content.ActivityNotFoundException){mediaInfo="Não há aplicativo de câmera disponível."}})
+                    DropdownMenuItem(text={Text("Ferramentas")},onClick={extras=false;onTools()})
+                    messages.lastOrNull{it.role=="user" && it.status==MessageStatus.SENT}?.let{last ->
+                        if(account!=null)DropdownMenuItem(text={Text("Resumo e lembranças")},onClick={extras=false;onJournal(last.localDate)})
+                    }
+                    DropdownMenuItem(text={Text("Parar voz")},onClick={extras=false;voice.stop()})
+                }
+            }
             TextField(value=input,onValueChange={input=it},placeholder={Text("Digite uma mensagem…",fontSize=14.sp)},
                 modifier=Modifier.weight(1f),maxLines=4,
                 colors=TextFieldDefaults.colors(focusedContainerColor=Color.Transparent,unfocusedContainerColor=Color.Transparent,
                     focusedIndicatorColor=Color.Transparent,unfocusedIndicatorColor=Color.Transparent,cursorColor=KoiColors.Purple))
+            IconButton(onClick={
+                if(androidx.core.content.ContextCompat.checkSelfPermission(context,android.Manifest.permission.RECORD_AUDIO)==android.content.pm.PackageManager.PERMISSION_GRANTED)voiceCapture=true
+                else microphone.launch(android.Manifest.permission.RECORD_AUDIO)
+            },enabled=!busy,modifier=Modifier.semantics{contentDescription="Falar com a Koi"}){KoiGlyph("voice",KoiColors.Purple)}
             KoiAction(if(busy) "…" else "Enviar",{pendingText=input;pendingId=repository.send(input.ifBlank{"Analise esta imagem, Koi."},image)},
                 enabled=!busy && history!=null && (input.isNotBlank() || image!=null) && input.length<=8000)
         }
@@ -228,10 +254,10 @@ private fun ProcessingIndicator() {
 @Composable
 private fun MessageBubble(message:ChatMessage,busy:Boolean,onRetry:()->Unit) {
     val user=message.role=="user"
-    val shape=if(user) RoundedCornerShape(20.dp,20.dp,5.dp,20.dp) else RoundedCornerShape(5.dp,20.dp,20.dp,20.dp)
+    val shape=if(user) RoundedCornerShape(24.dp,24.dp,8.dp,24.dp) else RoundedCornerShape(8.dp,24.dp,24.dp,24.dp)
     Box(Modifier.fillMaxWidth(),contentAlignment=if(user) Alignment.CenterEnd else Alignment.CenterStart) {
         Column(Modifier.widthIn(max=320.dp).clip(shape)
-            .background(Brush.linearGradient(if(user) listOf(Color(0xFF54328E),Color(0xFF34285C)) else listOf(Color(0xFF201B32),Color(0xFF17182B))))
+            .background(Brush.linearGradient(if(user) listOf(Color(0xFF623BB1),Color(0xFF354887)) else listOf(Color(0xFF1C2438),Color(0xFF151B2C))))
             .border(1.dp,(if(user) KoiColors.Purple else KoiColors.Blue).copy(alpha=.23f),shape).padding(15.dp),verticalArrangement=Arrangement.spacedBy(7.dp)) {
             Text(if(user) "VOCÊ" else "✦ KOIWAI",color=if(user) Color(0xFFD9C4FF) else Color(0xFF9AAFFF),fontSize=10.sp,letterSpacing=1.sp,fontWeight=FontWeight.Bold)
             message.imageJpegBase64?.let{encoded->
@@ -239,7 +265,7 @@ private fun MessageBubble(message:ChatMessage,busy:Boolean,onRetry:()->Unit) {
                 preview?.let{Image(it,"Imagem enviada",Modifier.fillMaxWidth().heightIn(max=180.dp))}
                 Text("Imagem guardada neste celular",fontSize=10.sp,color=KoiColors.Muted)
             }
-            SelectionContainer {Text(message.content,color=Color.White,fontSize=15.sp,lineHeight=23.sp)}
+            SelectionContainer {Text(message.content,color=Color.White,fontSize=16.sp,lineHeight=25.sp)}
             val status=when(message.status){MessageStatus.SENDING->" • Enviando…";MessageStatus.FAILED->" • Falha no envio";else->""}
             Text(messageTime(message)+status,color=KoiColors.Muted,fontSize=10.sp,modifier=Modifier.align(Alignment.End))
             if(user && message.status==MessageStatus.FAILED) {

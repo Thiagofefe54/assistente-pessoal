@@ -187,7 +187,7 @@ def handle(semantic, owner, request_id, message, timezone):
     if not semantic.permits('google',operation,message):
         return {'reply':'Posso ajudar com o Google; para alterar algo, faça um pedido atual e claro 💜'}
     if tool.service not in ('calendar','tasks') or operation not in ('create','update','complete','reopen'):
-        return {'reply':'Nesta etapa posso consultar Google e criar/ajustar Agenda e Tasks. Envio de e-mail e outras alterações ainda não estão disponíveis 💜'}
+        return {'reply':'Posso consultar Google e criar/ajustar Agenda e Tasks. Para enviar e-mail, abra Escrever e-mail em Conexões, selecione a conta e revise o destinatário e o texto antes de enviar 💜'}
     if len(rows)!=1:
         return {'reply':'Qual conta Google devo usar? Escreva o e-mail junto com o pedido para eu alterar a conta certa 💜'}
     for title in (tool.title,tool.target):

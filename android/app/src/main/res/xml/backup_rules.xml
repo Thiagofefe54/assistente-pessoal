@@ -2,5 +2,8 @@
 <full-backup-content>
     <exclude domain="database" path="." />
     <exclude domain="sharedpref" path="koiwai_session.xml" />
+    <exclude domain="sharedpref" path="koi-device-access.xml" />
+    <exclude domain="sharedpref" path="koi-mail-pending.xml" />
+    <exclude domain="sharedpref" path="koi-mail-alerts.xml" />
     <exclude domain="sharedpref" path="koiwai-reminders.xml" /><exclude domain="sharedpref" path="koiwai-reports.xml" />
 </full-backup-content>

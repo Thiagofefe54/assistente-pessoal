@@ -53,6 +53,48 @@ class GoogleContentRequest(BaseModel):
     item_id:str=Field(min_length=1,max_length=200,pattern=r'^[A-Za-z0-9_-]+$')
 
 
+class MailReceiptRequest(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    request_id:UUID
+    timezone:str|None=Field(default=None,max_length=80)
+
+
+class MailSendRequest(MailReceiptRequest):
+    connection_id:UUID
+    recipient:str=Field(min_length=3,max_length=254,pattern=r'^[A-Za-z0-9.!#$%&\x27*+/=?^_`{|}~-]+@[A-Za-z0-9](?:[A-Za-z0-9.-]*[A-Za-z0-9])?\.[A-Za-z]{2,63}$')
+    subject:str=Field(min_length=1,max_length=160,pattern=r'^[^\x00-\x1f\x7f]+$')
+    body:str=Field(min_length=1,max_length=10000)
+    reviewed:Literal[True]
+
+    @field_validator('body')
+    @classmethod
+    def valid_body(cls,value):
+        if not value.strip() or any(ord(c)<32 and c not in '\r\n\t' for c in value):raise ValueError('Confira o texto da mensagem.')
+        return value
+
+
+@router.post('/assistant/google-mail-send')
+def mail_send(body:MailSendRequest,response:Response,owner:UUID=Depends(current_user)):
+    from backend.app.core.google_mail import send
+    response.headers.update(HEADERS)
+    return send(owner,body.connection_id,body.request_id,body.recipient,body.subject,body.body,body.reviewed)
+
+
+@router.post('/assistant/google-mail-status')
+def mail_status(body:MailReceiptRequest,response:Response,owner:UUID=Depends(current_user)):
+    from backend.app.core.google_mail import receipt
+    response.headers.update(HEADERS)
+    result=receipt(owner,body.request_id)
+    return result or {'sent':False,'uncertain':False,'reply':'Esse pedido não foi iniciado no servidor.'}
+
+
+@router.post('/assistant/google-mail-important')
+def mail_important(body:GoogleRequest,response:Response,owner:UUID=Depends(current_user)):
+    from backend.app.core.google_mail import important
+    response.headers.update(HEADERS)
+    return important(owner)
+
+
 @router.post('/assistant/google-content')
 def google_content(body:GoogleContentRequest,response:Response,owner:UUID=Depends(current_user)):
     from backend.app.core.google_content import preview

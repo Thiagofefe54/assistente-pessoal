@@ -22,7 +22,8 @@ import com.thiago.assistentepessoal.*
     }
     KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Purple){
         Text("Koi como assistente do Android",fontSize=20.sp)
-        Text("O gesto de assistente pode abrir o Chat da Koi. Você escolhe no Android. Isso não ativa escuta por “Koi”, leitura de outras telas ou microfone contínuo.",fontSize=12.sp,color=KoiColors.Muted)
+        Text("Chame a Koi pelo gesto do Android: um painel compacto aparece sobre a tela atual. Você pode falar, escrever ou continuar no Chat completo.",fontSize=12.sp,color=KoiColors.Muted)
+        TextButton(onClick={context.startActivity(Intent(context,com.thiago.assistentepessoal.KoiAssistActivity::class.java))}){Text("Experimentar painel da Koi")}
         KoiAction("Escolher assistente padrão",{
             if(Build.VERSION.SDK_INT>=29){
                 val roles=context.getSystemService(RoleManager::class.java)

@@ -39,11 +39,7 @@ fun AccountScreen(onBack:()->Unit) {
     BackHandler(enabled=busy) { }
     Column(Modifier.fillMaxSize().imePadding().verticalScroll(rememberScrollState()).padding(22.dp),verticalArrangement=Arrangement.spacedBy(18.dp)) {
         TextButton(onClick=onBack,enabled=!busy){Text("← Voltar")}
-        Row(verticalAlignment=Alignment.CenterVertically) {
-            Column(Modifier.weight(1f)){Eyebrow("CONEXÃO PESSOAL",KoiColors.Blue);Spacer(Modifier.height(8.dp));Text("Conta Koiwai",fontSize=30.sp,fontWeight=FontWeight.Bold)}
-            OrbitEmblem("spark",KoiColors.Blue,Modifier.size(76.dp))
-        }
-        Text("Sua história, sempre com você.",color=KoiColors.Muted,fontSize=15.sp)
+        KoiPageHeading("CONEXÃO PESSOAL","Conta Koiwai","Sua história, sempre com você.",KoiColors.Blue,"settings")
         KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue) {
             if(account==null) {
                 Text("Bem-vindo ao seu universo",fontSize=21.sp,fontWeight=FontWeight.SemiBold)

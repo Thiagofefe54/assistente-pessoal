@@ -41,11 +41,11 @@ fun PersonalScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
         (category!="Finanças" || ((!monthOnly || it.date?.startsWith(month)==true) && (financeFilter=="all" || financeCategory(it)==financeFilter)))}
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(14.dp)){
         item{
-            TextButton(onClick=onBack){Text("← Rotina")};Eyebrow("SEU ESPAÇO",accent);Text(category,fontSize=32.sp)
+            TextButton(onClick=onBack){Text("← Rotina")};KoiPageHeading("SEU ESPAÇO",category,when(category){"Finanças"->"Seu dinheiro, com mais clareza.";"Treinos"->"Evolução em movimento.";"Metas"->"Cada passo aproxima você.";"Listas"->"Pequenas coisas, no lugar certo.";else->"Um lugar para suas ideias."},accent,when(category){"Finanças"->"finance";"Treinos"->"training";"Metas"->"tasks";else->"notes"})
             Text(when(category){"Listas"->"Um item de cada vez.";"Metas"->"Transforme planos em progresso.";"Treinos"->"Registre o que você fez e acompanhe a evolução.";"Finanças"->"Receitas e despesas registradas por você, em reais.";else->"Ideias que acompanham você."},color=KoiColors.Muted)
             Spacer(Modifier.height(12.dp))
             KoiAction("＋ Novo registro",{editing=null;creationId=UUID.randomUUID().toString();editor=true},Modifier.fillMaxWidth(),!busy && records!=null && records!!.size<2000)
-            OutlinedTextField(query,{query=it},label={Text("Buscar")},singleLine=true,modifier=Modifier.fillMaxWidth())
+            OutlinedTextField(query,{query=it},label={Text("Buscar")},singleLine=true,shape=androidx.compose.foundation.shape.RoundedCornerShape(18.dp),modifier=Modifier.fillMaxWidth())
             Row{FilterChip(selected=!archived,onClick={archived=false},label={Text("Ativos")});Spacer(Modifier.width(8.dp));FilterChip(selected=archived,onClick={archived=true},label={Text("Arquivados")})}
             if(category=="Finanças")Row{FilterChip(selected=monthOnly,onClick={monthOnly=true},label={Text("Este mês")});Spacer(Modifier.width(8.dp));FilterChip(selected=!monthOnly,onClick={monthOnly=false},label={Text("Todos")})}
             if(category=="Finanças")FinanceCategoryPicker(financeFilter,{financeFilter=it},true)

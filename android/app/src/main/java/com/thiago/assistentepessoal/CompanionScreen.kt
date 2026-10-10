@@ -73,8 +73,7 @@ fun CompanionScreen(onBack:()->Unit,onArea:(String)->Unit){
     LazyColumn(Modifier.fillMaxSize().imePadding(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(14.dp)){
         item{
             TextButton(onClick=onBack){Text("← Voltar")}
-            Eyebrow("UM PASSO DE CADA VEZ",KoiColors.Purple)
-            Text("Seu ritmo.\nCom a Koi.",fontSize=30.sp,fontWeight=FontWeight.Bold)
+            KoiPageHeading("UM PASSO DE CADA VEZ","Meu ritmo com a Koi.","Hábitos, momentos e pequenas conquistas.",kind="training")
             Row(horizontalArrangement=Arrangement.spacedBy(8.dp)){
                 listOf("day" to "Meu dia","habits" to "Hábitos","checkins" to "Check-ins").forEach{(id,label)->FilterChip(selected=tab==id,onClick={tab=id},label={Text(label)})}
             }

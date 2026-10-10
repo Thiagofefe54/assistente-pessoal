@@ -11,6 +11,12 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.Canvas
+import androidx.compose.ui.Alignment
+import com.thiago.assistentepessoal.OrbitEmblem
+import com.thiago.assistentepessoal.motionPhase
+import kotlin.math.sin
 import com.thiago.assistentepessoal.KoiColors
 
 /** One user-started utterance; never continuously restarts or sends a chat message. */
@@ -23,6 +29,8 @@ fun KoiVoiceCapture(onText:(String)->Unit,onClose:()->Unit){
     var preview by remember{mutableStateOf("")}
     var status by remember{mutableStateOf("Pode falar, estou ouvindo 💜")}
     var listening by remember{mutableStateOf(false)}
+    var level by remember{mutableFloatStateOf(0f)}
+    val phase=motionPhase(1800)
     var attempt by remember{mutableIntStateOf(0)}
     val local=remember{android.os.Build.VERSION.SDK_INT>=31 && SpeechRecognizer.isOnDeviceRecognitionAvailable(context)}
     val recognizer=remember{runCatching{
@@ -37,7 +45,7 @@ fun KoiVoiceCapture(onText:(String)->Unit,onClose:()->Unit){
         recognizer?.setRecognitionListener(object:RecognitionListener{
             override fun onReadyForSpeech(params:Bundle?){listening=true}
             override fun onBeginningOfSpeech(){}
-            override fun onRmsChanged(rmsdB:Float){}
+            override fun onRmsChanged(rmsdB:Float){level=(rmsdB/10f).coerceIn(0f,1f)}
             override fun onBufferReceived(buffer:ByteArray?){}
             override fun onEndOfSpeech(){listening=false;status="Entendendo sua fala…"}
             override fun onError(error:Int){listening=false;status=when(error){
@@ -63,8 +71,18 @@ fun KoiVoiceCapture(onText:(String)->Unit,onClose:()->Unit){
         catch(e:RuntimeException){listening=false;status="Não consegui iniciar a voz agora. Tente novamente."}
     }
     AlertDialog(onDismissRequest=onClose,title={Text("Fale com a Koi 💜")},text={Column(verticalArrangement=Arrangement.spacedBy(12.dp)){
-        Text(status,color=KoiColors.Blue)
-        if(listening)LinearProgressIndicator(Modifier.fillMaxWidth())
+        Row(verticalAlignment=Alignment.CenterVertically,horizontalArrangement=Arrangement.spacedBy(12.dp)){
+            OrbitEmblem("voice",KoiColors.Purple,Modifier.size(58.dp))
+            Text(status,color=KoiColors.Purple,fontSize=16.sp)
+        }
+        if(listening)Canvas(Modifier.fillMaxWidth().height(46.dp)){
+            repeat(30){i->
+                val height=6.dp.toPx()+(sin(phase.value*6.28f+i*.65f)+1f)*(.18f+level)*size.height*.22f
+                val x=size.width*(i+.5f)/30f
+                drawLine(if(i%3==0)KoiColors.Blue else KoiColors.Purple,
+                    androidx.compose.ui.geometry.Offset(x,size.height/2-height/2),androidx.compose.ui.geometry.Offset(x,size.height/2+height/2),3.dp.toPx(),androidx.compose.ui.graphics.StrokeCap.Round)
+            }
+        }
         if(preview.isNotBlank())Text(preview)
         Text(if(local)"Transcrição local disponível neste Android." else "Serviço de voz do Android; pode usar rede. Preferência offline é solicitada.",style=MaterialTheme.typography.bodySmall)
         Text("Sua fala vai para o campo de mensagem. Revise antes de enviar. A transcrição usa o serviço de voz do Android.",style=MaterialTheme.typography.bodySmall)

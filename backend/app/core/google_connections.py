@@ -23,6 +23,7 @@ SCOPE = {
     'calendars': 'https://www.googleapis.com/auth/calendar.calendarlist.readonly',
     'tasks': 'https://www.googleapis.com/auth/tasks',
     'mail': 'https://www.googleapis.com/auth/gmail.readonly',
+    'mail_send': 'https://www.googleapis.com/auth/gmail.send',
     'drive': 'https://www.googleapis.com/auth/drive.readonly',
 }
 ALL_SCOPES = {'openid', 'email', *SCOPE.values()}
@@ -291,7 +292,7 @@ def access_token(owner, row):
 
 
 def consult(owner, connection, service, query=None, start=None, end=None, local_timezone='America/Sao_Paulo'):
-    if service not in SCOPE:
+    if service not in SCOPE or service=='mail_send':
         raise HTTPException(422, 'Serviço Google inválido.')
     row = account(owner, connection)
     if SCOPE[service] not in row['scopes']:

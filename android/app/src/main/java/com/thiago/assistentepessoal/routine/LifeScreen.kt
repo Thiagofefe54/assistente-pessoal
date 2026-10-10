@@ -36,7 +36,7 @@ fun LifeScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
     LaunchedEffect(repo){repo.refresh()}
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(14.dp)){
         item{
-            TextButton(onClick=onBack){Text("← Rotina")};Eyebrow("SEU DIA COM A KOI",accent);Text(category,fontSize=32.sp)
+            TextButton(onClick=onBack){Text("← Rotina")};KoiPageHeading("SEU DIA COM A KOI",category,when(kind){"bill"->"Nada importante fica para trás.";"budget"->"Planeje com tranquilidade.";else->"Seu dia merece um capítulo."},accent,if(kind=="diary")"memory" else "finance")
             Text(when(kind){"bill"->"Vencimentos previstos. Marcar pago registra uma despesa; não movimenta sua conta bancária.";"budget"->"Limite do mês comparado às despesas registradas. Não é saldo bancário.";else->"Acontecimentos por dia, sem inventar o que você não contou."},color=KoiColors.Muted)
             Spacer(Modifier.height(10.dp));KoiAction("＋ ${if(kind=="bill")"Nova conta" else if(kind=="budget")"Definir limite" else "Novo acontecimento"}",{editing=null;creationId=UUID.randomUUID().toString();editor=true},enabled=!busy && records!=null && all.size<2000)
             Row{FilterChip(selected=!archived,onClick={archived=false},label={Text("Ativos")});Spacer(Modifier.width(8.dp));FilterChip(selected=archived,onClick={archived=true},label={Text("Arquivados")})}
@@ -56,7 +56,7 @@ fun LifeScreen(category:String,onBack:()->Unit,onAccount:()->Unit){
         }
         if(kind=="budget")item{KoiPanel(Modifier.fillMaxWidth(),accent=accent){Text("Gastos registrados neste mês",fontSize=20.sp);Text(money(spent),fontSize=27.sp);Text("Entradas e contas previstas não são despesas. Pagamentos registrados entram no total.",color=KoiColors.Muted)}}
         if(kind=="diary"){
-            item{WeeklyLifePanel(all,today)}
+            item{KoiDisclosure("Minha semana","Acontecimentos e sono registrados","memory",KoiColors.Purple){WeeklyLifePanel(all,today)}}
             item{Row(Modifier.fillMaxWidth(),horizontalArrangement=Arrangement.spacedBy(6.dp)){FilterChip(selected=filter=="all",onClick={filter="all"},label={Text("Todos")});FilterChip(selected=filter=="week",onClick={filter="week"},label={Text("Semana")});FilterChip(selected=filter=="sleep",onClick={filter="sleep"},label={Text("Sono")})}}
             val monday=today.minusDays((today.dayOfWeek.value-1).toLong())
             val entries=own.filter{filter=="all" || (filter=="week" && it.date!=null && it.date>=monday.toString() && it.date<=today.toString()) || (filter=="sleep" && JSONObject(it.details).optString("category")=="sleep")}.sortedByDescending{it.date}

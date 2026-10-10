@@ -50,16 +50,17 @@ fun DeviceAccessPanel(){
         TextButton(onClick={openIntent(context,Intent(android.provider.AlarmClock.ACTION_SHOW_ALARMS))}){Text("Abrir alarmes")}
         TextButton(onClick={openIntent(context,Intent(Settings.ACTION_WIFI_SETTINGS))}){Text("Abrir Wi-Fi")}
         TextButton(onClick={openIntent(context,Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS,Uri.parse("package:${context.packageName}")))}){Text("Gerenciar permissões da Koi")}
-        Text("Câmera, voz e arquivos usam as telas do Android. Leitura de notificações e controle de outras telas ainda não estão integrados.",fontSize=12.sp,color=KoiColors.Muted)
+        Text("Contatos e mensagens têm painéis próprios acima. Câmera, voz e arquivos usam as telas do Android. Controle automático de outras telas ainda não está integrado.",fontSize=12.sp,color=KoiColors.Muted)
     }
 }
 
 @Composable
 fun ConnectionsPanel(){
     val context=LocalContext.current
-    GoogleConnectionPanel()
-    CalendarConnectionPanel()
-    BankConnectionPanel()
+    Column(verticalArrangement=Arrangement.spacedBy(12.dp)) {
+    KoiDisclosure("Google com a Koi","Contas, agenda, tarefas, Gmail e Drive","agenda",KoiColors.Blue){GoogleConnectionPanel()}
+    KoiDisclosure("Agenda do celular","Eventos e planejamento do dia","agenda",KoiColors.Blue){CalendarConnectionPanel()}
+    KoiDisclosure("Meu Inter","Consulta privada de saldo","finance",KoiColors.Blue){BankConnectionPanel()}
     KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Blue){
         Eyebrow("CONEXÕES",KoiColors.Blue)
         Text("Seu mundo com a Koi",fontSize=22.sp)
@@ -68,5 +69,6 @@ fun ConnectionsPanel(){
             TextButton(onClick={openIntent(context,Intent(Intent.ACTION_VIEW,Uri.parse(url)))}){Text("Abrir $name")}
         }
         Text("Conecte cada conta Google no painel acima para autorizar os serviços disponíveis. A agenda do celular e o saldo do Inter têm painéis separados. O Plus não inclui créditos de API; pagamentos bancários não estão disponíveis.",fontSize=12.sp,color=KoiColors.Muted)
+    }
     }
 }

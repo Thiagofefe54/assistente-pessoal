@@ -1,4 +1,14 @@
-# Atualização integrada V1.15.0
+# Prévia V2 · Koiwai
+
+Nova navegação flutuante, telas reorganizadas, capítulos de memória, painel compacto
+de assistente e acessos pessoais. Contatos, rascunhos WhatsApp/SMS, notificações
+autorizadas e captura única de tela chegam à prévia. Gmail ganha envio revisado e
+avisos importantes, com nova autorização Google. Não é acesso irrestrito ao Android.
+
+[Comece aqui](docs/COMECE_AQUI_V2.md) · [Entrega, verificações e limites](docs/ENTREGA_V2_PREVIA.md).
+Voz expressiva escolhida: amostra local; respostas contínuas ainda usam Android.
+
+# Histórico · atualização integrada V1.15.0
 
 Conversa com contexto de tarefas, busca ampliada de lembranças, seleção de agendas
 e listas Google, e recuperação de consultas interrompidas. 265 testes do servidor

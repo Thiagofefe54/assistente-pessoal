@@ -36,9 +36,7 @@ import java.time.LocalDate
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
         item {
             TextButton(onClick=onBack){Text("← Memória")}
-            Eyebrow("SUA HISTÓRIA EM PERSPECTIVA",KoiColors.Blue)
-            Text("Pequenos dias.\nUma grande história.",fontSize=30.sp,lineHeight=36.sp)
-            Text("Relatórios com fontes e o período realmente registrado. Nenhum mês anterior ao seu diário será inventado.",color=KoiColors.Muted)
+            KoiPageHeading("SUA HISTÓRIA EM PERSPECTIVA","Dias que viram história.","Semana, mês e ano, com as fontes do seu diário.",KoiColors.Blue,"memory")
         }
         item {
             Row(Modifier.horizontalScroll(rememberScrollState()),horizontalArrangement=Arrangement.spacedBy(6.dp)) {

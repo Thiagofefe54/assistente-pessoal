@@ -52,9 +52,8 @@ private fun ConnectedTasks(repo: TaskRepository, onBack: () -> Unit, mode:String
     LazyColumn(Modifier.fillMaxSize(),contentPadding=PaddingValues(22.dp),verticalArrangement=Arrangement.spacedBy(14.dp)) {
         item {
             TextButton(onClick=onBack) { Text("← Rotina") }
-            Eyebrow("PAINEL DE MISSÕES",KoiColors.Red)
-            Text(if(mode=="Tarefas") "Um passo.\nUma conquista." else mode,fontSize=32.sp,lineHeight=38.sp,fontWeight=FontWeight.Bold)
-            Text("Seus próximos passos, salvos na sua conta.",color=KoiColors.Muted)
+            KoiPageHeading("PAINEL DE MISSÕES",if(mode=="Tarefas") "Minhas tarefas" else mode,
+                if(mode=="Hábitos") "Constância, sem pressa." else if(mode=="Agenda") "Tempo para o que importa." else "Um passo. Uma conquista.",if(mode=="Agenda")KoiColors.Blue else KoiColors.Red)
         }
         item {
             KoiPanel(Modifier.fillMaxWidth(),accent=KoiColors.Red) {
