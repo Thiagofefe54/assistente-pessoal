@@ -11,10 +11,14 @@ Pedido simples de saldo agora abre cartão balance, sem plano de gastos/IA.
 Correção explícita de divergência reconhecida sem escrita ou repetição do cartão.
 Intérprete orientado a tratar correção como conversa. Android esclarece snapshot
 e atualiza rótulos/botão; V1.14.1/code17 inclui V1.14. Backend257 testes PASS.
-Android59 testes/build PASS; APK1.14.1/code17 preparado, NÃO instalado.
+Android59 testes/build PASS; APK1.14.1/code17 INSTALADO no Poco via install -r
+(Success), versão confirmada no package manager em10/10/2026. Home aberta
+verificada por captura: conta conectada, duas tarefas vencidas e notificação
+correspondente. Conversa de saldo/voz/novos painéis ainda precisa validação manual.
 Render LIVE commit476ac79, deploy dep-db4m1gflot8c73bi7aog às18:47 São Paulo.
 Smoke HTTPS health200, Google privado401/callback inválido400 PASS. Usuário remoto
-sem USB; instalação e conferência real pendentes. Ver CORRECAO_SALDO_V1_14_1.md.
+com USB; instalação concluída, conferência funcional em andamento. Ver
+CORRECAO_SALDO_V1_14_1.md.
 
 ## Checkpoint V1.14 — Dia conectado — 09/10/2026
 

@@ -25,7 +25,10 @@ negação, pagamento e relato de receita. 59 testes Android PASS; assembleDebug 
 Nenhuma chamada Poe ou alteração bancária nos testes desta correção.
 APK android/build/releases/Koiwai-1.14.1.apk, code17, inclui V1.14.
 SHA256 27520D63555A38AE93BF8B0127738F46F160C7413E783BF8FF81D5B0E19D9718.
-NÃO instalado. Teste real no Poco pendente. Ao instalar, preservar os dados.
+INSTALADO no Poco via install -r (Success), versão1.14.1/code17 confirmada em
+10/10/2026. Home abriu com conta conectada e tarefas existentes. Conferência
+manual das respostas do saldo ainda pendente; não confundir instalação com
+validação de todas as funções. Atualização preservou instalação/dados.
 Servidor LIVE commit476ac79f1d4da25bc4d3ad604688d9d6655fdbcc,
 deploy dep-db4m1gflot8c73bi7aog em 09/10/2026 às18:47 São Paulo.
 Smoke HTTPS: health200, endpoints Google privados401, callback inválido400.
