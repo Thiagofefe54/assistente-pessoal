@@ -7,15 +7,21 @@ import com.thiago.assistentepessoal.cloud.connectionMessage
 
 // This scope belongs to the app, so leaving the chat does not interrupt an active send.
 class ChatRepository(private val database: ChatDatabase, private val onSaved: () -> Unit = {},
-    tokenProvider: suspend () -> String? = { null },private val onTaskChanged:(String)->Unit={},private val captureReports:()->Boolean={false}) {
+    tokenProvider: suspend () -> String? = { null },private val onTaskChanged:(String)->Unit={},private val captureReports:()->Boolean={false},private val onInteraction:()->Unit={}) {
     private val dao = database.messages()
     private val backend = ChatBackend(tokenProvider)
+    private val _conversation=MutableStateFlow(DEFAULT_CONVERSATION)
+    val conversationId=_conversation.asStateFlow()
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main.immediate)
     private val _busy = MutableStateFlow(true)
     val busy: StateFlow<Boolean> = _busy.asStateFlow()
     private val _error = MutableStateFlow<String?>(null)
     val error: StateFlow<String?> = _error.asStateFlow()
-    val messages: StateFlow<List<ChatMessage>?> = dao.observeMessages()
+    val conversations=dao.observeConversations().stateIn(scope,SharingStarted.Eagerly,emptyList())
+    val allMessages=dao.observeMessages().stateIn(scope,SharingStarted.Eagerly,emptyList())
+    val notices=dao.observeNotices().stateIn(scope,SharingStarted.Eagerly,emptyList())
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val messages: StateFlow<List<ChatMessage>?> = _conversation.flatMapLatest { dao.observeConversation(it) }
         .catch { _error.value = "Não consegui ler o histórico salvo no celular." }
         .stateIn(scope, SharingStarted.Eagerly, null)
 
@@ -23,6 +29,7 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
         scope.launch {
             try {
                 dao.recoverInterruptedSends()
+                dao.trimNotices(System.currentTimeMillis()-60L*24*60*60*1000)
             } catch (e: Exception) {
                 if (e is CancellationException) throw e
                 _error.value = "Não consegui preparar o histórico. Reabra o aplicativo."
@@ -32,10 +39,28 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
         }
     }
 
+    fun selectConversation(id:String){if(!_busy.value){_conversation.value=id;_error.value=null}}
+    fun newConversation(folder:String="Pessoal"){
+        if(_busy.value)return
+        _busy.value=true
+        scope.launch{try{
+            val id=java.util.UUID.randomUUID().toString()
+            dao.createConversation(ChatConversation(id,folder=folder));_conversation.value=id
+        }catch(e:Exception){if(e is CancellationException)throw e;_error.value="Não consegui criar a conversa."}finally{_busy.value=false}}
+    }
+    fun editConversation(chat:ChatConversation,title:String,folder:String,pinned:Boolean){scope.launch{
+        try{dao.editConversation(chat.id,title.trim().take(80).ifBlank{"Nova conversa"},folder,pinned)}
+        catch(e:Exception){if(e is CancellationException)throw e;_error.value="Não consegui atualizar a conversa."}
+    }}
+    fun readNotice(id:String){scope.launch{dao.readNotice(id)}}
+    fun readAllNotices(){scope.launch{dao.readAllNotices()}}
+    fun showNotices(){_conversation.value=NOTICES_CONVERSATION}
+    fun resumeNormalConversation(){if(_conversation.value==NOTICES_CONVERSATION)_conversation.value=DEFAULT_CONVERSATION}
+
     fun send(text: String,imageJpegBase64:String?=null): String? {
-        if (_busy.value || messages.value == null || text.isBlank() || text.trim().length > 8000) return null
+        if (_conversation.value==NOTICES_CONVERSATION || _busy.value || messages.value == null || text.isBlank() || text.trim().length > 8000) return null
         if(imageJpegBase64!=null && imageJpegBase64.length>1100000)return null
-        val message = ChatMessage(role = "user", content = text.trim(), status = MessageStatus.SENDING,imageJpegBase64=imageJpegBase64)
+        val message = ChatMessage(role = "user", content = text.trim(), status = MessageStatus.SENDING,imageJpegBase64=imageJpegBase64,conversationId=_conversation.value)
         perform(message, false)
         return message.id
     }
@@ -59,7 +84,7 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
             try {
                 val id=org.json.JSONObject(message.actionReceiptJson).getString("request_id")
                 val reply=withContext(Dispatchers.IO){backend.undo(id,org.json.JSONObject(message.actionReceiptJson).optString("tool")=="personal")}
-                val user=ChatMessage(role="user",content="Desfaça esta ação salva.")
+                val user=ChatMessage(role="user",content="Desfaça esta ação salva.",conversationId=message.conversationId)
                 dao.saveUndo(user,reply,message.id)
                 scheduleSaved(message.actionReceiptJson)
             } catch(e:Exception) {
@@ -79,9 +104,12 @@ class ChatRepository(private val database: ChatDatabase, private val onSaved: ()
                     if (saved.status != MessageStatus.FAILED) return@launch
                     dao.updateStatus(message.id, MessageStatus.SENDING, null)
                 } else {
+                    dao.createConversation(ChatConversation(message.conversationId,title=message.content.take(60)))
+                    dao.nameConversation(message.conversationId,message.content.take(60))
                     dao.insert(message)
+                    onInteraction()
                 }
-                val context = recentChatContext(dao.recentContext(message.id, message.occurredAt), message)
+                val context = recentChatContext(dao.recentContext(message.id, message.occurredAt,message.conversationId), message)
                 val reply = withContext(Dispatchers.IO) {
                     (if(message.imageJpegBase64==null)com.thiago.assistentepessoal.tools.bankChatQuery(message.content) else null)?.let{query->
                         ChatResult("Claro, mestre 💜 Vou conferir ${if(query=="plan")"o saldo do Inter e suas contas cadastradas" else "o saldo do Inter"} no cartão abaixo. Os valores ficam nessa consulta privada, sem entrar no histórico enviado à IA.",

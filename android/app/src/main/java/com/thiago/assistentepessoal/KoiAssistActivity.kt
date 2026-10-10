@@ -33,6 +33,8 @@ import com.thiago.assistentepessoal.tools.rememberKoiVoice
 class KoiAssistActivity:ComponentActivity() {
     override fun onCreate(savedInstanceState:Bundle?) {
         super.onCreate(savedInstanceState)
+        (application as KoiwaiApplication).chatRepository.resumeNormalConversation()
+        (application as KoiwaiApplication).chatRepository.resumeNormalConversation()
         enableEdgeToEdge()
         setContent {KoiwaiTheme {MotionEnvironment {KoiAssistPanel(onClose={finish()},onExpand={
             startActivity(Intent(this,MainActivity::class.java).putExtra("openChat",true)

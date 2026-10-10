@@ -35,7 +35,7 @@ import kotlinx.coroutines.*
 import androidx.compose.ui.graphics.asImageBitmap
 
 @Composable
-fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) -> Unit = {},onTools:()->Unit={},onOpenAction:(String)->Unit={}) {
+internal fun ChatConversationScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) -> Unit = {},onTools:()->Unit={},onOpenAction:(String)->Unit={},onConversations:()->Unit={},imageState:MutableState<String?>) {
     val context=LocalContext.current
     val app=context.applicationContext as KoiwaiApplication
     val repository by app.repositories.collectAsState()
@@ -45,10 +45,12 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
     val error by repository.error.collectAsState()
     val tasksRepo by app.tasks.collectAsState()
     var reviewing by remember(repository) {mutableStateOf<ChatMessage?>(null)}
-    val messages=history.orEmpty()
+    val selected by repository.conversationId.collectAsState()
+    val conversations by repository.conversations.collectAsState()
+    val messages=history.orEmpty().filter{it.conversationId==selected}
     val openedAt=remember(repository){System.currentTimeMillis()}
     var input by rememberSaveable {mutableStateOf("")}
-    var image by remember{mutableStateOf<String?>(null)}
+    var image by imageState
     var mediaInfo by remember{mutableStateOf<String?>(null)}
     val mediaScope=rememberCoroutineScope()
     val voice=rememberKoiVoice()
@@ -113,13 +115,13 @@ fun ChatScreen(onBack: () -> Unit, onAccount: () -> Unit, onJournal: (String) ->
             IconButton(onClick=onBack,modifier=Modifier.semantics{contentDescription="Voltar"}) {KoiGlyph("back",Color.White)}
             Image(painterResource(R.drawable.koiwai),null,Modifier.size(46.dp).clip(CircleShape).background(KoiColors.Purple.copy(alpha=.15f)).border(1.dp,KoiColors.Purple.copy(alpha=.5f),CircleShape))
             Column(Modifier.weight(1f)) {
-                Text("Koiwai",fontSize=23.sp,fontWeight=FontWeight.Bold)
+                Text(conversations.firstOrNull{it.id==selected}?.title ?: "Nova conversa",fontSize=19.sp,fontWeight=FontWeight.Bold,maxLines=1,overflow=androidx.compose.ui.text.style.TextOverflow.Ellipsis)
                 Text(if(busy && history!=null) "Preparando sua resposta…" else "Aqui, um passo de cada vez",color=KoiColors.Muted,fontSize=11.sp)
             }
-            TextButton(onClick=onAccount,enabled=!busy) {Text("Conta",fontSize=12.sp)}
+            TextButton(onClick=onConversations,enabled=!busy) {Text("Chats",fontSize=12.sp)}
         }
         Row(Modifier.fillMaxWidth().padding(vertical=8.dp),horizontalArrangement=Arrangement.SpaceBetween,verticalAlignment=Alignment.CenterVertically) {
-            Eyebrow("CONVERSA")
+            Eyebrow(conversations.firstOrNull{it.id==selected}?.folder?.uppercase() ?: "CONVERSA")
             KoiChip(if(account==null) "Neste celular" else "Conta conectada",KoiColors.Blue)
         }
         HorizontalDivider(color=KoiColors.Purple.copy(alpha=.16f))

@@ -13,6 +13,15 @@
 9. **Avisos importantes:** no painel Google, ative os avisos. A primeira consulta estabelece o ponto inicial. Depois a Koi consulta até 20 IDs não lidos/importantes por conta no último dia; a marcação é feita pelo Gmail. O Android agenda consultas de aproximadamente 15 minutos, podendo atrasar. Silêncio 22h–08h. Sem leitura automática do corpo ou uso de IA.
 10. **Mostrar a tela:** no Chat, + → Mostrar minha tela. Autorize no Android e abra a tela desejada; captura única após 7 segundos. Volte ao Chat, revise a imagem e só então envie para interpretação. Pode gastar pontos da IA. Telas protegidas podem aparecer vazias. O acesso encerra após a captura, cancelamento ou timeout.
 
+## Conversas e recadinhos
+
+- No Chat, toque em **Chats**: novo assunto, busca e pastas Pessoal, Estudos, Trabalho e Outros. No botão ···, renomeie, mova de pasta ou fixe no topo.
+- Cada conversa tem contexto recente separado. Lembranças confirmadas e dados da sua rotina continuam compartilhados para a Koi ajudar em qualquer conversa.
+- **Avisos da Koi** reúne recados de tarefas, acompanhamento e Gmail importante; mostra não lidos, marcar como lido e conferir a área correspondente. Só avisos gerados depois desta atualização entram ali. Marcar um aviso como lido não marca o e-mail como lido no Gmail.
+- Avisos com mais de 60 dias são removidos aos poucos, até 50 por execução, ao abrir/receber recados e na manutenção periódica. Conversas normais e lembranças não são removidas por essa regra.
+- **Config. → Lembretes e carinho → Um toque de carinho**: prazo escolhido de 1 dia sem abrir chat/enviar mensagem, no máximo um recado por dia. Pode mudar para 6h/2 dias ou desativar. Respeita descanso; Android pode atrasar.
+- Mensagens e sua separação por conversa sincronizam com a conta. Nomes personalizados, pastas, fixados, chats ainda vazios e avisos são organização local deste celular nesta prévia.
+
 ## Seu primeiro dia
 
 Conte à Koi seus horários de trabalho/estudo, uma meta e as contas a pagar. Confira o que foi salvo na Rotina/Memória e corrija o que precisar. Comece com poucos registros reais para avaliar as sugestões.

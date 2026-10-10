@@ -1,5 +1,24 @@
 # Koiwai — leia primeiro ao retomar
 
+## Prévia V2.2 conversas/avisos — trabalho atual 10/10/2026
+
+Usuário pediu chats separados bonitos; escolheu pastas Pessoal, Estudos, Trabalho,
+Outros e não lidos. Avisos da Koi dedicado; retenção APENAS avisos após60 dias em
+lotes50. Toque de carinho após1 dia, máximo1/dia, silêncio, frequência configurável.
+Room6: conversationId, conversas com title/folder/pinned e notices/read; respostas,
+contexto e desfazer vinculados à conversa. Supabase migration chat_conversation_identity
+APLICADA: conversation_id uuid notnull/defaultlegado e índice owner/conversation;
+RLS mantida. Metadata de pastas/títulos/fixados e avisos é local; mensagens/threadID
+sincronizam. Prévia2/code21 INSTALADA no Poco por atualização e versão confirmada. Build/lint
+PASS, lint0 erros/131 avisos, Android62 unitários PASS. ConversationIsolationTest4
++ ChatPersistenceTest6 PASS no aparelho: contexto/respostas por conversa, metadata
+local preservada em merge, retenção50/limite60dias sem apagar chats, lidos/dedupe,
+migração1→6 e históricos/recibos/imagens preservados. Usuário confirmou Chats,
+Avisos, Nova conversa e quatro pastas. Chat vazio capturado, login mantido.
+Backend inteligência LIVE2799d23, dep-db58qqqd0e5s73ejj1ag. Prompt extra carinho
+validado com283 testes backend; nova publicação pendente no fechamento. Sem nova chamada Poe/compra. APK SHA256
+4F313B19D3ED8DB6A2662D10B0E168CFF35818ECE74434D3801BFAC528B09B68.
+
 ## Prévia V2 e novos acessos — 10/10/2026
 
 Usuário autorizou reformulação completa de todas as abas, painel compacto de

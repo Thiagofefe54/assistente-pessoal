@@ -20,7 +20,7 @@ class CloudSync(private val context: Context, private val auth: CloudAuth,
                 val body = JSONArray()
                 batch.forEach { m ->
                     body.put(JSONObject().put("user_id", userId).put("id", m.id)
-                        .put("role", m.role).put("content", m.content)
+                        .put("conversation_id",m.conversationId).put("role", m.role).put("content", m.content)
                         .put("occurred_at", Instant.ofEpochMilli(m.occurredAt).toString())
                         .put("timezone", m.timezone).put("reply_to", m.replyTo ?: JSONObject.NULL))
                 }
@@ -40,6 +40,7 @@ class CloudSync(private val context: Context, private val auth: CloudAuth,
                     ChatMessage(id=row.getString("id"), role=row.getString("role"), content=row.getString("content"),
                         occurredAt=Instant.parse(row.getString("occurred_at")).toEpochMilli(),
                         timezone=row.getString("timezone"), localDate=row.getString("local_date"),
+                        conversationId=row.optString("conversation_id",DEFAULT_CONVERSATION),
                         replyTo=if (row.isNull("reply_to")) null else row.getString("reply_to"), synced=true)
                 }
                 dao.merge(messages)

@@ -40,10 +40,11 @@ class KoiwaiApplication : Application() {
     val journal = _journal.asStateFlow()
     private var memoryOwner: String? = null
     private var activeChatOwner: String? = "uninitialized"
-    private fun database(id: String?): ChatDatabase = databases.getOrPut(id ?: "local") { ChatDatabase.open(this, id) }
+    internal fun database(id: String?): ChatDatabase = databases.getOrPut(id ?: "local") { ChatDatabase.open(this, id) }
     private fun activate(account: Account?) {
         if(activeChatOwner==account?.id) return
         activeChatOwner=account?.id
+        KoiAttention.schedule(this,account?.id)
         reminders.account(account?.id)
         reports.account(account?.id)
         lifeReminders.account(account?.id)
@@ -64,7 +65,7 @@ class KoiwaiApplication : Application() {
         cloudSync = sync
         current.value = repos.getOrPut(account?.id ?: "local") {
             ChatRepository(database(account?.id), onSaved = { sync?.schedule() },
-                tokenProvider = { account?.let { auth.token(it.id) } },captureReports={getSharedPreferences("koiwai-preferences",0).getBoolean("capture-reports",false)},onTaskChanged={ receipt ->
+                tokenProvider = { account?.let { auth.token(it.id) } },onInteraction={KoiAttention.touch(this,account?.id)},captureReports={getSharedPreferences("koiwai-preferences",0).getBoolean("capture-reports",false)},onTaskChanged={ receipt ->
                     if(auth.account.value?.id==account?.id) {
                         val tool=org.json.JSONObject(receipt)
                         if(tool.optString("tool")=="personal") {
@@ -88,6 +89,13 @@ class KoiwaiApplication : Application() {
         repositories = current.asStateFlow()
         activate(auth.account.value)
         scope.launch { auth.account.collect { activate(it) } }
+    }
+    fun recordNotice(owner:String,id:String,title:String,content:String,category:String){
+        if(auth.account.value?.id!=owner)return
+        scope.launch(Dispatchers.IO){try{
+            database(owner).messages().insertNotice(KoiNotice(id,title,content,category))
+            database(owner).messages().trimNotices(System.currentTimeMillis()-60L*24*60*60*1000)
+        }catch(e:CancellationException){throw e}catch(_:Exception){android.util.Log.w("KoiNotices","Could not save notice")}}
     }
     suspend fun importLocalHistory() {
         val account = auth.account.value ?: error("Entre na sua conta primeiro.")

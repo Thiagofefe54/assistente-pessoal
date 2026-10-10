@@ -118,6 +118,7 @@ class TaskReminders(private val context:Context) {
         if(channel?.importance==NotificationManager.IMPORTANCE_NONE) return false
         try {manager.notify(id,1,notification(row,"Hora da sua missão 💜",row.getString("title"),true))}
         catch(_:SecurityException) {return false}
+        (context.applicationContext as KoiwaiApplication).recordNotice(owner,"task-$id-${occurrence(row)}-${if(snoozed)System.currentTimeMillis() else 0}","Hora da sua missão 💜",row.getString("title"),"Tarefa")
         prefs.edit().putString("delivered-$id",occurrence(row)).remove("snooze-$id").commit()
         return true
     }

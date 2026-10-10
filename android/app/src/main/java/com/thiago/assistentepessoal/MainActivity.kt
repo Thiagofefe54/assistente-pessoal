@@ -34,6 +34,7 @@ class MainActivity : ComponentActivity() {
         }
         if(intent.getBooleanExtra("openTasks",false)) taskRequest.intValue++
         if(intent.action==Intent.ACTION_ASSIST || intent.getBooleanExtra("openChat",false))assistRequest.intValue++
+        if(intent.getBooleanExtra("openNotices",false))(application as KoiwaiApplication).chatRepository.showNotices()
         reportIntent(intent)
         lifeIntent(intent)
         enableEdgeToEdge(statusBarStyle=SystemBarStyle.dark(android.graphics.Color.TRANSPARENT), navigationBarStyle=SystemBarStyle.dark(android.graphics.Color.TRANSPARENT))
@@ -45,6 +46,7 @@ class MainActivity : ComponentActivity() {
         if(intent.action==Intent.ACTION_ASSIST){startActivity(Intent(this,KoiAssistActivity::class.java));return}
         if(intent.getBooleanExtra("openTasks",false)) taskRequest.intValue++
         if(intent.action==Intent.ACTION_ASSIST || intent.getBooleanExtra("openChat",false))assistRequest.intValue++
+        if(intent.getBooleanExtra("openNotices",false))(application as KoiwaiApplication).chatRepository.showNotices()
         reportIntent(intent)
         lifeIntent(intent)
     }

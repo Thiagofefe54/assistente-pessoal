@@ -106,6 +106,7 @@ class LifeReminders(private val context:Context){
             .setVisibility(NotificationCompat.VISIBILITY_PRIVATE).setPublicVersion(NotificationCompat.Builder(context,"koi-life")
                 .setSmallIcon(R.drawable.ic_koi_notification).setContentTitle("Koiwai").setContentText("Seu acompanhamento está pronto.").build()).build())
         }catch(_:SecurityException){return false}
+        (context.applicationContext as KoiwaiApplication).recordNotice(owner,"life-$kind-$today","A Koi está com você 💜",text,"Cuidado")
         prefs.edit().putString("sent-$kind",today).putString("count-day",today).putInt("count",sent(today)+1)
             .putLong("last-at",System.currentTimeMillis()).putString("status","Acompanhamento enviado às ${now.toLocalTime().withSecond(0).withNano(0)}.").commit()
         return true
@@ -130,6 +131,7 @@ class LifeReminderWorker(context:Context,params:WorkerParameters):CoroutineWorke
     val context=LocalContext.current;val app=context.applicationContext as KoiwaiApplication
     val account by app.auth.account.collectAsState();val owner=account?.id
     key(owner){
+        KoiAttentionPanel()
         val service=app.lifeReminders;val prefs=service.prefs
         var revision by remember{mutableIntStateOf(0)}
         DisposableEffect(prefs){val listener=SharedPreferences.OnSharedPreferenceChangeListener{_,_->revision++};prefs.registerOnSharedPreferenceChangeListener(listener);onDispose{prefs.unregisterOnSharedPreferenceChangeListener(listener)}}

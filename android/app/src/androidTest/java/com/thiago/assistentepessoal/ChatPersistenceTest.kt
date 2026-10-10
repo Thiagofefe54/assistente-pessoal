@@ -66,7 +66,7 @@ class ChatPersistenceTest {
         sqlite.version = 1
         sqlite.close()
         val db = Room.databaseBuilder(context, ChatDatabase::class.java, name)
-            .addMigrations(ChatDatabase.MIGRATION_1_2,ChatDatabase.MIGRATION_2_3,ChatDatabase.MIGRATION_3_4,ChatDatabase.MIGRATION_4_5).build()
+            .addMigrations(ChatDatabase.MIGRATION_1_2,ChatDatabase.MIGRATION_2_3,ChatDatabase.MIGRATION_3_4,ChatDatabase.MIGRATION_4_5,ChatDatabase.MIGRATION_5_6).build()
         try {
             val saved = db.messages().getMessages().single()
             assertEquals("Conversa anterior", saved.content)

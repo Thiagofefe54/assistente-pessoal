@@ -59,10 +59,11 @@ class GoogleMailAlertsWorker(context:Context,params:WorkerParameters):CoroutineW
                 edits.putStringSet(key,seen).putBoolean("baseline-$key",true)
             }
             val mayNotify=Build.VERSION.SDK_INT<33 || ContextCompat.checkSelfPermission(app,Manifest.permission.POST_NOTIFICATIONS)==PackageManager.PERMISSION_GRANTED
+            if(total>0){app.recordNotice(owner,"mail-${System.currentTimeMillis()}","Tem novidade importante no Gmail 💜","Há $total novo(s) e-mail(s) não lido(s) marcado(s) como importante(s) pelo Gmail. Confira em Conexões.","E-mail")}
             if(total>0 && mayNotify){
                 val notifications=app.getSystemService(NotificationManager::class.java)
                 notifications.createNotificationChannel(NotificationChannel("koi-important-mail","E-mails importantes",NotificationManager.IMPORTANCE_DEFAULT))
-                val open=PendingIntent.getActivity(app,743,Intent(app,MainActivity::class.java).putExtra("openChat",true),PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
+                val open=PendingIntent.getActivity(app,743,Intent(app,MainActivity::class.java).putExtra("openChat",true).putExtra("openNotices",true),PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
                 val note=NotificationCompat.Builder(app,"koi-important-mail").setSmallIcon(R.drawable.ic_koi_foreground)
                     .setContentTitle("Koi · confira seus e-mails 💜")
                     .setContentText("Há $total novo(s) e-mail(s) não lido(s) marcado(s) como importante(s) pelo Gmail.")

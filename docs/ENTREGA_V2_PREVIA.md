@@ -1,5 +1,22 @@
 # V2 · reformulação e acessos pessoais · 10/10/2026
 
+## Conversas separadas — prévia 2
+
+Novos pedidos do usuário: múltiplos chats com pastas Pessoal/Estudos/Trabalho/Outros,
+fixar/renomear/buscar; área Avisos da Koi com não lidos; retenção somente de avisos
+por 60 dias em lotes de até 50; toque após 1 dia sem interação, limitado a 1/dia,
+com silêncio e opção de desligar. Room migra 5→6 preservando mensagens anteriores,
+respostas e desfazer usam a mesma conversa; IA só recebe contexto recente do chat
+selecionado. Supabase recebe conversation_id UUID aditivo, sem mudar RLS por dono.
+Mensagens sincronizadas reconstroem chats. Organização personalizada/avisos ficam
+locais nesta prévia. Não importamos avisos antigos de apps externos.
+
+Inteligência publicada LIVE2799d23, dep-db58qqqd0e5s73ejj1ag; 283 testes backend.
+Prévia2/code21 instalada; build/lint PASS, 62 Android unitários e 10 testes físicos
+PASS (4 novos + 6 de persistência). Usuário confirmou seletor e quatro pastas.
+SHA256 APK: 4F313B19D3ED8DB6A2662D10B0E168CFF35818ECE74434D3801BFAC528B09B68.
+Prompt adicional de carinho aguardando publicação final.
+
 ## Implementado
 
 - Todas as cinco abas principais reorganizadas: Home com personagem e próximos passos; Chat com ações no menu +; Memória em capítulos; Rotina em grupos e missões; Configurações em áreas separadas.
