@@ -64,7 +64,7 @@ class GoogleMailAlertsWorker(context:Context,params:WorkerParameters):CoroutineW
                 val notifications=app.getSystemService(NotificationManager::class.java)
                 notifications.createNotificationChannel(NotificationChannel("koi-important-mail","E-mails importantes",NotificationManager.IMPORTANCE_DEFAULT))
                 val open=PendingIntent.getActivity(app,743,Intent(app,MainActivity::class.java).putExtra("openChat",true).putExtra("openNotices",true),PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-                val note=NotificationCompat.Builder(app,"koi-important-mail").setSmallIcon(R.drawable.ic_koi_foreground)
+                val note=NotificationCompat.Builder(app,"koi-important-mail").setSmallIcon(R.drawable.ic_koi_notification)
                     .setContentTitle("Koi · confira seus e-mails 💜")
                     .setContentText("Há $total novo(s) e-mail(s) não lido(s) marcado(s) como importante(s) pelo Gmail.")
                     .setVisibility(NotificationCompat.VISIBILITY_PRIVATE).setContentIntent(open).setAutoCancel(true).build()

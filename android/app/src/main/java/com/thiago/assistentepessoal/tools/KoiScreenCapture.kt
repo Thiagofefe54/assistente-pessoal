@@ -64,7 +64,7 @@ class KoiScreenCaptureService:Service(){
         try {
             getSystemService(NotificationManager::class.java).createNotificationChannel(NotificationChannel(channel,"Compartilhar tela com a Koi",NotificationManager.IMPORTANCE_LOW))
             val cancel=PendingIntent.getService(this,2,Intent(this,KoiScreenCaptureService::class.java).setAction("cancel"),PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT)
-            val note=NotificationCompat.Builder(this,channel).setSmallIcon(R.drawable.ic_koi_foreground)
+            val note=NotificationCompat.Builder(this,channel).setSmallIcon(R.drawable.ic_koi_notification)
                 .setContentTitle("Abra a tela que quer mostrar à Koi")
                 .setContentText("Captura única em 7 segundos. Depois volte ao Chat para revisar.")
                 .setOngoing(true).addAction(0,"Cancelar",cancel).build()

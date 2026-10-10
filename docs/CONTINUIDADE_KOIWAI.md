@@ -1,5 +1,21 @@
 # Koiwai — leia primeiro ao retomar
 
+## Ícone próprio e silhueta nos avisos — 10/10/2026
+
+Usuário mostrou Recents do Poco com ícone verde Android e pediu ícone do app e
+silhueta da personagem nos avisos. Novo recurso koi_app_icon evita referências
+legadas/cache do launcher: versão vetorial fallback e adaptativa v26 com símbolo
+original do capuz/orelhas, rosto roxo/azul, detalhe vermelho e fundo escuro.
+Monochrome separado; notificações usam silhueta branca vazada do capuz/orelhas,
+sem fundo opaco. Gmail e captura de tela corrigidos para usar pequeno ícone de
+notificação, em vez de foreground colorido 108dp. Todas as outras notificações
+já apontavam ic_koi_notification e recebem a nova silhueta. Prévia3/code22
+INSTALADA no Poco. Build assembleDebug e lintDebug PASS. Ícone e versão confirmados
+visualmente em Informações do app; nova entrega de notificação ainda não observada.
+APK: android/build/releases/Koiwai-2.0.0-preview.3.apk; SHA256
+B5A686EB78E7E3027AC5B5BC2E893A52D75C7CFAB8CAE55473A74634F68445C1.
+Sem alteração backend/dados/permissões e sem consumo de IA paga.
+
 ## Segunda prévia V2 conversas/avisos — trabalho atual 10/10/2026
 
 Usuário pediu chats separados bonitos; escolheu pastas Pessoal, Estudos, Trabalho,
