@@ -1,5 +1,10 @@
 # Koiwai — leia primeiro ao retomar
 
+Preferência de voz10/10: usuário rejeitou Katie e pediu estilo Yoshino Koiwai
+dublada em português. Direção suave/contida/tímida para voz original; duas
+amostras Rina/Pip geradas para comparação com4 créditos gratuitos Runway.
+Aguardar escolha antes de alterar APK. Ver DIRECAO_DE_VOZ_KOI.md.
+
 ## Correção V1.14.1 — saldo como fotografia, 09/10/2026
 
 Usuário mostrou saldo diferente do Inter: consulta18:42, data do provedor11:55.
