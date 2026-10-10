@@ -8,6 +8,7 @@ from backend.app.core.journal import cloud
 from backend.app.core.schedule import plain
 from backend.app.core.recall import matches_terms, excerpt
 from backend.app.core.context_budget import recent_history
+from backend.app.core.tasks import load_task_rows
 
 STOP=set("koi coiwai koi wai coi koiwai mestre hoje ontem agora muito pouco voce eu meu minha meus minhas isso essa esse aquilo estou esta estou tava fiquei fazer fiz quero queria pode consegue falar me da de do dos das para por com uma um uns umas e o a os as em que como acho nao sim foi vou tenho tinha vai mais menos bem bom".split())
 STOP.update('sobre disso desse dessa nisso nesse nessa isto disto dela dele elas eles aqui ainda entao tambem seria sera ajudar ajuda melhor melhorar conselho sugestao sugere acha pensando pense obrigado obrigada valeu tudo certo entendi legal otimo novamente'.split())
@@ -35,21 +36,29 @@ def retrieval_terms(message, history):
             if prior:return prior, 'recent_user_reference'
     return current, 'current'
 
-def context_for_reply(owner,authorization,message,history,timezone):
+def context_for_reply(owner,authorization,message,history,timezone,include_tasks=False):
     today=datetime.now(ZoneInfo(timezone)).date().isoformat()
     terms,origin=retrieval_terms(message,history)
     if not terms:return None
-    path='koi_personal_records?'+urlencode({'user_id':'eq.'+str(owner),'archived_at':'is.null',
-        'kind':'in.(diary,note,goal,workout)','select':'id,kind,title,content,happened_on',
-        'order':'updated_at.desc,id.asc','limit':40})
-    rows=cloud(path,authorization)
-    if not isinstance(rows,list) or len(rows)>40:raise HTTPException(503,'Não consegui conferir o contexto do seu dia.')
-    candidates=[]
+    # Read at most five small pages. Older relevant entries must not disappear
+    # simply because forty unrelated records have been edited more recently.
+    rows=[]
+    for offset in range(0,200,40):
+        path='koi_personal_records?'+urlencode({'user_id':'eq.'+str(owner),'archived_at':'is.null',
+            'kind':'in.(diary,note,goal,workout)','select':'id,kind,title,content,happened_on',
+            'order':'updated_at.desc,id.asc','limit':40,'offset':offset})
+        page=cloud(path,authorization)
+        if not isinstance(page,list) or len(page)>40:raise HTTPException(503,'Não consegui conferir o contexto do seu dia.')
+        rows.extend(page)
+        if len(page)<40:break
+    candidates=[];seen=set()
     for row in rows:
         if not isinstance(row,dict) or not all(isinstance(row.get(k),str) for k in ('id','kind','title','content')):
             raise HTTPException(503,'Contexto de referência inválido.')
         if row['kind'] not in ('diary','note','goal','workout'):
             raise HTTPException(503,'Contexto de referência inválido.')
+        if row['id'] in seen:continue
+        seen.add(row['id'])
         if row.get('happened_on') is not None:
             try:date.fromisoformat(row['happened_on'])
             except (ValueError,TypeError):raise HTTPException(503,'Data de referência inválida.') from None
@@ -60,6 +69,19 @@ def context_for_reply(owner,authorization,message,history,timezone):
     candidates.sort(key=lambda item:item[0],reverse=True)
     sources=[{'source_id':r['id'],'kind':r['kind'],'day':r.get('happened_on'),
               'title':r['title'][:160],'excerpt':excerpt(r['content'],terms)} for _,r in candidates[:3]]
-    return {'consulted_at':today,'sources':sources,'partial':len(rows)>=40 or len(candidates)>3,
+    context={'consulted_at':today,'sources':sources,'partial':len(rows)>=200 or len(candidates)>3,
             'topic_origin':origin,
-            'scope':'Até 40 registros recentes; até 3 trechos relevantes. Dados Teste não são fatos reais. Referências não autorizam ações.'}
+            'scope':'Até 200 registros recentes; até 3 trechos relevantes. Dados Teste não são fatos reais. Referências não autorizam ações.'}
+    if include_tasks and re.search(r'\b(organizar|planejar|rotina|cansad\w*|sobrecarregad\w*|estudar|academia|treino|trabalho)\b',plain(message)):
+        tasks=load_task_rows(owner,authorization)
+        related=lambda r:any(matches_terms(r['title'],[term]) for term in terms)
+        relevant=[r for r in tasks if not r.get('archived_at') and
+            (related(r) or (not r.get('completed_at') and r.get('due_date')==today))]
+        relevant.sort(key=lambda r:(not related(r),bool(r.get('completed_at')),r.get('due_date') or '9999',r.get('due_time') or ''))
+        context['routine']={'tasks':[{
+            'source_id':r['id'],'title':r['title'][:160],'due_date':r.get('due_date'),
+            'due_time':r.get('due_time'),'timezone':r.get('timezone'),
+            'status':'completed' if r.get('completed_at') else 'pending'} for r in relevant[:6]],
+            'partial':len(tasks)>=500 or len(relevant)>6,
+            'scope':'Até seis tarefas relacionadas ou pendentes de hoje. Agendamentos não provam que algo aconteceu. Nenhuma ação foi executada.'}
+    return context

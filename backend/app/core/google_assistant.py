@@ -72,7 +72,28 @@ def blocks_time(event):
         isinstance(a,dict) and a.get('self') is True and a.get('responseStatus')=='declined' for a in attendees)
 
 
-def read(owner, connection, service, start=None, end=None, query=None, timezone='America/Sao_Paulo'):
+def paged_items(owner, connection, service, path, params, pages=3):
+    """Bounded read-only pagination, including empty pages with a next token."""
+    result=[];seen=set();token=None
+    for _ in range(pages):
+        current=dict(params)
+        if token:current['pageToken']=token
+        data=google_call(owner,connection,service,path+'?'+urlencode(current))
+        page=items(data)
+        if len(page)>int(params['maxResults']):raise HTTPException(503,'Lista Google maior que o limite solicitado.')
+        result.extend(page)
+        token=data.get('nextPageToken')
+        if not token:return result,False
+        if not isinstance(token,str) or len(token)>4096 or any(ord(c)<32 for c in token):
+            raise HTTPException(503,'Continuação Google inválida.')
+        if token in seen:break
+        seen.add(token)
+    return result,True
+
+
+def read(owner, connection, service, start=None, end=None, query=None, timezone='America/Sao_Paulo',calendar_id=None,list_id=None):
+    if calendar_id and service!='calendar' or list_id and service!='task_items':
+        raise HTTPException(422,'Escolha uma agenda ou lista compatível com a consulta.')
     if service not in ('calendar','task_items'):
         return g.consult(owner,connection,service,query,start,end,timezone) if service in ('mail','drive') else g.consult(owner,connection,service)
     row=g.account(owner,connection)
@@ -83,11 +104,10 @@ def read(owner, connection, service, start=None, end=None, query=None, timezone=
     partial=False; result=[]
     if service=='calendar':
         clock=lambda d:datetime.combine(d,datetime.min.time(),ZoneInfo(timezone)).isoformat()
-        data=google_call(owner,connection,'calendar','calendars/primary/events?'+urlencode({
+        events,partial=paged_items(owner,connection,'calendar','calendars/'+identifier(calendar_id or 'primary')+'/events',{
             'timeMin':clock(first),'timeMax':clock(last+timedelta(days=1)),
-            'singleEvents':'true','orderBy':'startTime','maxResults':20}))
-        partial=bool(data.get('nextPageToken'))
-        for i in items(data)[:20]:
+            'singleEvents':'true','orderBy':'startTime','maxResults':20})
+        for i in events:
             if i.get('status')=='cancelled':continue
             if query and plain(query) not in plain(str(i.get('summary',''))):continue
             result.append({'id':i.get('id'),'title':str(i.get('summary','Sem título'))[:200],
@@ -95,13 +115,17 @@ def read(owner, connection, service, start=None, end=None, query=None, timezone=
                            'start':event_time(i.get('start')),'end':event_time(i.get('end')),'etag':version(i.get('etag')),
                            'blocks_time':blocks_time(i)})
     else:
-        lists=google_call(owner,connection,'tasks','users/@me/lists?maxResults=3')
-        partial=bool(lists.get('nextPageToken'))
-        for tasklist in items(lists)[:3]:
-            data=google_call(owner,connection,'tasks','lists/'+identifier(tasklist.get('id'))+
-                '/tasks?maxResults=20&showCompleted=true&showHidden=true&showDeleted=false')
-            partial=partial or bool(data.get('nextPageToken'))
-            for i in items(data)[:20]:
+        if list_id:
+            tasklists=[google_call(owner,connection,'tasks','users/@me/lists/'+identifier(list_id))]
+        else:
+            lists=google_call(owner,connection,'tasks','users/@me/lists?maxResults=3')
+            partial=bool(lists.get('nextPageToken'))
+            tasklists=items(lists)[:3]
+        for tasklist in tasklists:
+            tasks,incomplete=paged_items(owner,connection,'tasks','lists/'+identifier(tasklist.get('id'))+'/tasks',
+                {'maxResults':20,'showCompleted':'true','showHidden':'true','showDeleted':'false'})
+            partial=partial or incomplete
+            for i in tasks:
                 if i.get('deleted'):continue
                 due=str(i.get('due',''))[:10]
                 if start and due and not first.isoformat()<=due<=last.isoformat():continue
@@ -113,8 +137,8 @@ def read(owner, connection, service, start=None, end=None, query=None, timezone=
                     'due':due,'status':i.get('status'),'etag':version(i.get('etag'))})
     return {'account':g.metadata(row),'service':service,'items':result,
             'partial':partial,'checked_at':g.stamp(), 'note':
-            'Até três listas e vinte tarefas por lista; vencimento Google Tasks é por dia, sem alarme.'
-            if service=='task_items' else 'Agenda principal; até vinte eventos no período.'}
+            'Até três listas (ou a lista escolhida), sessenta tarefas por lista; vencimento Google Tasks é por dia, sem alarme.'
+            if service=='task_items' else 'Agenda escolhida' + (' · principal' if not calendar_id else '') + '; até sessenta eventos no período.'}
 
 
 def previous(owner, request_id, message, timezone):

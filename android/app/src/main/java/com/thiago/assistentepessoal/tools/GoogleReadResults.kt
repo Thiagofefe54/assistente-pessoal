@@ -29,7 +29,7 @@ internal fun googleItemUrl(service:String,email:String,id:String):String?{
     }
 }
 
-@Composable internal fun GoogleReadResults(data:JSONObject){
+@Composable internal fun GoogleReadResults(data:JSONObject,onSelect:((String,String)->Unit)?=null){
     val context=LocalContext.current
     val app=context.applicationContext as KoiwaiApplication
     val account by app.auth.account.collectAsState();val owner=account?.id
@@ -60,6 +60,9 @@ internal fun googleItemUrl(service:String,email:String,id:String):String?{
         item.optJSONObject("start")?.let{Text(it.optString("dateTime",it.optString("date")),fontSize=12.sp,color=KoiColors.Muted)}
         listOf("due","list","from").forEach{key->item.optString(key).takeIf{it.isNotBlank()}?.let{Text(it,fontSize=12.sp,color=KoiColors.Muted)}}
         if(item.has("blocks_time") && !item.optBoolean("blocks_time"))Text("Não bloqueia horário",fontSize=11.sp,color=KoiColors.Muted)
+        if(onSelect!=null && service in listOf("calendars","tasks"))TextButton(onClick={
+            onSelect(if(service=="calendars")"calendar" else "task_items",item.getString("id"))
+        }){Text(if(service=="calendars")"Consultar esta agenda" else "Consultar esta lista")}
         if(details){
             listOf("date","modifiedTime","mimeType").forEach{key->item.optString(key).takeIf{it.isNotBlank()}?.let{Text(it,fontSize=11.sp,color=KoiColors.Muted)}}
             googleItemUrl(service,email,item.optString("id"))?.let{url->TextButton(onClick={openIntent(context,Intent(Intent.ACTION_VIEW,Uri.parse(url)))}){

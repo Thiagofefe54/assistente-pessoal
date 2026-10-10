@@ -41,7 +41,7 @@ class JournalRepository(private val auth: CloudAuth, private val owner: String) 
             if(code !in 200..299) {
                 val raw=connection.errorStream?.bufferedReader(Charsets.UTF_8)?.use {it.readBoundedText(2000)}
                 val detail=runCatching{JSONObject(raw ?: "{}").optString("detail")}.getOrNull()
-                throw IOException(if(code==401) "Entre novamente na sua conta." else detail?.takeIf {it.isNotBlank()} ?: "Não consegui acessar o diário. Atualize para conferir.")
+                throw com.thiago.assistentepessoal.cloud.HttpFailure(code,if(code==401) "Entre novamente na sua conta." else detail?.takeIf {it.isNotBlank()} ?: "Não consegui acessar o diário. Atualize para conferir.")
             }
             JSONObject(connection.inputStream.bufferedReader(Charsets.UTF_8).use {it.readBoundedText(100000)})
         } finally {connection.disconnect()}

@@ -73,7 +73,7 @@ internal suspend fun assistantRequest(app: KoiwaiApplication, owner: String, pat
         }
     }
 }
-private class PanelFailure(val status:Int,message:String):IOException(message)
+private class PanelFailure(status:Int,message:String):com.thiago.assistentepessoal.cloud.HttpFailure(status,message)
 
 private fun shortDate(date: String): String = runCatching {
     java.time.LocalDate.parse(date).format(DateTimeFormatter.ofPattern("dd/MM"))

@@ -199,7 +199,7 @@ Não identifique pessoas nem invente características pessoais sensíveis.
                 raise HTTPException(502,'Não consegui preparar esse registro. Pode dizer de outro jeito?') from None
         if semantic.domain=='conversation':
             from backend.app.core.grounded_context import context_for_reply
-            context=context_for_reply(user_id,authorization,payload.message,history,payload.timezone)
+            context=context_for_reply(user_id,authorization,payload.message,history,payload.timezone,include_tasks=True)
             return ChatResponse(reply=reply(payload.message,history,confirmed_facts(user_id,authorization),context=context))
     if payload.task_mode=='direct':
         if semantic is None and (applies(payload.message) or follows_record(payload.message,[h.model_dump() for h in payload.history])):

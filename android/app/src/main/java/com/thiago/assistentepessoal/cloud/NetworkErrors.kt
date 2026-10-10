@@ -8,6 +8,21 @@ import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 import javax.net.ssl.SSLException
 
+open class HttpFailure(val status:Int,message:String):IOException(message)
+
+/** Only for reads: never repeat mutations or paid generation after a timeout. */
+fun retryReadFailure(error:Exception,attempt:Int):Boolean {
+    if(attempt !in 0..2)return false
+    return when(error){
+        is SSLException -> false
+        is CloudException -> error.code in listOf(408,429,500,502,503,504)
+        is HttpFailure -> error.status in listOf(408,429,500,502,503,504)
+        is UnknownHostException,is NoRouteToHostException,is ConnectException,is SocketException -> true
+        is SocketTimeoutException -> true
+        else -> false
+    }
+}
+
 /** Explain transport failures without changing DNS, TLS, or retrying an action. */
 fun connectionMessage(error:IOException):String=when(error) {
     is UnknownHostException -> "Não consegui encontrar o endereço do servidor da Koi. Confira a internet; se estiver usando VPN ou DNS privado, teste outra rede e tente novamente."

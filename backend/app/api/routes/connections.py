@@ -24,6 +24,8 @@ class GoogleRequest(BaseModel):
     end: date | None = None
     query: str | None = Field(default=None,max_length=200)
     plan: bool = False
+    calendar_id: str | None = Field(default=None,min_length=1,max_length=1024,pattern=r'^[^\x00-\x1f\x7f]+$')
+    list_id: str | None = Field(default=None,min_length=1,max_length=1024,pattern=r'^[^\x00-\x1f\x7f]+$')
 
     @field_validator('timezone')
     @classmethod
@@ -95,7 +97,8 @@ def read(body: GoogleRequest, response: Response, request: Request, owner: UUID 
     from backend.app.core.google_assistant import read
     result=read(owner,body.connection_id,body.service,
         body.start.isoformat() if body.start else None,body.end.isoformat() if body.end else None,
-        body.query,body.timezone or 'America/Sao_Paulo')
+        body.query,body.timezone or 'America/Sao_Paulo',**({
+            'calendar_id':body.calendar_id,'list_id':body.list_id} if body.calendar_id or body.list_id else {}))
     if body.plan and body.service=='calendar':
         from backend.app.core.google_day import combine_day
         from datetime import datetime

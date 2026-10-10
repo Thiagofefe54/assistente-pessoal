@@ -60,8 +60,9 @@ import org.json.JSONObject
             finally{if(app.auth.account.value?.id==owner)busy=false}
         }
     }
-    fun readAccount(id:String,service:String){
+    fun readAccount(id:String,service:String,selection:String?=null){
         val body=JSONObject().put("connection_id",id).put("service",service)
+        selection?.let{body.put(if(service=="calendar")"calendar_id" else "list_id",it)}
         if(search && service in listOf("calendar","task_items","mail","drive")){
             try{
                 val a=first.trim().takeIf{it.isNotEmpty()}?.let{java.time.LocalDate.parse(it)}
@@ -116,10 +117,10 @@ import org.json.JSONObject
         }
         info?.let{Text(it,fontSize=12.sp,color=KoiColors.Muted)}
         result?.let{value->
-            GoogleReadResults(value)
+            GoogleReadResults(value){service,selection->readAccount(value.getJSONObject("account").getString("id"),service,selection)}
             Text("Dados consultados agora; não são enviados à IA nem guardados no cache do celular.",fontSize=11.sp,color=KoiColors.Muted)
         }
-        Text("O chat consulta Google e pode criar/ajustar Agenda e Tasks quando você pedir e identificar a conta. Rascunhos, conteúdo de arquivos e envio de e-mail ainda não estão disponíveis.",fontSize=11.sp,color=KoiColors.Muted)
+        Text("O chat consulta Google e pode criar/ajustar Agenda e Tasks quando você pedir e identificar a conta. Você pode abrir textos compatíveis de e-mail e Drive nos detalhes. Envio de e-mail ainda não está disponível.",fontSize=11.sp,color=KoiColors.Muted)
     }
     removing?.let{row->AlertDialog(onDismissRequest={removing=null},title={Text("Desconectar Google?")},
         text={Text("Remover ${row.getString("email")} da Koi. Seus dados no Google serão preservados.")},

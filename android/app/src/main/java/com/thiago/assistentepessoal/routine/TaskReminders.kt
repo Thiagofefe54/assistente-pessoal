@@ -188,7 +188,8 @@ class TaskReminderRefreshWorker(context:Context,params:WorkerParameters):Corouti
         val owner=inputData.getString("owner") ?: return Result.failure()
         if(app.auth.account.value?.id!=owner || !app.reminders.enabled()) return Result.success()
         return try {val tasks=loadTasks(app.auth,owner);if(app.auth.account.value?.id==owner)app.reminders.reconcile(owner,tasks);Result.success()}
-        catch(e:Exception) {if(e is CancellationException)throw e;Result.success()}
+        catch(e:Exception) {if(e is CancellationException)throw e;
+            if(com.thiago.assistentepessoal.cloud.retryReadFailure(e,runAttemptCount))Result.retry()else Result.failure()}
     }
 }
 class TaskReminderCompleteWorker(context:Context,params:WorkerParameters):CoroutineWorker(context,params) {

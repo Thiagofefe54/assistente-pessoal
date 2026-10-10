@@ -1,5 +1,20 @@
 # Koiwai — leia primeiro ao retomar
 
+## Packs 1–4 / V1.15.0 — 10/10/2026
+
+Pedido atual: quatro packs juntos, preservando dados; Windows e visual final adiados.
+V1.15.0/code19 pronta, NÃO instalada (ADB sem aparelhos). Última versão confirmada
+no Poco: V1.14.1/code17. APK inclui a amostra expressiva aprovada, não síntese
+contínua própria. 265 testes backend e61 Android PASS; build PASS. Sem gasto Poe.
+Conversa recebe tarefas relevantes/hoje e busca até200 registros mantendo3 trechos;
+Google consulta3 páginas/60 itens e permite agenda/lista escolhida no painel.
+Workers de consulta têm recuperação transitória limitada; ações/geração paga não
+são repetidas automaticamente. Ver ENTREGA_PACKS_1_4_V1_15.md para limites,
+hash do APK e checklist físico. Render aguardando publicação desta atualização.
+Ainda não marcar packs nem V2.0 concluídos: faltam validação no Poco, critérios
+de reinício/tela apagada/autorizações e sete dias de uso. Voz contínua expressiva
+precisa decisão viável; não comprar serviço sem orçamento e autorização.
+
 Preferência de voz10/10: usuário rejeitou Katie e pediu estilo Yoshino Koiwai
 dublada em português. Direção suave/contida/tímida para voz original; duas
 amostras Rina/Pip geradas para comparação com4 créditos gratuitos Runway.

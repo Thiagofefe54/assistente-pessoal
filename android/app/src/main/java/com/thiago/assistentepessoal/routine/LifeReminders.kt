@@ -119,9 +119,9 @@ class LifeReminderWorker(context:Context,params:WorkerParameters):CoroutineWorke
         return try{
             val data=assistantRequest(app,owner,"review",allowCached=false)
             app.lifeReminders.deliver(owner,data);Result.success()
-        }catch(e:CancellationException){throw e}catch(_:Exception){
+        }catch(e:CancellationException){throw e}catch(e:Exception){
             if(app.auth.account.value?.id==owner)app.lifeReminders.status("Não consegui atualizar o acompanhamento. Vou conferir novamente com conexão.")
-            if(runAttemptCount<2)Result.retry()else Result.failure()
+            if(com.thiago.assistentepessoal.cloud.retryReadFailure(e,runAttemptCount))Result.retry()else Result.failure()
         }
     }
 }

@@ -178,7 +178,8 @@ class ReportRefreshWorker(context:Context,params:WorkerParameters):CoroutineWork
                 if(++queued==3) break
             }
             Result.success()
-        } catch(e:Exception) {if(e is CancellationException)throw e;Result.success()}
+        } catch(e:Exception) {if(e is CancellationException)throw e;
+            if(com.thiago.assistentepessoal.cloud.retryReadFailure(e,runAttemptCount))Result.retry()else Result.failure()}
     }
 }
 class ReportNotifyWorker(context:Context,params:WorkerParameters):CoroutineWorker(context,params) {

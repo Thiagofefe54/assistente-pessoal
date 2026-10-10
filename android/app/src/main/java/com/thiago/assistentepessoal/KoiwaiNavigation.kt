@@ -425,7 +425,7 @@ private fun SettingsScreen(onAccount:()->Unit,onTools:()->Unit,onFacts:()->Unit)
                 Text("Escolha a voz em português no seu celular.",color=KoiColors.Muted,fontSize=12.sp)
                 KoiAction("Testar voz",{voice.speak("Oi! Eu sou a Koi. Vamos cuidar do seu dia juntas? 💜")},Modifier.fillMaxWidth(),voice.ready)
                 Row {
-                    TextButton(onClick={com.thiago.assistentepessoal.tools.openIntent(context,android.content.Intent("com.android.settings.TTS_SETTINGS"))}){Text("Configurar voz")}
+                    TextButton(onClick={com.thiago.assistentepessoal.tools.openIntent(context,android.content.Intent("com.android.settings.TTS_SETTINGS"))}){Text("Configurações da voz do Android")}
                     TextButton(onClick={voice.stop()}){Text("Parar voz")}
                 }
                 voice.info?.let{Text(it,color=KoiColors.Muted,fontSize=12.sp)}

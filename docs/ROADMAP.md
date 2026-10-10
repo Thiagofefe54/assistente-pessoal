@@ -1,5 +1,14 @@
 # Roadmap da Koiwai
 
+## Estado atual — 10/10/2026
+
+V1.15.0/code19 integra melhorias dos packs de conversa, organização/memória,
+Google/voz e confiabilidade. [Entrega, limites e testes pendentes](ENTREGA_PACKS_1_4_V1_15.md).
+265 testes backend e61 Android aprovados; APK pronto, aguardando Poco.
+Os textos de versões abaixo são históricos. Conferir CONTINUIDADE_KOIWAI.md
+para estado de publicação/instalação. V2.0 depende da validação física, sete dias
+de uso e depois reformulação visual. Windows segue posterior.
+
 ## Direção atual — revisão de 08/10/2026
 
 Leia o checkpoint de continuidade e a [entrega V1.4](ENTREGA_MEUDIA_V1_4_2026_10_08.md)

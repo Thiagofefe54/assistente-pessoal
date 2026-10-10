@@ -1,3 +1,10 @@
+# Atualização integrada V1.15.0
+
+Conversa com contexto de tarefas, busca ampliada de lembranças, seleção de agendas
+e listas Google, e recuperação de consultas interrompidas. 265 testes do servidor
+e61 Android aprovados. APK preparado; validação no celular pendente.
+[Entrega dos quatro packs e limites](docs/ENTREGA_PACKS_1_4_V1_15.md).
+
 # Continuidade de conversa — servidor
 
 A Koi acompanha perguntas como “e sobre isso?” usando o assunto da última fala da
